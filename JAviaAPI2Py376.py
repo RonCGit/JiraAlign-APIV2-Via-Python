@@ -7,9 +7,11 @@ See README for usage instructions
 """
 import requests
 import json
+import time
 from creds import *
 import csv
 from urllib.parse import urlparse
+import threading
 #from exportAPItoCSV import *
 
 
@@ -34,7 +36,7 @@ def CollectApiInfo():
     apiendpoint = input("Enter the api endpoint for your instance in following format EG. ""cities"". It is very important that you spell this endpoint correctly. Please refer to the api documents E.G https://cprime.agilecraft.com/api-docs/public/ for the apiendpoints available : ")
     #print(apiendpoint)
     instanceurl = input("Enter the url for your instance in following format EG. ""https://cprime.agilecraft.com"" : ")
-    ChkInput = input("Is this your correct instance and endpoint you want to work with?  " + instanceurl + " : " + apiendpoint + "  ")
+    ChkInput = input("Is this your correct instance and endpoint you want to work with?  " + instanceurl + " : " + apiendpoint + "  " + "\n")
     if (ChkInput == "N") or (ChkInput == "n"):
        CollectApiInfo()
     instanceurl = instanceurl + "/rest/align/api/2" ##### Mess with these couple of lines, and break all of the other defs! 
@@ -42,7 +44,6 @@ def CollectApiInfo():
     api1instance = urlparse(instanceurl)
     api1instance = api1instance.scheme + "://" + api1instance.netloc
     api1instance = api1instance + "/api"
-    #print(instanceurl+apiendpoint, api1instance)
     return instanceurl, apiendpoint, api1instance
         
 #reuse this function to check if the user sees that they entered information correctly after reviewing it
@@ -53,8 +54,9 @@ def ChkInput(Input):
         else:
             break
 
-#this function will retrieve JA data necessary for creating items in JA and put that information into arrays for later use.          
-def CollectUsrMenuItems():
+#Collect some basic stuff from the instance         
+def CollectBasicItems():
+    print ("Please wait about 30 seconds while we collect some information from the Jira Align instance. Do not end this process, just wait a bit...")
 # # GET REGIONS
     global regArr
     regArr = []
@@ -96,8 +98,11 @@ def CollectUsrMenuItems():
         costCentID = costCen['ID']
         costCentName = costCen['Name']
         costArr.append("Costcenter Name: " + costCentName + " " + " / Costcenter ID: " + str(costCentID))
-        
+   
+    return regArr, citArr, orgArr, costArr     
+
 #V2 GET Capabilities
+def Capability():
     global capArr
     capArr = []
     Capabilities = requests.get(instanceurl + "/capabilities", auth=BearerAuth(jatoken))
@@ -108,8 +113,10 @@ def CollectUsrMenuItems():
         capTitle = eachCap['title']
         #capArr.append(("Capability ID: " + str(capID) + " " + " / Capability Name: " + capTitle))
         capArr.append(str(capID)+","+capTitle)
+    return capArr
         
-#V2 GET Users        
+#V2 GET Users
+def User():    
     global usrArr
     usrArr = []
     users = requests.get(instanceurl + "/users",  auth=BearerAuth(jatoken))
@@ -120,9 +127,65 @@ def CollectUsrMenuItems():
         un = eachUsr['uid']
         em = eachUsr['email']
         usrArr.append(fn + ',' + ln + "," + un + ',' + em)
+    return usrArr
 
-     
-    return regArr, citArr, orgArr, capArr, costArr, usrArr
+#V2 GET Programs
+def Program():
+    global progArr
+    progArr = []
+    programs = requests.get(instanceurl + "/programs", auth=BearerAuth(jatoken))
+    progData = programs.json()
+    for eachProg in progData:
+        progName = eachProg['title']
+        progID = eachProg['id']
+        progArr.append(progName + "," + str(progID))
+    return progArr
+
+#V2 GET Features
+def Feature():
+    global featArr
+    featArr = []
+    features = requests.get(instanceurl + "/features", auth=BearerAuth(jatoken))
+    featData = features.json()
+    print(len(features.json()))
+    line_count = 0
+    print("in1")
+    for eachFeature in featData:
+        line_count += 1
+        featName = eachFeature['title']
+        featID = eachFeature['id']
+        featArr.append(featName + "," + str(featID))
+        print(featName,featID)
+    #check to see if we hit 100 and if so start working in groups of 100
+    if len(features.json()) == 100:
+        print("in2")
+        #set this value since the api allows skipping by an integer assigned to argument skip
+        skip = int(100)
+        moreFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
+        mofeatData = moreFeatures.json()
+        print(len(moreFeatures.json()))
+        for anotherFeat in mofeatData:
+            line_count += 1
+            mofeatName = anotherFeat['title']
+            mofeatID = anotherFeat['id']
+            featArr.append(mofeatName + "," + str(mofeatID))
+            #print (mofeatName,str(mofeatID))
+    manyFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
+    manyfeatData = manyFeatures.json()
+    while len(manyFeatures.json()) > 1:
+        print("in3")
+        manyFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
+        manyfeatData = manyFeatures.json()
+        print(len(manyFeatures.json()))
+        skip = int(skip+100)
+        for addFeat in manyfeatData:
+            line_count += 1
+            manyfeatName = addFeat['title']
+            manyfeatID = addFeat['id']
+            featArr.append(manyfeatName + "," + str(manyfeatID))
+            #print (manyfeatName,str(manyfeatID))
+    print('Processed ' + str(line_count) + ' lines')
+    return featArr
 
 #This function formats arrays returned into a menu
 
@@ -183,39 +246,45 @@ def CreateOrg(newName):
     newOrgPost = requests.post(url = instanceurl+apiendpoint, data=json.dumps(paramData), headers=header, verify=True, auth=(username, jatoken))
     print (newOrgPost.status_code)
 
-def CreateCap(progID,parenID):
-    paramData = {"title" : "testcap1", "description" : "testcap1 test", "programid" : progID, "state" : "1", "type" : "1", "parentId" : parenID}
+def CreateCap(titl,progID,parenID):
+    print(progID,parenID)
+    paramData = {"title" : titl,"description" : "testcap1 test", "programid" : progID, "state" : "1", "type" : "1", "parentId" : parenID}
     header = {"Content-Type": "application/json"}
     newCapPost = requests.post(url = instanceurl+apiendpoint, data=json.dumps(paramData), headers=header, verify=True, auth=BearerAuth(jatoken))
     print (newCapPost.status_code, newCapPost.text)
 
-def CapHandler():
-    #V2 Capabilities Endpoint 
-    addCap = input("Do you want to import new Capabilities in your instance? If 'No' we will just output a list of the exsiting Capabilities to a csv file called caplist.csv in the directory this script is located [Y/N]:"+'\n')
+# Works togther with createcap. This function only handles the logic around capturing the information needed to create capabilities. The function CreateCap handles actually creating those capabilities after the infomation is collected
+def CapHandler(): 
+    addCap = input("Do you want to import new Capabilities in your instance? If 'No' we will just output a list of the existing Capabilities to a csv file called caplist.csv in the directory this script is located [Y/N]:"+'\n')
     if (addCap== "Y") or (addCap == "y"):
         capInpt = input("Please place the csv file containing the capabilities you want to import, which is properly formatted in the directory with this script that contains the capabilities you want to import [Type ""OK""]" + '\n')
         capInpt = input("Type the name of the input csv file exactly here with .csv extension included:" + "\n")
         ChkInput = input("Is this the correct file name with .csv extension included? " + capInpt + " Type [Y/N]" + "\n")
+        # Lets check if they are happy with their input, and if not start again and they can input the correct information
         if (ChkInput == "N") or (ChkInput == "n"):
-            Capabilities()
-        capProgID = input("Type the ID Number of the Program you want to assign these Capabilities to" + "\n")
-        capParID = input("Type the ID number of the Parent Portfolio Epic (Not the name! - get ID from JA UI) or equivalent work item in this instance" + "\n")
-        ChkInput = input("Are these the correct programs and parent ID to assign these capabilties? " + capProgID + " " + capParID + " Type [Y/N]" + "\n")
+            CapHandler()
+        time.sleep(5)
+        #Fire off the Capability function to collect all of the capabilities
+        Capability()
+        #Loop through the possible programs you are going to assign as primary program for these capabiltiee
+        for each in progArr:
+            print (each)
+        capProgID = input("From the list above, type the ID NUMBER of the Primary Program you assign to these imported capabilties. You MUST choose a primary Program for them. You may need to import in batches to get all of your Capabilities into the right Programs" + "\n")
+        capParID = input("Type the ID number of the Parent Portfolio Epic (Not the name! - get ID from your JIRAALIGN List of PORTFOLIO EPICS) or EQUIVALENT work item in this instance" + "\n")
+        ChkInput = input("Is this the correct Primary Program and correct Parent Program Epic to assign these capabilties? " + capProgID + " " + capParID + " Type [Y/N]" + "\n")
         if (ChkInput == "N") or (ChkInput == "n"):
-            Capabilities()
+            CapHandler()
         with open(capInpt) as cap_inpt_file:
-            csv_reader = csv.reader(cap_inpt_file, delimiter=',')
-            line_count = 0
+            csv_reader = csv.DictReader(cap_inpt_file)
+            line_count = 0  
             for row in csv_reader:
-                if line_count > 0:
-                #if line_count == 0:
-                #    #print(f'Column names are {", ".join(row)}')
-                    CreateCap(capProgID,)
-                    line_count += 1
-                else:
-                #print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
-                    line_count += 1
-                    print(f'Processed {line_count} lines.')
+                capTitle = row['title']
+                description = row['description']
+                state = row['state']
+                typ = row['type']
+                CreateCap(capTitle,capProgID, capParID)
+                line_count += 1
+            print(f'Processed {line_count} lines.')
     else:
         print ("This script is now going to create a comma delimited file called caplist.csv in the same directory of this script with all of the users listed \n")
         with open('caplist.csv', 'w', newline='') as myfile:
@@ -224,6 +293,95 @@ def CapHandler():
                 print(eachCap)
                 out.writerow([eachCap]) 
 
+def FeatHandler():
+    #Available in Version 2 only - handles the Features endpoint
+    addFeat = input("Do you want to import new Features in your instance? If 'No' we will just output a list of the existing Features to a csv file called featurelist.csv in the directory this script is located [Y/N]:"+'\n')
+    if (addFeat== "Y") or (addFeat == "y"):
+        featInpt = input("Please place the csv file containing the FEATURES you want to import, which is properly formatted in the directory with this script that contains the FEATURES you want to import [Type ""OK""]" + '\n')
+        featInpt = input("Type the name of the input csv file exactly here with .csv extension included:" + "\n")
+        ChkInput = input("Is this the correct file name with .csv extension included? " + featInpt + " Type [Y/N]" + "\n")
+        # Lets check if they are happy with their input, and if not start again and they can input the correct information
+        if (ChkInput == "N") or (ChkInput == "n"):
+            FeatHandler()
+        time.sleep(5)
+        #Loop through the possible programs you are adding as Primary Program to imported Features
+        for each in progArr:
+            print (each)
+        featProgID = input("From the list above, type the ID NUMBER of the Primary Program you assign to these imported Features. You MUST choose a primary program for them. You may need to import in batches to get all of your features into the right Programs" + "\n")
+        featParID = input("Type the ID number of the Capability OR EQUIVALENT (Not the name! - get ID from your JIRAALIGN List of CAPABILITIES) or EQUIVALENT work item in this instance" + "\n")
+        ChkInput = input("Is this the correct Primary Program and correct Capability to assign these Features to? " + featProgID + " " + featParID + " Type [Y/N]" + "\n")
+        if (ChkInput == "N") or (ChkInput == "n"):
+            FeatHandler()
+        with open(featInpt) as feat_inpt_file:
+            csv_reader = csv.DictReader(feat_inpt_file)
+            line_count = 0  
+            for row in csv_reader:
+                featTitle = row['title']
+                description = row['description']
+                state = row['state']
+                typ = row['type']
+                CreateFeat(featTitle,featProgID, featParID)
+                line_count += 1
+            print('Processed {line_count} lines.')
+    else:
+        print ("This script is now going to create a comma delimited file called featlist.csv in the same directory of this script with all of the users listed \n")
+        with open('featlist.csv', 'w', newline='') as myfile:
+            line_count = 0
+            out = csv.writer(myfile,dialect='excel',delimiter=',',quoting=csv.QUOTE_NONE,escapechar=' ')
+            for eachFeat in featArr:
+                #print(eachFeat)
+                out.writerow([eachFeat]) #write each out to csv
+                line_count += 1
+            print('Processed {line_count} lines.')
+
+#V2 GET Features
+def Feature():
+    global featArr
+    featArr = []
+    features = requests.get(instanceurl + "/features", auth=BearerAuth(jatoken))
+    featData = features.json()
+    print(len(features.json()))
+    line_count = 0
+    print("in1")
+    for eachFeature in featData:
+        line_count += 1
+        featName = eachFeature['title']
+        featID = eachFeature['id']
+        featArr.append(featName + "," + str(featID))
+        print(featName,featID)
+    #check to see if we hit 100 and if so start working in groups of 100
+    if len(features.json()) == 100:
+        print("in2")
+        #set this value since the api allows skipping by an integer assigned to argument skip
+        skip = int(100)
+        moreFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
+        mofeatData = moreFeatures.json()
+        print(len(moreFeatures.json()))
+        for anotherFeat in mofeatData:
+            line_count += 1
+            mofeatName = anotherFeat['title']
+            mofeatID = anotherFeat['id']
+            featArr.append(mofeatName + "," + str(mofeatID))
+            #print (mofeatName,str(mofeatID))
+    manyFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
+    manyfeatData = manyFeatures.json()
+    while len(manyFeatures.json()) > 1:
+        print("in3")
+        manyFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
+        manyfeatData = manyFeatures.json()
+        print(len(manyFeatures.json()))
+        skip = int(skip+100)
+        for addFeat in manyfeatData:
+            line_count += 1
+            manyfeatName = addFeat['title']
+            manyfeatID = addFeat['id']
+            featArr.append(manyfeatName + "," + str(manyfeatID))
+            #print (manyfeatName,str(manyfeatID))
+    print('Processed ' + str(line_count) + ' lines')
+    return featArr
+
+
+    
 def CitHandler():
     addCity = input("Do you want to create a new City in your Jira Align instance? [Y/N]:"+'\n')
     if (addCity == "Y") or (addCity == "y"):
@@ -249,8 +407,13 @@ def main():
     #print(instanceurl+apiendpoint)
  
     #Large def, collects infomation on (almost) every endpoint, and collects that info into a comma delimited array
-    CollectUsrMenuItems()
+    CollectBasicItems()
 
+    #Features
+    if "features" in apiendpoint:
+        Feature()
+        FeatHandler()
+    
     #Capabilities
     if "capabilities" in apiendpoint:
         CapHandler()
