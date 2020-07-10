@@ -11,8 +11,7 @@ import time
 from creds import *
 import csv
 from urllib.parse import urlparse
-import threading
-#from exportAPItoCSV import *
+
 
 
 instanceurl = "None"
@@ -53,8 +52,15 @@ def ChkInput(Input):
             return input
         else:
             break
+#Since we are using csv files as the basis for import and export, we have to remove all of the commas from the text in the fields so commas are only field delimiters
+def ReplaceStrings(txt,remove,replace):
+    if txt and "," in txt:
+        txt = txt.replace(remove,replace)
+        return txt
+    else:
+        return txt
 
-#Collect some basic stuff from the instance         
+#Collect some basic stuff from the instance that provide information needed for adding work items
 def CollectBasicItems():
     print ("Please wait about 30 seconds while we collect some information from the Jira Align instance. Do not end this process, just wait a bit...")
 # # GET REGIONS
@@ -140,52 +146,6 @@ def Program():
         progID = eachProg['id']
         progArr.append(progName + "," + str(progID))
     return progArr
-
-#V2 GET Features
-def Feature():
-    global featArr
-    featArr = []
-    features = requests.get(instanceurl + "/features", auth=BearerAuth(jatoken))
-    featData = features.json()
-    print(len(features.json()))
-    line_count = 0
-    print("in1")
-    for eachFeature in featData:
-        line_count += 1
-        featName = eachFeature['title']
-        featID = eachFeature['id']
-        featArr.append(featName + "," + str(featID))
-        print(featName,featID)
-    #check to see if we hit 100 and if so start working in groups of 100
-    if len(features.json()) == 100:
-        print("in2")
-        #set this value since the api allows skipping by an integer assigned to argument skip
-        skip = int(100)
-        moreFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
-        mofeatData = moreFeatures.json()
-        print(len(moreFeatures.json()))
-        for anotherFeat in mofeatData:
-            line_count += 1
-            mofeatName = anotherFeat['title']
-            mofeatID = anotherFeat['id']
-            featArr.append(mofeatName + "," + str(mofeatID))
-            #print (mofeatName,str(mofeatID))
-    manyFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
-    manyfeatData = manyFeatures.json()
-    while len(manyFeatures.json()) > 1:
-        print("in3")
-        manyFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
-        manyfeatData = manyFeatures.json()
-        print(len(manyFeatures.json()))
-        skip = int(skip+100)
-        for addFeat in manyfeatData:
-            line_count += 1
-            manyfeatName = addFeat['title']
-            manyfeatID = addFeat['id']
-            featArr.append(manyfeatName + "," + str(manyfeatID))
-            #print (manyfeatName,str(manyfeatID))
-    print('Processed ' + str(line_count) + ' lines')
-    return featArr
 
 #This function formats arrays returned into a menu
 
@@ -293,7 +253,7 @@ def CapHandler():
                 print(eachCap)
                 out.writerow([eachCap]) 
 
-def FeatHandler():
+def FeatRoutine():
     #Available in Version 2 only - handles the Features endpoint
     addFeat = input("Do you want to import new Features in your instance? If 'No' we will just output a list of the existing Features to a csv file called featurelist.csv in the directory this script is located [Y/N]:"+'\n')
     if (addFeat== "Y") or (addFeat == "y"):
@@ -302,9 +262,9 @@ def FeatHandler():
         ChkInput = input("Is this the correct file name with .csv extension included? " + featInpt + " Type [Y/N]" + "\n")
         # Lets check if they are happy with their input, and if not start again and they can input the correct information
         if (ChkInput == "N") or (ChkInput == "n"):
-            FeatHandler()
+            FeatRoutine()
         time.sleep(5)
-        #Loop through the possible programs you are adding as Primary Program to imported Features
+        #Loop through the possible programs collected in CollectBasic function you are adding as Primary Program to imported Features
         for each in progArr:
             print (each)
         featProgID = input("From the list above, type the ID NUMBER of the Primary Program you assign to these imported Features. You MUST choose a primary program for them. You may need to import in batches to get all of your features into the right Programs" + "\n")
@@ -314,25 +274,20 @@ def FeatHandler():
             FeatHandler()
         with open(featInpt) as feat_inpt_file:
             csv_reader = csv.DictReader(feat_inpt_file)
-            line_count = 0  
             for row in csv_reader:
                 featTitle = row['title']
                 description = row['description']
                 state = row['state']
                 typ = row['type']
                 CreateFeat(featTitle,featProgID, featParID)
-                line_count += 1
-            print('Processed {line_count} lines.')
     else:
-        print ("This script is now going to create a comma delimited file called featlist.csv in the same directory of this script with all of the users listed \n")
+        print ("This script is now going to create a comma delimited file called featlist.csv in the same directory of this script" + " \n")
         with open('featlist.csv', 'w', newline='') as myfile:
             line_count = 0
             out = csv.writer(myfile,dialect='excel',delimiter=',',quoting=csv.QUOTE_NONE,escapechar=' ')
             for eachFeat in featArr:
-                #print(eachFeat)
+                print(eachFeat)
                 out.writerow([eachFeat]) #write each out to csv
-                line_count += 1
-            print('Processed {line_count} lines.')
 
 #V2 GET Features
 def Feature():
@@ -340,44 +295,64 @@ def Feature():
     featArr = []
     features = requests.get(instanceurl + "/features", auth=BearerAuth(jatoken))
     featData = features.json()
-    print(len(features.json()))
+    #print(len(features.json()))
     line_count = 0
-    print("in1")
     for eachFeature in featData:
         line_count += 1
         featName = eachFeature['title']
+        # Replace all commas to preserve comma delimited format that the csv.writer module is using with dashes
+        featName = ReplaceStrings(featName,",","-")
         featID = eachFeature['id']
-        featArr.append(featName + "," + str(featID))
-        print(featName,featID)
+        featDesc = eachFeature['description']
+        # Replace all commas to preserve comma delimited format that the csv.writer module is using with dashes
+        featDesc = ReplaceStrings(featDesc,",","-")
+        featParent = eachFeature['parentId']
+        featProg = eachFeature['programId']
+        featIsDel = eachFeature['inRecycleBin']
+        featArr.append(featName + "," + str(featID) + "," + featDesc + "," + str(featParent) + "," + str(featProg) + "," + str(featIsDel))
     #check to see if we hit 100 and if so start working in groups of 100
     if len(features.json()) == 100:
-        print("in2")
         #set this value since the api allows skipping by an integer assigned to argument skip
         skip = int(100)
-        moreFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
+        moreFeatures = requests.get(instanceurl + "/features?$select=id,title,description,programId,parentId,inRecycleBin&$skip=" + str(skip), auth=BearerAuth(jatoken))
         mofeatData = moreFeatures.json()
-        print(len(moreFeatures.json()))
+        #print(len(moreFeatures.json()))
         for anotherFeat in mofeatData:
             line_count += 1
-            mofeatName = anotherFeat['title']
+            mofeatName = anotherFeat['title']      
+            # Replace all commas to preserve comma delimited format that the csv.writer module is using with dashes
+            mofeatName = ReplaceStrings(mofeatName,",","-")
             mofeatID = anotherFeat['id']
-            featArr.append(mofeatName + "," + str(mofeatID))
-            #print (mofeatName,str(mofeatID))
-    manyFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
+            mofeatDesc = anotherFeat['description']
+            # Replace all commas to preserve comma delimited format that the csv.writer module is using with dashes
+            mofeatDesc = ReplaceStrings(mofeatDesc,",","-")
+            mofeatParent = anotherFeat['parentId']
+            mofeatProg = anotherFeat['programId']
+            mofeatIsDel = anotherFeat['inRecycleBin']
+            featArr.append(mofeatName + "," + str(mofeatID) + "," + mofeatDesc + "," + str(mofeatParent) + "," + str(mofeatProg) + "," + str(mofeatIsDel))
+    manyFeatures = requests.get(instanceurl + "/features?$select=id,title,description,programId,parentId,inRecycleBin&$skip=" + str(skip), auth=BearerAuth(jatoken))
     manyfeatData = manyFeatures.json()
     while len(manyFeatures.json()) > 1:
-        print("in3")
-        manyFeatures = requests.get(instanceurl + "/features?$select=id,title&$skip=" + str(skip), auth=BearerAuth(jatoken))
+        manyFeatures = requests.get(instanceurl + "/features?$select=id,title,description,programId,parentId,inRecycleBin&$skip=" + str(skip), auth=BearerAuth(jatoken))
         manyfeatData = manyFeatures.json()
-        print(len(manyFeatures.json()))
+        #print(len(manyFeatures.json()))
         skip = int(skip+100)
         for addFeat in manyfeatData:
             line_count += 1
-            manyfeatName = addFeat['title']
+            manyfeatName = addFeat['title']      
+            # Replace all commas to preserve comma delimited format that the csv.writer module is using with dashes
+            manyfeatName = ReplaceStrings(manyfeatName,",","-")
             manyfeatID = addFeat['id']
-            featArr.append(manyfeatName + "," + str(manyfeatID))
-            #print (manyfeatName,str(manyfeatID))
-    print('Processed ' + str(line_count) + ' lines')
+            manyfeatDesc = addFeat['description']
+            # Replace all commas to preserve comma delimited format that the csv.writer module is using with dashes
+            manyfeatDesc = ReplaceStrings(manyfeatDesc,",","-")
+            manyfeatParent = addFeat['parentId']
+            manyfeatProg = addFeat['programId']
+            manyfeatIsDel = addFeat['inRecycleBin']
+            featArr.append((manyfeatName if manyfeatName else "")+","+(str(manyfeatID) if manyfeatID else "")+","+(manyfeatDesc if manyfeatDesc else "")+","+(str(manyfeatParent) if manyfeatParent else "")+","+(str(manyfeatProg) if manyfeatProg else "")+","+(str(manyfeatIsDel) if manyfeatIsDel else ""))
+            # The following 2 lines are good lines to uncomment to see if you are really getting all of the features
+            #print (line_count)
+    #print('Processed ' + str(line_count) + ' lines')
     return featArr
 
 
@@ -411,8 +386,10 @@ def main():
 
     #Features
     if "features" in apiendpoint:
+        # Call Feature so that you can build the complete list of Features into an array
         Feature()
-        FeatHandler()
+        # Call the FeatRoutine that utilizes the array that is created in Features and puts them into a csv file.
+        FeatRoutine()
     
     #Capabilities
     if "capabilities" in apiendpoint:
@@ -421,46 +398,63 @@ def main():
     #Cities    
     if "cities" in apiendpoint:
         CitHandler()
+        
+    if "themes" in apiendpoint:
+        theme()
 
 
 ####################################################################################################################################################################################
    
+    # This section will be deprecated
     #break out into handing each endpoint differently as they will go through iteration in subsequent versions of API
+    # #USERS endpoint
+    # if "users" in apiendpoint:
+    #     print ("From within the users endpoint, you can either retrieve all the users into a spreadsheet, or create a single user  \n")
+    #     addUsr = input("Do you want to create a new user? [Y/N]:"+'\n') or "N"
+    #     if (addUsr == "Y") or (addUsr == "y"):
+    #         CollectUsrMenuItems()
+    #         MenuChooser('What Region would you like to put your user into? \n', regArr)
+    #         MenuChooser('What City do you want to assign to your user? \n', citArr)
+    #         MenuChooser('What Organization do you want to assign to your user? \n', orgArr)
+    #         CollectUserInfo()
+    #         #CreateUser(UsrEmail,UsrFN,UsrLN)
+    #     else:
+    #         print ("This script is now going to create a comma delimited file called userlist.csv in the same directory of this script with all of the users listed \n")   
+    #         with open('userlist.csv', 'w', newline='') as myfile:
+    #             out = csv.writer(myfile,dialect='excel',delimiter=',',quoting=csv.QUOTE_NONE,escapechar=' ')
+    #             for eachUsr in usrArr:
+    #                 print(eachUsr)
+    #                 out.writerow([eachUsr])
+
+
+
+    # # #ORGANIZATIONSTRUCTURES endpoint
+    # if "organizationstructures" in apiendpoint:
+    #     addOrg = input("Do you want to create a new Organization in your instance? If 'No' we will just output a list of the exsiting organizations [Y/N]:"+'\n')
+    #     if (addOrg== "Y") or (addOrg == "y"):
+    #         print ("Here is a list of all Organizations and thier IDs in Jira Align from your instance \n")
+    #         for org in orgArr:
+    #             print (org)
+    #         # newOrg = input("Please enter the name of the new Organization you would like to create [eg: HR]")
+    #         # CreateOrg(newOrg)
+    #     else:
+    #         print ("Here is a list of all Organizations and thier IDs in Jira Align from your instance \n")
+    #         for org in orgArr:
+    #             print (org)
+        
+def theme():
+    global themeArr
+    themeArr = []
+    themes = requests.get(instanceurl + "/themes", auth=BearerAuth(jatoken))
+    themeData = themes.json()
+    for eachTheme in themeData:
+        themeName = eachTheme['title']
+        themeID = eachTheme['id']
+        themeArr.append(themeName + "," + str(themeID))
+        print(themeName)
+    return themeArr
+
     
-    #USERS endpoint
-    if "users" in apiendpoint:
-        print ("From within the users endpoint, you can either retrieve all the users into a spreadsheet, or create a single user  \n")
-        addUsr = input("Do you want to create a new user? [Y/N]:"+'\n') or "N"
-        if (addUsr == "Y") or (addUsr == "y"):
-            CollectUsrMenuItems()
-            MenuChooser('What Region would you like to put your user into? \n', regArr)
-            MenuChooser('What City do you want to assign to your user? \n', citArr)
-            MenuChooser('What Organization do you want to assign to your user? \n', orgArr)
-            CollectUserInfo()
-            #CreateUser(UsrEmail,UsrFN,UsrLN)
-        else:
-            print ("This script is now going to create a comma delimited file called userlist.csv in the same directory of this script with all of the users listed \n")   
-            with open('userlist.csv', 'w', newline='') as myfile:
-                out = csv.writer(myfile,dialect='excel',delimiter=',',quoting=csv.QUOTE_NONE,escapechar=' ')
-                for eachUsr in usrArr:
-                    print(eachUsr)
-                    out.writerow([eachUsr])
-
-
-
-    # #ORGANIZATIONSTRUCTURES endpoint
-    if "organizationstructures" in apiendpoint:
-        addOrg = input("Do you want to create a new Organization in your instance? If 'No' we will just output a list of the exsiting organizations [Y/N]:"+'\n')
-        if (addOrg== "Y") or (addOrg == "y"):
-            print ("Here is a list of all Organizations and thier IDs in Jira Align from your instance \n")
-            for org in orgArr:
-                print (org)
-            # newOrg = input("Please enter the name of the new Organization you would like to create [eg: HR]")
-            # CreateOrg(newOrg)
-        else:
-            print ("Here is a list of all Organizations and thier IDs in Jira Align from your instance \n")
-            for org in orgArr:
-                print (org)
             
 ####################################################################################################################################################################################       
 if __name__ == "__main__":
