@@ -7,9 +7,11 @@ Created on Fri Aug 14 13:28:11 2020
 import requests
 import cfg
 import creds
+import json
 
-
-def grabit(which):
+##################
+def jajsonparser(which,key1,key2,key3,key4,key5,key6):
+##################
     global arrname
     arrname = which+'Arr'
     arrname = []
@@ -17,10 +19,11 @@ def grabit(which):
     iters = requests.get(cfg.instanceurl + "/" + which, auth=cfg.BearerAuth(creds.jatoken))
     data = iters.json()
     line_count = 0
+    #print(json.dumps(data))
     for iter in data:
-        print (iter)
-        name = iter['title']
-        # = str(item['id'])
-        # item+'ReleaseId' = str(iter['releaseId'])
-        print(name)
-        
+        title = (iter[key1])
+        startdate = str(iter[key2])
+        enddate = str(iter[key3])
+        anchorSprintID = str(iter[key4])
+        progID = str(iter[key5])
+        print(title, startdate, enddate, anchorSprintID,progID)
