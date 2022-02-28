@@ -1,21 +1,81 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jan 30 10:50:05 2020
-@author: roncavallo
-See README for usage instructions
-"""
-import requests
+#!/usr/bin/env python3
+#
+# common.py
+#
+# All common function used for various example programs.
+
 import json
 import time
 import csv
 from urllib.parse import urlparse
 
 #import subfiles
+import cfg
+import creds
 import workitemparser
 import timeboxes
-import creds
-import cfg
+import requests
+
+MAX = 10
+
+def PostToJiraAlign(header, paramData, verify_flag, use_bearer, url = None):
+    """Generic method to do a POST to the Jira Align instance, with the specified parameters, and return
+        the result of the POST call.
+
+    Args:
+        header: The HTTP header to use
+        paramData: The data to POST
+        verify_flag (bool): Either True or False
+        use_bearer (bool): If True, use the BearerAuth token, else use username/token.
+        url (string): The URL to use for the POST.  If None, use the default instance + API end point variables defined
+
+    Returns:
+        Response
+    """
+    if url is None:
+        # Use the default URL
+        url_to_use = instanceurl
+    else:
+        # Use the given URL
+        url_to_use = url
+
+    # If we need to use BearerAuth with Token
+    if use_bearer:
+        result = requests.post(url = url_to_use, data=json.dumps(paramData), 
+                               headers=header, verify=verify_flag, 
+                               auth=cfg.BearerAuth(creds.jatoken))
+    # Otherwise, use Username/Token auth
+    else:
+        result = requests.post(url = url_to_use, data=json.dumps(paramData), 
+                               headers=header, verify=verify_flag, 
+                               auth=(creds.username, creds.jatoken))
+    return result
+
+def GetFromJiraAlign(use_bearer, url = None):
+    """Generic method to do a GET to the Jira Align instance, with the specified parameters, and return
+        the result of the GET call.
+
+    Args:
+        use_bearer (bool): If True, use the BearerAuth token, else use username/token.
+        url (string): The URL to use for the GET.  If None, use the default instance + API end point variables defined
+
+    Returns:
+        Response
+    """
+    if url is None:
+        # Use the default URL
+        url_to_use = instanceurl
+    else:
+        # Use the given URL
+        url_to_use = url
+
+    # If we need to use BearerAuth with Token
+    if use_bearer:
+        result = requests.get(url = url_to_use, auth=cfg.BearerAuth(creds.jatoken))
+    # Otherwise, use Username/Token auth
+    else:
+        result = requests.get(url = url_to_use, auth=(creds.usernamev1, creds.jatokenv1))
+    return result
 
 # This collects instance details like the url and the endpoint you want to target
 def CollectApiInfo():
@@ -39,156 +99,97 @@ def CollectBasicItems():
 # # GET REGIONS
     global regArr
     regArr = []
-    regions = requests.get(cfg.instanceurl + "/regions", auth=cfg.BearerAuth(creds.jatoken))
+    print("Collecting Region info...")
+    regions = GetFromJiraAlign(True, cfg.instanceurl + "/regions")
     dataReg = regions.json()
     for eachReg in dataReg:
         #print(eachReg)
         region = eachReg['name']
         regionid = eachReg['id']
-        regArr.append("Region Name: " + region + " " + " / Region ID: " + str(regionid))
+        regArr.append("Region Name: " + region + ", Region ID: " + str(regionid))
  
 # #GET CITIES
     global citArr
     citArr = []
-    cities= requests.get(cfg.instanceurl + "/cities",  auth=cfg.BearerAuth(creds.jatoken))
+    print("Collecting City info...")
+    cities = GetFromJiraAlign(True, cfg.instanceurl + "/cities")
     dataCit = cities.json()
     for eachCit in dataCit:
         cityID = eachCit['id']
         cityN = eachCit['name']
-        citArr.append("City Name: " + cityN + " " + " / City ID: " + str(cityID))
-
+        citArr.append("City Name: " + cityN + ", City ID: " + str(cityID))
     
-# V1 GET ENTERPRISE HIERARCHY   
-    global orgArr
-    orgArr = []
-    enterpriseH = requests.get(cfg.api1instance + "/organizationstructures",  auth=(creds.username, creds.jatoken))
-    entData = enterpriseH.json()
-    for eachOrg in entData['Results']:
-            orgID = eachOrg['OrganizationStructureID']
-            orgName = eachOrg['OrganizationStructureName']
-            orgArr.append("Organization Name: " + orgName + " " + " / Organization ID: " + str(orgID))
-        
-# V1 GET COST CENTERS
-    global costArr
-    costArr = []
-    CostCenters = requests.get(cfg.api1instance + "/costcenters",  auth=(creds.username, creds.jatoken))
-    costData = CostCenters.json()
-    for costCen in costData['Results']:
-        costCentID = costCen['ID']
-        costCentName = costCen['Name']
-        costArr.append("Costcenter Name: " + costCentName + " " + " / Costcenter ID: " + str(costCentID))
-   
-    return regArr, citArr, orgArr, costArr     
+    return regArr, citArr
 
 #V2 GET Capabilities
 def Capability():
     global capArr
     capArr = []
-    Capabilities = requests.get(instanceurl + "/capabilities", auth=BearerAuth(jatoken))
+    print("Collecting Capability info...")
+    Capabilities = GetFromJiraAlign(True, cfg.instanceurl + "/capabilities")
     capData = Capabilities.json()   
     for eachCap in capData:
         #print(eachCap['title'])
         capID = eachCap['id']
         capTitle = eachCap['title']
-        #capArr.append(("Capability ID: " + str(capID) + " " + " / Capability Name: " + capTitle))
-        capArr.append(str(capID)+","+capTitle)
+        capArr.append("Capability Name: " + capTitle + ", Capability ID: " + str(capID))
+        #capArr.append(str(capID)+","+capTitle)
     return capArr
         
 #V2 GET Users
 def User():    
     global usrArr
     usrArr = []
-    users = requests.get(instanceurl + "/users",  auth=BearerAuth(jatoken))
+    print("Collecting User info...")
+    users = GetFromJiraAlign(True, cfg.instanceurl + "/users")
     data = users.json()
     for eachUsr in data:
         fn = eachUsr["firstName"]
         ln = eachUsr["lastName"]
         un = eachUsr['uid']
         em = eachUsr['email']
-        usrArr.append(fn + ',' + ln + "," + un + ',' + em)
+        usrArr.append("User First Name: " + fn + ", Last Name: " + ln + ", User ID: " + un + ", Email: " + em)
     return usrArr
 
 #V2 GET Programs
 def Program():
     global progArr
     progArr = []
-    programs = requests.get(cfg.instanceurl + "/programs", auth=cfg.BearerAuth(creds.jatoken))
+    print("Collecting Program info...")
+    programs = GetFromJiraAlign(True, cfg.instanceurl + "/programs")
     progData = programs.json()
     for eachProg in progData:
         progName = eachProg['title']
         progID = eachProg['id']
-        progArr.append(progName + "," + str(progID))
+        progArr.append("Program Name: " + progName + ", Program ID: " + str(progID))
     return progArr
 
 #V2 GET Product List for when Products are mandatory on Feature creations
 def Product():
     global prodArr
     prodArr = []
-    products = requests.get(cfg.instanceurl + "/products", auth=cfg.BearerAuth(creds.jatoken))
+    print("Collecting Product info...")
+    products = GetFromJiraAlign(True, cfg.instanceurl + "/products")
     prodData = products.json()
     for eachProd in prodData:
         prodName = eachProd['title']
         prodID = eachProd['id']
-        prodArr.append(prodName + "," + str(prodID))
+        prodArr.append("Product Name: " + prodName + ", Product ID: " + str(prodID))
         #print (prodName,prodID)
     return prodArr
 
-                
-            
-# This function is for collecting unique user-specific information for creating users such as email address etc. 
-            
-def CollectUserInfo():
-    global UsrEmail
-    UsrEmail = input("Please enter the full email address of the user [eg: ron.cavallo@cprime.com]")
-    if not UsrEmail:
-        UsrEmail = input("You must enter the full email address of the user [eg: ron.cavallo@cprime.com]")##This needs better checking 
-    global UsrFN
-    UsrFN = input("Please enter the full first name of the new user [eg: Jimeny]")
-    if not UsrFN:
-        UsrFN = input("You must enter the first name the user [eg: Jimeny]")
-    global UsrLN
-    UsrLN = input("Please enter the last name of the new user [eg: Cricket]")
-    if not UsrLN:
-        UsrFN = input("You must enter the last name the user [eg: Cricket]")
-    return UsrEmail,UsrFN,UsrLN
-    
-        
-#These functions create objects as per their name using POST commands 
-
-def CreateUser(UsrE, UsrF, UsrL):
-    UsrData = { "email" : UsrE, "FirstName" : UsrF, "LastName" : UsrL, "RoleID": "6", "Title": "CRM+ User", "EnterpirseHierarchy" : "16", "RegionID" : "1","CityID" : "14","CostCenterID" : "1" }
-    #header = {"content-type": "application/json"}
-    header = {"content-type": "appilcation/json", "Accept": "text/plain"}
-    NewUser = requests.post(url = instanceurl+apiendpoint,data=json.dumps(UsrData), headers=header, verify=False, auth=(username, jatoken))
-
-# This function creates a city with a post. Contrary to API documentation, these are the only two fields required to create a field
-def CreateCity(newName, existingRegionID):
-    paramData = {"Name" : newName, "RegionID" : existingRegionID}
-    header = {"Content-Type": "application/json"}
-    newCityPost = requests.post(url = instanceurl+apiendpoint, data=json.dumps(paramData), headers=header, verify=True, auth=(username, jatoken))
-    print (newCityPost.status_code)
-
-# This function creates an organization with a post. You only need to specify the name of the new org the ID will be automatically generated
-def CreateOrg(newName):
-    paramData = {"Name" : newName}
-    header = {"Content-Type": "application/json"}
-    newOrgPost = requests.post(url = instanceurl+apiendpoint, data=json.dumps(paramData), headers=header, verify=True, auth=(username, jatoken))
-    print (newOrgPost.status_code)
-
-def CreateCap(titl,desc,progID,parenID):
-    #print(progID,parenID)
-    paramData = {"title" : titl,"description" : desc, "programid" : progID, "state" : "1", "type" : "1", "parentId" : parenID}
-    header = {"Content-Type": "application/json"}
-    newCapPost = requests.post(url = instanceurl+apiendpoint, data=json.dumps(paramData), headers=header, verify=True, auth=BearerAuth(jatoken))
-    print (newCapPost.status_code, newCapPost.text)
-
-def CreateFeat(titl,desc,progID,parenID,prodID):
-    print(titl,desc,progID,parenID)
-    paramData = {"title" : titl,"description" : desc, "programid" : progID, "state" : "0", "type" : "1", "parentId" : parenID, "productId" : prodID}
-    header = {"Content-Type": "application/json"}
-    newFeatPost = requests.post(url = cfg.instanceurl+cfg.apiendpoint, data=json.dumps(paramData), headers=header, verify=True, auth=cfg.BearerAuth(creds.jatoken))
-    #newFeatPost = requests.post(url = cfg.instanceurl+cfg.apiendpoint, data=json.dumps(paramData), headers=header, verify=True, auth=cfg.BearerAuth(creds.jatoken))
-    print("Status Code - looking for 201's: " + str(newFeatPost.status_code))
+#V2 GET Iteration list
+def Iterations():
+    global iterArr
+    iterArr = []
+    print("Collecting Iteration info...")
+    iters = GetFromJiraAlign(True, cfg.instanceurl + "/iterations")
+    data = iters.json()
+    line_count = 0
+    for iter in data:
+        iterationName = iter['title']
+        iterationID = iter['releaseId']
+        iterArr.append("Iteration Name: " + iterationName + ", Iteration ID: " + str(iterationID))
 
 #Handles the logic for EXPORT and IMPORT and parses several arrays to give the user choices over parameters during import
 def CapRoutine(): 
@@ -226,7 +227,7 @@ def CapRoutine():
         with open('caplist.csv', 'w', newline = '') as myfile:
             print ("This script is now going to create a comma delimited file called caplist.csv in the same directory of this script with all of the users listed \n")
             out = csv.writer(myfile,delimiter=',',quoting=csv.QUOTE_NONE, escapechar=' ')
-            out.writerow(["title","description","id","parentID","programID","inRecycleBin"])
+            out.writerow(["title","description","id","parentID","programID","isRecycled"])
             for eachCap in workitemparser.itemArr:
                     #print(eachFeat)
                     out.writerow([eachCap]) #write each out to csv
@@ -368,58 +369,121 @@ def CitHandler():
         for cit in citArr:
             print (cit)
 
+def PrintXRegions(x):
+    """ Output up to x regions to the console.
 
-#def IterationRoutine():
-    
+    Args:
+        x: maximum number of regions to output
+    """
+    i = 1
+    size = x
+    if len(regArr) < size:
+        size = len(regArr)
+    print("Here are " + str(size) + " regions defined in Jira Align:")
+    for region in regArr:
+        print(str(i) + " " + region)
+        i = i + 1
+        if i > size:
+            break
 
+def PrintXCities(x):
+    """ Output up to x cities to the console.
 
-####################################################################################################################################################################################
-def main():
-####################################################################################################################################################################################
-# MAIN
-  
-    # Call a subfile that helps handle shared routines and variables between this file and other files like workitemparser, jathemes, etc
-    cfg.init()
-    
-    #Collect api server and endpoint. Also collect all of the instance json infomation we need into arrays with CollectUsrMenuItems
-    CollectApiInfo()
-    #print(instanceurl+apiendpoint)
- 
-    #Dat collects information you will need later if you want to create users at all, and in some cases work items.
-    CollectBasicItems()
+    Args:
+        x: maximum number of cities to output
+    """
+    i = 1
+    size = x
+    if len(citArr) < size:
+        size = len(citArr)
+    print("Here are " + str(size) + " cities defined in Jira Align:")
+    for city in citArr:
+        print(str(i) + " " + city)
+        i = i + 1
+        if i > size:
+            break
 
-    #Features
-    if "features" in cfg.apiendpoint:     
-        Product()
-        # Call Feature from the workitemparser file so that you can build the complete list of Features into an array
-        workitemparser.FeatsOrCaps("features")
-        # Call the FeatRoutine that utilizes the array that is created in Features and puts them into a csv file.
-        Program()
-        FeatRoutine()
-    
-    #Capabilities
-    if "capabilities" in cfg.apiendpoint:
-        workitemparser.FeatsOrCaps("capabilities")
-        Program()
-        CapRoutine()
-  
-    #Portfolio Epics
-    if "epics" in cfg.apiendpoint:
-        workitemparser.FeatsOrCaps("epics")
-        Program()
-        EpicRoutine()   
+def PrintXCapabilities(x):
+    """ Output up to x capabilities to the console.
 
-    # Themes
-    if "themes" in cfg.apiendpoint:
-        workitemparser.FeatsOrCaps("themes")
-        Program()
-        ThemeRoutine()
-        
-    if "iterations" in cfg.apiendpoint:
-        timeboxes.grabit("iterations")
+    Args:
+        x: maximum number of capabilities to output
+    """
+    i = 1
+    size = x
+    if len(capArr) < size:
+        size = len(capArr)
+    print("Here are " + str(size) + " capabilities defined in Jira Align:")
+    for capability in capArr:
+        print(str(i) + " " + capability)
+        i = i + 1
+        if i > size:
+            break
 
-####################################################################################################################################################################################       
-if __name__ == "__main__":
-    main()     
-####################################################################################################################################################################################
+def PrintXUsers(x):
+    """ Output up to x users to the console.
 
+    Args:
+        x: maximum number of users to output
+    """
+    i = 1
+    size = x
+    if len(usrArr) < size:
+        size = len(usrArr)
+    print("Here are " + str(size) + " users defined in Jira Align:")
+    for user in usrArr:
+        print(str(i) + " " + user)
+        i = i + 1
+        if i > size:
+            break
+
+def PrintXPrograms(x):
+    """ Output up to x programs to the console.
+
+    Args:
+        x: maximum number of programs to output
+    """
+    i = 1
+    size = x
+    if len(progArr) < size:
+        size = len(progArr)
+    print("Here are " + str(size) + " programs defined in Jira Align:")
+    for program in progArr:
+        print(str(i) + " " + program)
+        i = i + 1
+        if i > size:
+            break
+
+def PrintXProducts(x):
+    """ Output up to x products to the console.
+
+    Args:
+        x: maximum number of products to output
+    """
+    i = 1
+    size = x
+    if len(prodArr) < size:
+        size = len(prodArr)
+    print("Here are " + str(size) + " products defined in Jira Align:")
+    for product in prodArr:
+        print(str(i) + " " + product)
+        i = i + 1
+        if i > size:
+            break
+
+def PrintXIterations(x):
+    """ Output up to x iterations to the console.
+
+    Args:
+        x: maximum number of iterations to output
+    """
+    i = 1
+    size = x
+    if len(iterArr) < size:
+        size = len(iterArr)
+    print("Here are " + str(size) + " iterations defined in Jira Align:")
+    for iteration in iterArr:
+        print(str(i) + " " + iteration)
+        i = i + 1
+        if i > size:
+            break

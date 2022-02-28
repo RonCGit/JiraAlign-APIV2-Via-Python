@@ -17,6 +17,8 @@ def init():
     global itemArr
 
 
+# Be sure to create a creds.py file in this same directory, defining jatoken and username
+# See readme for more details.
 
 #_______________________________________________________________________________
 
@@ -47,6 +49,4 @@ def RemoveEOLChar(txteol):
         #print(txteol)
     return txteol
 #_______________________________________________________________________________
-
-
 

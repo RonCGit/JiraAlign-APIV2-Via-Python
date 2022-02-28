@@ -45,8 +45,8 @@ def FeatsOrCaps(which):
             itemParent = eachWorkItem['parentId']
         if not itemParent:
             itemParent = ''
-        itemProg = eachWorkItem['programId']
-        itemIsDel = eachWorkItem['inRecycleBin']
+        itemProg = eachWorkItem['primaryProgramId']
+        itemIsDel = eachWorkItem['isRecycled']
         # ONLY Take items that are not in the recycle bin
         # Epics have different values for the key inRecycleBin so handle that first. Its either null or 1. Duh.
         if itemIsDel is None:
@@ -87,8 +87,8 @@ def FeatsOrCaps(which):
                 moitemParent = anotherItem['parentId']
             if not moitemParent:
                 moitemParent = ''
-            moitemProg = anotherItem['programId']
-            mofeatIsDel = anotherItem['inRecycleBin']
+            moitemProg = anotherItem['primaryProgramId']
+            mofeatIsDel = anotherItem['isRecycled']
             # ONLY Take items that are not in the recycle bin
             # Epics have different values for the key inRecycleBin so handle that first. Its either null or 1. Duh.
             if mofeatIsDel is None:
@@ -130,8 +130,8 @@ def FeatsOrCaps(which):
                 # If there is no parent specified remove the word "None" from the return json
                 if not manyitemParent:
                       manyitemParent = ''
-                manyitemProg = manyItem['programId']
-                manyitemIsDel = manyItem['inRecycleBin']
+                manyitemProg = manyItem['primaryProgramId']
+                manyitemIsDel = manyItem['isRecycled']
                 # ONLY Take items that are NOT in the recycle bin
                 # Epics have different values for the key inRecycleBin so handle that first. Its either null or 1. Duh.
                 if manyitemIsDel is None:
@@ -170,8 +170,8 @@ def FeatsOrCaps(which):
                     # If there is no parent specified remove the word "None" from the return json
                     if not lastitemParent:
                           lastitemParent = ''
-                    lastitemProg = lastItem['programId']
-                    lastitemIsDel = lastItem['inRecycleBin']
+                    lastitemProg = lastItem['primaryProgramId']
+                    lastitemIsDel = lastItem['isRecycled']
                     # ONLY Take items that are NOT in the recycle bin
                     if lastitemIsDel is None:
                         line_count += 1
