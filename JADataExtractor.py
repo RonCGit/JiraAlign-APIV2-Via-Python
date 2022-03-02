@@ -77,27 +77,27 @@ def main():
     allConfigurationData['releases'] = releaseArray
 
     # Collect selected information about all JA Epics information and save it
-    epicArray = common.ReadAllItems('epics')
+    epicArray = common.ReadAllItems('epics', 1000)
     allItemData['epics'] = epicArray
 
     # Collect selected information about all JA Features information and save it
-    featureArray = common.ReadAllItems('features')
+    featureArray = common.ReadAllItems('features', 1000)
     allItemData['features'] = featureArray
 
     # Collect selected information about all JA Capabilities information and save it
-    capabilityArray = common.ReadAllItems('capabilities')
+    capabilityArray = common.ReadAllItems('capabilities', 1000)
     allItemData['capabilities'] = capabilityArray
 
     # Collect selected information about all JA Stories information and save it
-    storyArray = common.ReadAllItems('stories')
+    storyArray = common.ReadAllItems('stories', 1000)
     allItemData['stories'] = storyArray
 
     # Collect selected information about all JA Defects information and save it
-    defectsArray = common.ReadAllItems('defects')
+    defectsArray = common.ReadAllItems('defects', 1000)
     allItemData['defects'] = defectsArray
 
     # Collect selected information about all JA Task information and save it
-    tasksArray = common.ReadAllItems('tasks')
+    tasksArray = common.ReadAllItems('tasks', 1000)
     allItemData['tasks'] = tasksArray
 
     # Save all configuration information in JSON format, pretty printed to be human readable and diffable
