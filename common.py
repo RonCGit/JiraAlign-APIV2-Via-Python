@@ -1071,15 +1071,102 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         if sourceItem['completedDate'] is not None:
             extractedData['completedDate'] = sourceItem['completedDate']
 
+def ExtractItemData(itemType, sourceItem, extractedData):
+    """ Extract all applicable fields from the source item and add them to the extracted
+        data, based on item type.
+    Args:
+        itemType: Which type of work the sourceItem is: epics, features, stories, defects, tasks
+        sourceItem: Full set of data for this item from Jira Align
+        extractedData: All the data that needs to be saved from this sourceItem
+    """
+    # Common fields for all item types
+    extractedData['itemtype'] = itemType
+    extractedData['title'] = sourceItem['title']
+    if sourceItem['description'] is not None:
+        extractedData['description'] = sourceItem['description']
+    extractedData['id'] = sourceItem['id']
+    extractedData['state'] = sourceItem['state']
+    if sourceItem['createDate'] is not None:
+        extractedData['createDate'] = sourceItem['createDate']
+    
+    # Specific fields to extract for each item type
+    if itemType == "epics":
+        extractedData['themeId'] = sourceItem['themeId']
+        extractedData['primaryProgramId'] = sourceItem['primaryProgramId']
+        extractedData['type'] = sourceItem['type']
+        if sourceItem['epicObjectId'] is not None:
+            extractedData['epicObjectId'] = sourceItem['epicObjectId']
+        if sourceItem['themeId'] is not None:
+            extractedData['themeId'] = sourceItem['themeId']
+        if sourceItem['primaryProgramId'] is not None:
+            extractedData['primaryProgramId'] = sourceItem['primaryProgramId']
+        if sourceItem['points'] is not None:
+            extractedData['points'] = sourceItem['points']
+        if sourceItem['acceptedDate'] is not None:
+            extractedData['acceptedDate'] = sourceItem['acceptedDate']
+    elif itemType == "features":
+        extractedData['parentId'] = sourceItem['parentId']
+        extractedData['primaryProgramId'] = sourceItem['primaryProgramId']
+        if sourceItem['productId'] is not None:
+            extractedData['productId'] = sourceItem['productId']
+        if sourceItem['parentId'] is not None:
+            extractedData['parentId'] = sourceItem['parentId']
+        if sourceItem['themeId'] is not None:
+            extractedData['themeId'] = sourceItem['themeId']
+        if sourceItem['primaryProgramId'] is not None:
+            extractedData['primaryProgramId'] = sourceItem['primaryProgramId']
+        if sourceItem['points'] is not None:
+            extractedData['points'] = sourceItem['points']
+        if sourceItem['acceptedDate'] is not None:
+            extractedData['acceptedDate'] = sourceItem['acceptedDate']
+    elif itemType == "stories":
+        extractedData['programId'] = sourceItem['programId']
+        if sourceItem['featureId'] is not None:
+            extractedData['featureId'] = sourceItem['featureId']
+        if sourceItem['releaseId'] is not None:
+            extractedData['releaseId'] = sourceItem['releaseId']
+        if sourceItem['valuePoints'] is not None:
+            extractedData['valuePoints'] = sourceItem['valuePoints']
+        if sourceItem['effortPoints'] is not None:
+            extractedData['effortPoints'] = sourceItem['effortPoints']
+        if sourceItem['connectorId'] is not None:
+            extractedData['connectorId'] = sourceItem['connectorId']
+        if sourceItem['acceptedDate'] is not None:
+            extractedData['acceptedDate'] = sourceItem['acceptedDate']
+    elif itemType == "defects":
+        extractedData['storyId'] = sourceItem['storyId']
+        extractedData['programId'] = sourceItem['programId']
+        if sourceItem['closeDate'] is not None:
+            extractedData['closeDate'] = sourceItem['closeDate']
+        if sourceItem['iterationId'] is not None:
+            extractedData['iterationId'] = sourceItem['iterationId']
+        if sourceItem['teamId'] is not None:
+            extractedData['teamId'] = sourceItem['teamId']
+        if sourceItem['pointsEstimate'] is not None:
+            extractedData['pointsEstimate'] = sourceItem['pointsEstimate']
+        if sourceItem['hoursEstimate'] is not None:
+            extractedData['hoursEstimate'] = sourceItem['hoursEstimate']
+        if sourceItem['connectorId'] is not None:
+            extractedData['connectorId'] = sourceItem['connectorId']
+    elif itemType == "tasks":
+        extractedData['storyId'] = sourceItem['storyId']
+        extractedData['type'] = sourceItem['type']
+        if sourceItem['effortHours'] is not None:
+            extractedData['effortHours'] = sourceItem['effortHours']
+        if sourceItem['totalHours'] is not None:
+            extractedData['totalHours'] = sourceItem['totalHours']
+        if sourceItem['lastUpdatedDate'] is not None:
+            extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
+        if sourceItem['completedDate'] is not None:
+            extractedData['completedDate'] = sourceItem['completedDate']
+
 def ReadAllItems(which, maxToRead):
     """ Read in all work items of the given type (Epic, Feature, Story, etc.) and 
         return selected fields of them to the caller.  This is NOT a complete dump of all data.
         Any work items that are deleted/in recycle bin are skipped.
-
     Args:
         which: Which type of work items to retrieve.  
                Valid values are: epics, capabilities, features, stories, defects, tasks
-
         maxToRead: Maximum number of entries to read in.
     """
     print("Collecting up to " + str(maxToRead) + " items of type " + which + "...")
