@@ -1214,6 +1214,8 @@ def GetAllReleases():
             itemDict['lastUpdatedBy'] = eachRelease['lastUpdatedBy']
         if eachRelease['lastUpdatedDate'] is not None:
             itemDict['lastUpdatedDate'] = eachRelease['lastUpdatedDate']
+        if eachRelease['releaseNumber'] is not None:
+            itemDict['releaseNumber'] = eachRelease['releaseNumber']
         # Don't save the self field, since it will be generated during creation
         releaseArr.append(itemDict)
     return releaseArr
@@ -1270,9 +1272,10 @@ def GetAllReleaseVehicles():
         releaseVehicleArr.append(itemDict)
     return releaseVehicleArr
 
-def ExtractItemData(itemType, sourceItem, extractedData):
+  def ExtractItemData(itemType, sourceItem, extractedData):
     """ Extract all applicable fields from the source item and add them to the extracted
         data, based on item type.
+
     Args:
         itemType: Which type of work the sourceItem is: epics, features, stories, defects, tasks
         sourceItem: Full set of data for this item from Jira Align
@@ -1358,7 +1361,6 @@ def ExtractItemData(itemType, sourceItem, extractedData):
             extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
         if sourceItem['completedDate'] is not None:
             extractedData['completedDate'] = sourceItem['completedDate']
-
 def ReadAllItems(which, maxToRead):
     """ Read in all work items of the given type (Epic, Feature, Story, etc.) and 
         return selected fields of them to the caller.  This is NOT a complete dump of all data.
