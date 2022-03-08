@@ -952,6 +952,212 @@ def GetAllObjectives():
         objectiveArr.append(itemDict)
     return objectiveArr
 
+def GetAllCustomers():
+    """ Get all Customers information and return to the caller.
+
+        Returns: All the details for each customer in a list of objects.
+    """
+    customerArr = []
+    print("Collecting all Customer info...")
+    customers = GetFromJiraAlign(True, cfg.instanceurl + "/customers")
+    dataCustomer = customers.json()
+    for eachCustomer in dataCustomer:
+        itemDict = {}
+        itemDict['id'] = eachCustomer['id']
+        itemDict['name'] = eachCustomer['name']
+        if eachCustomer['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachCustomer['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        customerArr.append(itemDict)
+    return customerArr
+
+def GetAllPortfolios():
+    """ Get all Portfolio information and return to the caller.
+
+        Returns: All the details for each portfolio in a list of objects.
+    """
+    portfolioArr = []
+    print("Collecting all Portfolio info...")
+    portfolios = GetFromJiraAlign(True, cfg.instanceurl + "/portfolios")
+    dataPortfolio = portfolios.json()
+    for eachPortfolio in dataPortfolio:
+        itemDict = {}
+        itemDict['id'] = eachPortfolio['id']
+        itemDict['title'] = eachPortfolio['title']
+        itemDict['divisionId'] = eachPortfolio['divisionId']
+        itemDict['scoreCardId'] = eachPortfolio['scoreCardId']
+        itemDict['teamId'] = eachPortfolio['teamId']
+        itemDict['isActive'] = eachPortfolio['isActive']
+        itemDict['intakeFormId'] = eachPortfolio['intakeFormId']
+        itemDict['regionId'] = eachPortfolio['regionId']
+        if eachPortfolio['description'] is not None:
+            itemDict['description'] = eachPortfolio['description']
+        if eachPortfolio['isPrivate'] is not None:
+            itemDict['isPrivate'] = eachPortfolio['isPrivate']
+        if eachPortfolio['caseDevelopmentId'] is not None:
+            itemDict['caseDevelopmentId'] = eachPortfolio['caseDevelopmentId']
+        if eachPortfolio['teamDescription'] is not None:
+            itemDict['teamDescription'] = eachPortfolio['teamDescription']
+        if eachPortfolio['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachPortfolio['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        portfolioArr.append(itemDict)
+    return portfolioArr
+
+def GetAllIdeas():
+    """ Get all Ideas information and return to the caller.
+
+        Returns: All the details for each idea in a list of objects.
+    """
+    ideaArr = []
+    print("Collecting all Idea info...")
+    ideas = GetFromJiraAlign(True, cfg.instanceurl + "/ideas")
+    dataIdeas = ideas.json()
+    for eachIdea in dataIdeas:
+        itemDict = {}
+        itemDict['id'] = eachIdea['id']
+        itemDict['groupId'] = eachIdea['groupId']
+        itemDict['title'] = eachIdea['title']
+        itemDict['createdBy'] = eachIdea['createdBy']
+        itemDict['createDate'] = eachIdea['createDate']
+        itemDict['ownerId'] = eachIdea['ownerId']
+        itemDict['status'] = eachIdea['status']
+        itemDict['isExternal'] = eachIdea['isExternal']
+        itemDict['companyId'] = eachIdea['companyId']
+        itemDict['categoryId'] = eachIdea['categoryId']
+        itemDict['isPublic'] = eachIdea['isPublic']
+        if eachIdea['productId'] is not None:
+            itemDict['productId'] = eachIdea['productId']
+        if eachIdea['description'] is not None:
+            itemDict['description'] = eachIdea['description']
+        # Don't save the self field, since it will be generated during creation
+        ideaArr.append(itemDict)
+    return ideaArr
+
+def GetAllKeyResults():
+    """ Get all Key Results information and return to the caller.
+
+        Returns: All the details for each Key Result in a list of objects.
+    """
+    keyResultArr = []
+    print("Collecting all Key Results info...")
+    keyResults = GetFromJiraAlign(True, cfg.instanceurl + "/keyresults")
+    dataKeyResults = keyResults.json()
+    for eachKeyResult in dataKeyResults:
+        itemDict = {}
+        itemDict['id'] = eachKeyResult['id']
+        itemDict['parentId'] = eachKeyResult['parentId']
+        itemDict['parentType'] = eachKeyResult['parentType']
+        itemDict['baselineValue'] = eachKeyResult['baselineValue']
+        itemDict['targetValue'] = eachKeyResult['targetValue']
+        itemDict['type'] = eachKeyResult['type']
+        itemDict['weight'] = eachKeyResult['weight']
+        itemDict['createDate'] = eachKeyResult['createDate']
+        itemDict['ownerId'] = eachKeyResult['ownerId']
+        itemDict['score'] = eachKeyResult['score']
+        if eachKeyResult['targetDate'] is not None:
+            itemDict['targetDate'] = eachKeyResult['targetDate']
+        if eachKeyResult['description'] is not None:
+            itemDict['description'] = eachKeyResult['description']
+        if eachKeyResult['isScoreOveridden'] is not None:
+            itemDict['isScoreOveridden'] = eachKeyResult['isScoreOveridden']
+        if eachKeyResult['scoreOverrides'] is not None:
+            itemDict['scoreOverrides'] = eachKeyResult['scoreOverrides']
+        if eachKeyResult['valueUpdates'] is not None:
+            itemDict['valueUpdates'] = eachKeyResult['valueUpdates']
+        if eachKeyResult['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachKeyResult['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        keyResultArr.append(itemDict)
+    return keyResultArr
+
+def GetAllMilestones():
+    """ Get all Milestones information and return to the caller.
+
+        Returns: All the details for each Milestone in a list of objects.
+    """
+    milestoneArr = []
+    print("Collecting all Milestone info...")
+    milestones = GetFromJiraAlign(True, cfg.instanceurl + "/milestones")
+    dataMilestones = milestones.json()
+    for eachMilestone in dataMilestones:
+        itemDict = {}
+        itemDict['id'] = eachMilestone['id']
+        itemDict['tier'] = eachMilestone['tier']
+        itemDict['programId'] = eachMilestone['programId']
+        itemDict['type'] = eachMilestone['type']
+        itemDict['isBlocked'] = eachMilestone['isBlocked']
+        itemDict['ownerId'] = eachMilestone['ownerId']
+        itemDict['name'] = eachMilestone['name']
+        itemDict['createDate'] = eachMilestone['createDate']
+        if eachMilestone['description'] is not None:
+            itemDict['description'] = eachMilestone['description']
+        if eachMilestone['status'] is not None:
+            itemDict['status'] = eachMilestone['status']
+        if eachMilestone['notes'] is not None:
+            itemDict['notes'] = eachMilestone['notes']
+        if eachMilestone['startInitiationDate'] is not None:
+            itemDict['startInitiationDate'] = eachMilestone['startInitiationDate']
+        if eachMilestone['endDate'] is not None:
+            itemDict['endDate'] = eachMilestone['endDate']
+        if eachMilestone['category'] is not None:
+            itemDict['category'] = eachMilestone['category']
+        if eachMilestone['targetSyncSprintId'] is not None:
+            itemDict['targetSyncSprintId'] = eachMilestone['targetSyncSprintId']
+        if eachMilestone['plannedValue'] is not None:
+            itemDict['plannedValue'] = eachMilestone['plannedValue']
+        if eachMilestone['themeId'] is not None:
+            itemDict['themeId'] = eachMilestone['themeId']
+        if eachMilestone['deliveredValue'] is not None:
+            itemDict['deliveredValue'] = eachMilestone['deliveredValue']
+        if eachMilestone['blockedReason'] is not None:
+            itemDict['blockedReason'] = eachMilestone['blockedReason']
+        if eachMilestone['targetCompletionDate'] is not None:
+            itemDict['targetCompletionDate'] = eachMilestone['targetCompletionDate']
+        if eachMilestone['portfolioAskDate'] is not None:
+            itemDict['portfolioAskDate'] = eachMilestone['portfolioAskDate']
+        if eachMilestone['health'] is not None:
+            itemDict['health'] = eachMilestone['health']
+        if eachMilestone['parentId'] is not None:
+            itemDict['parentId'] = eachMilestone['parentId']
+        if eachMilestone['score'] is not None:
+            itemDict['score'] = eachMilestone['score']
+        if eachMilestone['portfolioId'] is not None:
+            itemDict['portfolioId'] = eachMilestone['portfolioId']
+        if eachMilestone['goalId'] is not None:
+            itemDict['goalId'] = eachMilestone['goalId']
+        if eachMilestone['solutionId'] is not None:
+            itemDict['solutionId'] = eachMilestone['solutionId']
+        if eachMilestone['notificationStartDate'] is not None:
+            itemDict['notificationStartDate'] = eachMilestone['notificationStartDate']
+        if eachMilestone['notificationFrequency'] is not None:
+            itemDict['notificationFrequency'] = eachMilestone['notificationFrequency']
+        if eachMilestone['reference'] is not None:
+            itemDict['reference'] = eachMilestone['reference']
+        if eachMilestone['programIds'] is not None:
+            itemDict['programIds'] = eachMilestone['programIds']
+        if eachMilestone['releaseIds'] is not None:
+            itemDict['releaseIds'] = eachMilestone['releaseIds']
+        if eachMilestone['featureIds'] is not None:
+            itemDict['featureIds'] = eachMilestone['featureIds']
+        if eachMilestone['impedimentIds'] is not None:
+            itemDict['impedimentIds'] = eachMilestone['impedimentIds']
+        if eachMilestone['riskIds'] is not None:
+            itemDict['riskIds'] = eachMilestone['riskIds']
+        if eachMilestone['dependencyIds'] is not None:
+            itemDict['dependencyIds'] = eachMilestone['dependencyIds']
+        if eachMilestone['customFields'] is not None:
+            itemDict['customFields'] = eachMilestone['customFields']
+        if eachMilestone['teamIds'] is not None:
+            itemDict['teamIds'] = eachMilestone['teamIds']
+        if eachMilestone['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachMilestone['lastUpdatedBy']
+        if eachMilestone['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachMilestone['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        milestoneArr.append(itemDict)
+    return milestoneArr
+
 def GetAllReleases():
     """ Get all Releases information and return to the caller.
 
@@ -969,19 +1175,104 @@ def GetAllReleases():
         itemDict['type'] = eachRelease['type']
         itemDict['status'] = eachRelease['status']
         itemDict['description'] = eachRelease['description']
+        itemDict['releaseNumber'] = eachRelease['releaseNumber']
+        itemDict['scheduleType'] = eachRelease['scheduleType']
+        itemDict['roadmap'] = eachRelease['roadmap']
+        itemDict['budget'] = eachRelease['budget']
+        itemDict['health'] = eachRelease['health']
         if eachRelease['createDate'] is not None:
             itemDict['createDate'] = eachRelease['createDate']
         if eachRelease['startDate'] is not None:
             itemDict['startDate'] = eachRelease['startDate']
         if eachRelease['endDate'] is not None:
             itemDict['endDate'] = eachRelease['endDate']
+        if eachRelease['testSuite'] is not None:
+            itemDict['testSuite'] = eachRelease['testSuite']
+        if eachRelease['portfolioId'] is not None:
+            itemDict['portfolioId'] = eachRelease['portfolioId']
+        if eachRelease['predecessorId'] is not None:
+            itemDict['predecessorId'] = eachRelease['predecessorId']
+        if eachRelease['score1'] is not None:
+            itemDict['score1'] = eachRelease['score1']
+        if eachRelease['score2'] is not None:
+            itemDict['score2'] = eachRelease['score2']
+        if eachRelease['score3'] is not None:
+            itemDict['score3'] = eachRelease['score3']
+        if eachRelease['score4'] is not None:
+            itemDict['score4'] = eachRelease['score4']
+        if eachRelease['blendedHourlyRate'] is not None:
+            itemDict['blendedHourlyRate'] = eachRelease['blendedHourlyRate']
+        if eachRelease['divisionId'] is not None:
+            itemDict['divisionId'] = eachRelease['divisionId']
+        if eachRelease['programIds'] is not None:
+            itemDict['programIds'] = eachRelease['programIds']
+        #if eachRelease['regionIds'] is not None:
+        #    itemDict['regionIds'] = eachRelease['regionIds']
+        #if eachRelease['anchorSprintIds'] is not None:
+        #    itemDict['anchorSprintIds'] = eachRelease['anchorSprintIds']
+        if eachRelease['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachRelease['lastUpdatedBy']
+        if eachRelease['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachRelease['lastUpdatedDate']
         if eachRelease['releaseNumber'] is not None:
             itemDict['releaseNumber'] = eachRelease['releaseNumber']
         # Don't save the self field, since it will be generated during creation
         releaseArr.append(itemDict)
     return releaseArr
 
-def ExtractItemData(itemType, sourceItem, extractedData):
+def GetAllReleaseVehicles():
+    """ Get all Release Vehicles information and return to the caller.
+
+        Returns: All the details for each release vehicle in a list of objects.
+    """
+    releaseVehicleArr = []
+    print("Collecting all Release Vehicles info...")
+    releaseVehicles = GetFromJiraAlign(True, cfg.instanceurl + "/releasevehicles")
+    dataReleaseVehicle = releaseVehicles.json()
+    for eachReleaseVehicle in dataReleaseVehicle:
+        itemDict = {}
+        itemDict['id'] = eachReleaseVehicle['id']
+        itemDict['name'] = eachReleaseVehicle['name']
+        itemDict['releaseId'] = eachReleaseVehicle['releaseId']
+        if eachReleaseVehicle['shipDate'] is not None:
+            itemDict['shipDate'] = eachReleaseVehicle['shipDate']
+        if eachReleaseVehicle['startDate'] is not None:
+            itemDict['startDate'] = eachReleaseVehicle['startDate']
+        if eachReleaseVehicle['health'] is not None:
+            itemDict['health'] = eachReleaseVehicle['health']
+        if eachReleaseVehicle['externalId'] is not None:
+            itemDict['externalId'] = eachReleaseVehicle['externalId']
+        if eachReleaseVehicle['goLiveDate'] is not None:
+            itemDict['goLiveDate'] = eachReleaseVehicle['goLiveDate']
+        if eachReleaseVehicle['connectorId'] is not None:
+            itemDict['connectorId'] = eachReleaseVehicle['connectorId']
+        if eachReleaseVehicle['ownerId'] is not None:
+            itemDict['ownerId'] = eachReleaseVehicle['ownerId']
+        if eachReleaseVehicle['jiraProjectKey'] is not None:
+            itemDict['jiraProjectKey'] = eachReleaseVehicle['jiraProjectKey']
+        if eachReleaseVehicle['status'] is not None:
+            itemDict['status'] = eachReleaseVehicle['status']
+        if eachReleaseVehicle['closedDate'] is not None:
+            itemDict['closedDate'] = eachReleaseVehicle['closedDate']
+        if eachReleaseVehicle['type'] is not None:
+            itemDict['type'] = eachReleaseVehicle['type']
+        if eachReleaseVehicle['createDate'] is not None:
+            itemDict['createDate'] = eachReleaseVehicle['createDate']
+        if eachReleaseVehicle['externalProjectId'] is not None:
+            itemDict['externalProjectId'] = eachReleaseVehicle['externalProjectId']
+        if eachReleaseVehicle['isTimeTrackingOnly'] is not None:
+            itemDict['isTimeTrackingOnly'] = eachReleaseVehicle['isTimeTrackingOnly']
+        if eachReleaseVehicle['teamIds'] is not None:
+            itemDict['teamIds'] = eachReleaseVehicle['teamIds']
+        if eachReleaseVehicle['programIds'] is not None:
+            itemDict['programIds'] = eachReleaseVehicle['programIds']
+        if eachReleaseVehicle['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachReleaseVehicle['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        releaseVehicleArr.append(itemDict)
+    return releaseVehicleArr
+
+  def ExtractItemData(itemType, sourceItem, extractedData):
     """ Extract all applicable fields from the source item and add them to the extracted
         data, based on item type.
 
@@ -1070,96 +1361,6 @@ def ExtractItemData(itemType, sourceItem, extractedData):
             extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
         if sourceItem['completedDate'] is not None:
             extractedData['completedDate'] = sourceItem['completedDate']
-
-def ExtractItemData(itemType, sourceItem, extractedData):
-    """ Extract all applicable fields from the source item and add them to the extracted
-        data, based on item type.
-    Args:
-        itemType: Which type of work the sourceItem is: epics, features, stories, defects, tasks
-        sourceItem: Full set of data for this item from Jira Align
-        extractedData: All the data that needs to be saved from this sourceItem
-    """
-    # Common fields for all item types
-    extractedData['itemtype'] = itemType
-    extractedData['title'] = sourceItem['title']
-    if sourceItem['description'] is not None:
-        extractedData['description'] = sourceItem['description']
-    extractedData['id'] = sourceItem['id']
-    extractedData['state'] = sourceItem['state']
-    if sourceItem['createDate'] is not None:
-        extractedData['createDate'] = sourceItem['createDate']
-    
-    # Specific fields to extract for each item type
-    if itemType == "epics":
-        extractedData['themeId'] = sourceItem['themeId']
-        extractedData['primaryProgramId'] = sourceItem['primaryProgramId']
-        extractedData['type'] = sourceItem['type']
-        if sourceItem['epicObjectId'] is not None:
-            extractedData['epicObjectId'] = sourceItem['epicObjectId']
-        if sourceItem['themeId'] is not None:
-            extractedData['themeId'] = sourceItem['themeId']
-        if sourceItem['primaryProgramId'] is not None:
-            extractedData['primaryProgramId'] = sourceItem['primaryProgramId']
-        if sourceItem['points'] is not None:
-            extractedData['points'] = sourceItem['points']
-        if sourceItem['acceptedDate'] is not None:
-            extractedData['acceptedDate'] = sourceItem['acceptedDate']
-    elif itemType == "features":
-        extractedData['parentId'] = sourceItem['parentId']
-        extractedData['primaryProgramId'] = sourceItem['primaryProgramId']
-        if sourceItem['productId'] is not None:
-            extractedData['productId'] = sourceItem['productId']
-        if sourceItem['parentId'] is not None:
-            extractedData['parentId'] = sourceItem['parentId']
-        if sourceItem['themeId'] is not None:
-            extractedData['themeId'] = sourceItem['themeId']
-        if sourceItem['primaryProgramId'] is not None:
-            extractedData['primaryProgramId'] = sourceItem['primaryProgramId']
-        if sourceItem['points'] is not None:
-            extractedData['points'] = sourceItem['points']
-        if sourceItem['acceptedDate'] is not None:
-            extractedData['acceptedDate'] = sourceItem['acceptedDate']
-    elif itemType == "stories":
-        extractedData['programId'] = sourceItem['programId']
-        if sourceItem['featureId'] is not None:
-            extractedData['featureId'] = sourceItem['featureId']
-        if sourceItem['releaseId'] is not None:
-            extractedData['releaseId'] = sourceItem['releaseId']
-        if sourceItem['valuePoints'] is not None:
-            extractedData['valuePoints'] = sourceItem['valuePoints']
-        if sourceItem['effortPoints'] is not None:
-            extractedData['effortPoints'] = sourceItem['effortPoints']
-        if sourceItem['connectorId'] is not None:
-            extractedData['connectorId'] = sourceItem['connectorId']
-        if sourceItem['acceptedDate'] is not None:
-            extractedData['acceptedDate'] = sourceItem['acceptedDate']
-    elif itemType == "defects":
-        extractedData['storyId'] = sourceItem['storyId']
-        extractedData['programId'] = sourceItem['programId']
-        if sourceItem['closeDate'] is not None:
-            extractedData['closeDate'] = sourceItem['closeDate']
-        if sourceItem['iterationId'] is not None:
-            extractedData['iterationId'] = sourceItem['iterationId']
-        if sourceItem['teamId'] is not None:
-            extractedData['teamId'] = sourceItem['teamId']
-        if sourceItem['pointsEstimate'] is not None:
-            extractedData['pointsEstimate'] = sourceItem['pointsEstimate']
-        if sourceItem['hoursEstimate'] is not None:
-            extractedData['hoursEstimate'] = sourceItem['hoursEstimate']
-        if sourceItem['connectorId'] is not None:
-            extractedData['connectorId'] = sourceItem['connectorId']
-    elif itemType == "tasks":
-        extractedData['storyId'] = sourceItem['storyId']
-        extractedData['type'] = sourceItem['type']
-        if sourceItem['effortHours'] is not None:
-            extractedData['effortHours'] = sourceItem['effortHours']
-        if sourceItem['totalHours'] is not None:
-            extractedData['totalHours'] = sourceItem['totalHours']
-        if sourceItem['lastUpdatedDate'] is not None:
-            extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
-        if sourceItem['completedDate'] is not None:
-            extractedData['completedDate'] = sourceItem['completedDate']
-
 def ReadAllItems(which, maxToRead):
     """ Read in all work items of the given type (Epic, Feature, Story, etc.) and 
         return selected fields of them to the caller.  This is NOT a complete dump of all data.
