@@ -6,10 +6,8 @@
 """
 
 import common
-import creds
 import cfg
 import json
-import string
 
 ####################################################################################################################################################################################
 def main():
@@ -24,9 +22,6 @@ def main():
  
     # Setup a single variable to contain all the configuration data
     allConfigurationData = {}
-
-    # Setup a single variable to contain all the item data
-    allItemData = {}
 
     # Collect all Region information and save it
     regionArray = common.GetAllRegions()
@@ -76,28 +71,61 @@ def main():
     releaseArray = common.GetAllReleases()
     allConfigurationData['releases'] = releaseArray
 
+    # Collect all Customer information and save it
+    customerArray = common.GetAllCustomers()
+    allConfigurationData['customers'] = customerArray
+
+    # Collect all Portfolio information and save it
+    portfolioArray = common.GetAllPortfolios()
+    allConfigurationData['portfolio'] = portfolioArray
+
+    # Collect all Idea information and save it
+    ideaArray = common.GetAllIdeas()
+    allConfigurationData['ideas'] = ideaArray
+
+    # Collect all Key Results information and save it
+    keyResultsArray = common.GetAllKeyResults()
+    allConfigurationData['keyresults'] = keyResultsArray
+
+    # Collect all Milestone information and save it
+    milestoneArray = common.GetAllMilestones()
+    allConfigurationData['milestones'] = milestoneArray
+
+    # Collect all Release Vehicle information and save it
+    releaseVehicleArray = common.GetAllReleaseVehicles()
+    allConfigurationData['releasevehicle'] = releaseVehicleArray
+
+    # Save all configuration information in JSON format, pretty printed to be human readable and diffable
+    configFileName = 'JiraAlign_config_data.json'
+    print("Writing all Jira Align configuration data to: " + configFileName)
+    with open(configFileName, 'w') as outfile:
+        json.dump(allConfigurationData, outfile, indent=4, sort_keys=True)
+
+    # Setup a single variable to contain all the item data
+    allItemData = {}
+
     # Collect selected information about all JA Epics information and save it
-    epicArray = common.ReadAllItems('epics')
+    epicArray = common.ReadAllItems('epics', 1000)
     allItemData['epics'] = epicArray
 
     # Collect selected information about all JA Features information and save it
-    featureArray = common.ReadAllItems('features')
+    featureArray = common.ReadAllItems('features', 1000)
     allItemData['features'] = featureArray
 
     # Collect selected information about all JA Capabilities information and save it
-    capabilityArray = common.ReadAllItems('capabilities')
+    capabilityArray = common.ReadAllItems('capabilities', 1000)
     allItemData['capabilities'] = capabilityArray
 
     # Collect selected information about all JA Stories information and save it
-    storyArray = common.ReadAllItems('stories')
+    storyArray = common.ReadAllItems('stories', 1000)
     allItemData['stories'] = storyArray
 
     # Collect selected information about all JA Defects information and save it
-    defectsArray = common.ReadAllItems('defects')
+    defectsArray = common.ReadAllItems('defects', 1000)
     allItemData['defects'] = defectsArray
 
     # Collect selected information about all JA Task information and save it
-    tasksArray = common.ReadAllItems('tasks')
+    tasksArray = common.ReadAllItems('tasks', 1000)
     allItemData['tasks'] = tasksArray
 
     # Save all configuration information in JSON format, pretty printed to be human readable and diffable
@@ -105,7 +133,9 @@ def main():
         json.dump(allConfigurationData, outfile, indent=4, sort_keys=True)
 
     # Save all item information in JSON format, pretty printed to be human readable and diffable
-    with open('JiraAlign_item_data.json', 'w') as outfile:
+    itemFileName = 'JiraAlign_item_data.json'
+    print("Writing all item data to: " + itemFileName)
+    with open(itemFileName, 'w') as outfile:
         json.dump(allItemData, outfile, indent=4, sort_keys=True)
 
 ####################################################################################################################################################################################       
