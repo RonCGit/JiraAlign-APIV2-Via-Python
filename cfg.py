@@ -13,8 +13,10 @@ def init():
     global apiendpoint
     global instanceurl
     global api1instance
+    global abouturl
     global themeArr
     global itemArr
+    global jaVersion
 
 
 # Be sure to create a creds.py file in this same directory, defining jatoken and username

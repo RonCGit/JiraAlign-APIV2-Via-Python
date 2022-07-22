@@ -23,6 +23,9 @@ def main():
     # Setup a single variable to contain all the configuration data
     allConfigurationData = {}
 
+    # Add the Jira Align Version Number
+    allConfigurationData['_version'] = cfg.jaVersion
+
     # Collect all Region information and save it
     regionArray = common.GetAllRegions()
     allConfigurationData['regions'] = regionArray
@@ -95,6 +98,10 @@ def main():
     releaseVehicleArray = common.GetAllReleaseVehicles()
     allConfigurationData['releasevehicle'] = releaseVehicleArray
 
+    # Collect all Teams information and save it
+    teamsArray = common.GetAllTeams()
+    allConfigurationData['teams'] = teamsArray
+
     # Save all configuration information in JSON format, pretty printed to be human readable and diffable
     configFileName = 'JiraAlign_config_data.json'
     print("Writing all Jira Align configuration data to: " + configFileName)
@@ -103,6 +110,13 @@ def main():
 
     # Setup a single variable to contain all the item data
     allItemData = {}
+
+    # Add the Jira Align Version Number
+    allItemData['_version'] = cfg.jaVersion
+
+    # Collect all Value Stream information and save it
+    valueStreamArray = common.GetAllValueStreams()
+    allItemData['valuestreams'] = valueStreamArray
 
     # Collect selected information about all JA Epics information and save it
     epicArray = common.ReadAllItems('epics', 1000)

@@ -9,14 +9,16 @@ import time
 import csv
 from urllib.parse import urlparse
 
-#import subfiles
 import cfg
 import creds
 import workitemparser
-import timeboxes
 import requests
 
-MAX = 10
+# Set to True to see additional debug info on exact URLs used
+DEBUG = False
+# Set to True to use hardcoded values for API Endpoint and Instance URL
+# Set to False to prompt each time
+USE_DEFAULTS = True
 
 def PostToJiraAlign(header, paramData, verify_flag, use_bearer, url = None):
     """Generic method to do a POST to the Jira Align instance, with the specified parameters, and return
@@ -34,11 +36,12 @@ def PostToJiraAlign(header, paramData, verify_flag, use_bearer, url = None):
     """
     if url is None:
         # Use the default URL
-        url_to_use = instanceurl
+        url_to_use = cfg.instanceurl
     else:
         # Use the given URL
         url_to_use = url
-
+    if DEBUG == True:
+        print("URL: " + url_to_use)
     # If we need to use BearerAuth with Token
     if use_bearer:
         result = requests.post(url = url_to_use, data=json.dumps(paramData), 
@@ -64,10 +67,12 @@ def GetFromJiraAlign(use_bearer, url = None):
     """
     if url is None:
         # Use the default URL
-        url_to_use = instanceurl
+        url_to_use = cfg.instanceurl
     else:
         # Use the given URL
         url_to_use = url
+    if DEBUG == True:
+        print("URL: " + url_to_use)
 
     # If we need to use BearerAuth with Token
     if use_bearer:
@@ -79,19 +84,37 @@ def GetFromJiraAlign(use_bearer, url = None):
 
 # This collects instance details like the url and the endpoint you want to target
 def CollectApiInfo():
-    cfg.apiendpoint = input("Enter the api endpoint for your instance in following format EG. ""cities"". It is very important that you spell this endpoint correctly. Please refer to the api documents E.G https://cprime.agilecraft.com/api-docs/public/ for the apiendpoints available : ")
-    #print(apiendpoint)
-    cfg.instanceurl = input("Enter the url for your instance in following format EG. ""https://cprime.agilecraft.com"" : ")
-    ChkInput = input("Is this your correct instance and endpoint you want to work with?  " + cfg.instanceurl + " : " + cfg.apiendpoint + "  " + "\n")
-    if (ChkInput == "N") or (ChkInput == "n"):
-        CollectApiInfo()
+    print("Instance URL is normally something like:  https://foo.jiraalign.com")
+    print("API Endpoint is normally: /")
+    if USE_DEFAULTS == True:
+        cfg.apiendpoint = "/"
+        cfg.instanceurl = "https://foo.jiraalign.com"
+    else:
+        cfg.apiendpoint = input("Enter the api endpoint for your instance in following format EG. ""cities"". It is very important that you spell this endpoint correctly. Please refer to the api documents E.G https://cprime.agilecraft.com/api-docs/public/ for the apiendpoints available : ")
+        #print(apiendpoint)
+        cfg.instanceurl = input("Enter the url for your instance in following format EG. ""https://cprime.agilecraft.com"" : ")
+        ChkInput = input("Is this your correct instance and endpoint you want to work with?  " + cfg.instanceurl + " : " + cfg.apiendpoint + "  " + "\n")
+        if (ChkInput == "N") or (ChkInput == "n"):
+            CollectApiInfo()
+
+    cfg.abouturl = cfg.instanceurl + "/About"
     cfg.instanceurl = cfg.instanceurl + "/rest/align/api/2" ##### Mess with these couple of lines, and break all of the other defs! 
     cfg.apiendpoint = "/" + cfg.apiendpoint.lower()
     cfg.api1instance = urlparse(cfg.instanceurl)
     cfg.api1instance = cfg.api1instance.scheme + "://" + cfg.api1instance.netloc
     cfg.api1instance = cfg.api1instance + "/api"
-    return cfg.instanceurl, cfg.apiendpoint, cfg.api1instance
+    print(cfg.instanceurl, cfg.api1instance)
 
+    # Get the About page from Jira Align, and parse out the Jira Align version number from it
+    aboutInfo = GetFromJiraAlign(False, cfg.abouturl)
+    if DEBUG == True:
+        print(aboutInfo.text)
+    # This assumes a specific format/length of the JA version
+    start = aboutInfo.text.find("data-version") + 14
+    end = start + 14
+    cfg.jaVersion = aboutInfo.text[start:end]
+    
+    return cfg.instanceurl, cfg.apiendpoint, cfg.api1instance
 
 #Collect some basic stuff from the instance that provide information needed for adding work items
 def CollectBasicItems():
@@ -784,10 +807,6 @@ def GetAllThemes():
             itemDict['themeGroupId'] = eachTheme['themeGroupId']
         if eachTheme['externalId'] is not None:
             itemDict['externalId'] = eachTheme['externalId']
-        if eachTheme['developmentalStepId'] is not None:
-            eachTheme['developmentalStepId'] = eachTheme['developmentalStepId']
-        if eachTheme['operationalStepId'] is not None:
-            itemDict['operationalStepId'] = eachTheme['operationalStepId']
         if eachTheme['externalProject'] is not None:
             itemDict['externalProject'] = eachTheme['externalProject']
         if eachTheme['externalKey'] is not None:
@@ -806,26 +825,34 @@ def GetAllThemes():
             itemDict['startInitiationDate'] = eachTheme['startInitiationDate']
         if eachTheme['portfolioAskDate'] is not None:
             itemDict['portfolioAskDate'] = eachTheme['portfolioAskDate']
-        if eachTheme['ctext1'] is not None:
-            itemDict['ctext1'] = eachTheme['ctext1']
-        if eachTheme['ctext2'] is not None:
-            itemDict['ctext2'] = eachTheme['ctext2']
-        if eachTheme['carea1'] is not None:
-            itemDict['carea1'] = eachTheme['carea1']
-        if eachTheme['cdrop1'] is not None:
-            itemDict['cdrop1'] = eachTheme['cdrop1']
-        if eachTheme['cdrop2'] is not None:
-            itemDict['cdrop2'] = eachTheme['cdrop2']
-        if eachTheme['cdrop3'] is not None:
-            itemDict['cdrop3'] = eachTheme['cdrop3']
-        if eachTheme['cdrop4'] is not None:
-            itemDict['cdrop4'] = eachTheme['cdrop4']
-        if eachTheme['cdrop5'] is not None:
-            itemDict['cdrop5'] = eachTheme['cdrop5']
         if eachTheme['customFields'] is not None:
             itemDict['customFields'] = eachTheme['customFields']
         if eachTheme['lastUpdatedDate'] is not None:
             itemDict['lastUpdatedDate'] = eachTheme['lastUpdatedDate']
+        if cfg.jaVersion.find("10.107") != -1 or cfg.jaVersion.find("10.106") != -1:
+            if eachTheme['developmentalStepId'] is not None:
+                eachTheme['developmentalStepId'] = eachTheme['developmentalStepId']
+            if eachTheme['operationalStepId'] is not None:
+                itemDict['operationalStepId'] = eachTheme['operationalStepId']
+            if eachTheme['ctext1'] is not None:
+                itemDict['ctext1'] = eachTheme['ctext1']
+            if eachTheme['ctext2'] is not None:
+                itemDict['ctext2'] = eachTheme['ctext2']
+            if eachTheme['carea1'] is not None:
+                itemDict['carea1'] = eachTheme['carea1']
+            if eachTheme['cdrop1'] is not None:
+                itemDict['cdrop1'] = eachTheme['cdrop1']
+            if eachTheme['cdrop2'] is not None:
+                itemDict['cdrop2'] = eachTheme['cdrop2']
+            if eachTheme['cdrop3'] is not None:
+                itemDict['cdrop3'] = eachTheme['cdrop3']
+            if eachTheme['cdrop4'] is not None:
+                itemDict['cdrop4'] = eachTheme['cdrop4']
+            if eachTheme['cdrop5'] is not None:
+                itemDict['cdrop5'] = eachTheme['cdrop5']
+        if cfg.jaVersion.find("10.109") > -1:
+            if eachTheme['processStepId'] is not None:
+                itemDict['processStepId'] = eachTheme['processStepId']
         # Don't save the self field, since it will be generated during creation
         themeArr.append(itemDict)
     return themeArr
@@ -1272,7 +1299,105 @@ def GetAllReleaseVehicles():
         releaseVehicleArr.append(itemDict)
     return releaseVehicleArr
 
-  def ExtractItemData(itemType, sourceItem, extractedData):
+def GetAllTeams():
+    """ Get all Teams information and return to the caller.
+
+        Returns: All the details for each team in a list of objects.
+    """
+    teamsArr = []
+    print("Collecting all Teams info...")
+
+    # Teams are only supported for JA Version 10.108 or later
+    if cfg.jaVersion.find("10.108") != -1 and cfg.jaVersion.find("10.109") != -1\
+        and cfg.jaVersion.find("10.110") != -1:
+        return teamsArr
+
+    teams = GetFromJiraAlign(True, cfg.instanceurl + "/Teams")
+    dataTeams = teams.json()
+    for eachTeam in dataTeams:
+        itemDict = {}
+        itemDict['id'] = eachTeam['id']
+        itemDict['name'] = eachTeam['name']
+        itemDict['ownerId'] = eachTeam['ownerId']
+        itemDict['type'] = eachTeam['type']
+        itemDict['isActive'] = eachTeam['isActive']
+        if eachTeam['regionId'] is not None:
+            itemDict['regionId'] = eachTeam['regionId']
+        if eachTeam['programId'] is not None:
+            itemDict['programId'] = eachTeam['programId']
+        if eachTeam['description'] is not None:
+            itemDict['description'] = eachTeam['description']
+        if eachTeam['sprintPrefix'] is not None:
+            itemDict['sprintPrefix'] = eachTeam['sprintPrefix']
+        if eachTeam['shortName'] is not None:
+            itemDict['shortName'] = eachTeam['shortName']
+        if eachTeam['trackBy'] is not None:
+            itemDict['trackBy'] = eachTeam['trackBy']
+        if eachTeam['maxAllocation'] is not None:
+            itemDict['maxAllocation'] = eachTeam['maxAllocation']
+        if eachTeam['allowTaskDeletion'] is not None:
+            itemDict['allowTaskDeletion'] = eachTeam['allowTaskDeletion']
+        if eachTeam['allowTeamToRunStandup'] is not None:
+            itemDict['allowTeamToRunStandup'] = eachTeam['allowTeamToRunStandup']
+        if eachTeam['isKanbanTeam'] is not None:
+            itemDict['isKanbanTeam'] = eachTeam['isKanbanTeam']
+        if eachTeam['createDate'] is not None:
+            itemDict['createDate'] = eachTeam['createDate']
+        if eachTeam['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachTeam['lastUpdatedDate']
+        if eachTeam['enableAutoEstimate'] is not None:
+            itemDict['enableAutoEstimate'] = eachTeam['enableAutoEstimate']
+        if eachTeam['autoEstimateValue'] is not None:
+            itemDict['autoEstimateValue'] = eachTeam['autoEstimateValue']
+        if eachTeam['throughput'] is not None:
+            itemDict['throughput'] = eachTeam['throughput']
+        if eachTeam['communityIds'] is not None:
+            itemDict['communityIds'] = eachTeam['communityIds']
+        # Don't save the self field, since it will be generated during creation
+        teamsArr.append(itemDict)
+    return teamsArr
+
+def GetAllValueStreams():
+    """ Get all Value Stream information and return to the caller.
+
+        Returns: All the details for each value stream in a list of objects.
+    """
+    valueStreamArr = []
+    print("Collecting all Value Stream info...")
+
+    # Value Streams are only supported for JA Version 10.108 or later
+    if cfg.jaVersion.find("10.108") != -1 and cfg.jaVersion.find("10.109") != -1\
+        and cfg.jaVersion.find("10.110") != -1:
+        return valueStreamArr
+
+    valueStreams = GetFromJiraAlign(True, cfg.instanceurl + "/ValueStreams")
+    dataValueStreams = valueStreams.json()
+    for eachValueStream in dataValueStreams:
+        itemDict = {}
+        itemDict['id'] = eachValueStream['id']
+        itemDict['name'] = eachValueStream['name']
+        itemDict['level'] = eachValueStream['level']
+        itemDict['teamId'] = eachValueStream['teamId']
+        itemDict['isActive'] = eachValueStream['isActive']
+        itemDict['mapToState'] = eachValueStream['mapToState']
+        if eachValueStream['teamDescription'] is not None:
+            itemDict['teamDescription'] = eachValueStream['teamDescription']
+        if eachValueStream['regionId'] is not None:
+            itemDict['regionId'] = eachValueStream['regionId']
+
+        if eachValueStream['programIds'] is not None:
+            itemDict['programIds'] = eachValueStream['programIds']
+        if eachValueStream['customerIds'] is not None:
+            itemDict['customerIds'] = eachValueStream['customerIds']
+        if eachValueStream['processSteps'] is not None:
+            itemDict['processSteps'] = eachValueStream['processSteps']
+        if eachValueStream['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachValueStream['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        valueStreamArr.append(itemDict)
+    return valueStreamArr
+
+def ExtractItemData(itemType, sourceItem, extractedData):
     """ Extract all applicable fields from the source item and add them to the extracted
         data, based on item type.
 
