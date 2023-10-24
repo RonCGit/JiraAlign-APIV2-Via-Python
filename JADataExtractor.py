@@ -9,6 +9,9 @@ import common
 import cfg
 import json
 
+# Maximum number of records to return for main data items
+MAX = 1000
+
 ####################################################################################################################################################################################
 def main():
 ####################################################################################################################################################################################
@@ -30,6 +33,14 @@ def main():
     regionArray = common.GetAllRegions()
     allConfigurationData['regions'] = regionArray
 
+    # Collect all the Jira Align Connector information and save it
+    connectorJiraProjectArray = common.GetAllConnectorProjects()
+    allConfigurationData['connectorJiraProjects'] = connectorJiraProjectArray
+    connectorJiraBoardArray = common.GetAllConnectorBoards()
+    allConfigurationData['connectorJiraBoards'] = connectorJiraBoardArray
+    connectorPrioritiesArray = common.GetAllConnectorPriorities()
+    allConfigurationData['connectorPriorities'] = connectorPrioritiesArray
+
     # Collect all Country information and save it - not supported via API V2
     #countryArray = common.GetAllCountries()
     #allConfigurationData['countries'] = countryArray
@@ -37,6 +48,14 @@ def main():
     # Collect all City information and save it
     cityArray = common.GetAllCities()
     allConfigurationData['cities'] = cityArray
+
+    # Collect all Cost Center information and save it
+    costCenterArray = common.GetAllCostCenters()
+    allConfigurationData['costCenters'] = costCenterArray
+
+    # Collect all Division information and save it
+    divisionArray = common.GetAllDivisions()
+    allConfigurationData['divisions'] = divisionArray
 
     # Collect all Product information and save it
     productArray = common.GetAllProducts()
@@ -102,6 +121,10 @@ def main():
     teamsArray = common.GetAllTeams()
     allConfigurationData['teams'] = teamsArray
 
+    # Collect all Risks information and save it
+    risksArray = common.GetAllRisks()
+    allConfigurationData['risks'] = risksArray
+
     # Save all configuration information in JSON format, pretty printed to be human readable and diffable
     configFileName = 'JiraAlign_config_data.json'
     print("Writing all Jira Align configuration data to: " + configFileName)
@@ -119,28 +142,36 @@ def main():
     allItemData['valuestreams'] = valueStreamArray
 
     # Collect selected information about all JA Epics information and save it
-    epicArray = common.ReadAllItems('epics', 1000)
+    epicArray = common.ReadAllItems('epics', MAX)
     allItemData['epics'] = epicArray
 
     # Collect selected information about all JA Features information and save it
-    featureArray = common.ReadAllItems('features', 1000)
+    featureArray = common.ReadAllItems('features', MAX)
     allItemData['features'] = featureArray
 
     # Collect selected information about all JA Capabilities information and save it
-    capabilityArray = common.ReadAllItems('capabilities', 1000)
+    capabilityArray = common.ReadAllItems('capabilities', MAX)
     allItemData['capabilities'] = capabilityArray
 
     # Collect selected information about all JA Stories information and save it
-    storyArray = common.ReadAllItems('stories', 1000)
+    storyArray = common.ReadAllItems('stories', MAX)
     allItemData['stories'] = storyArray
 
     # Collect selected information about all JA Defects information and save it
-    defectsArray = common.ReadAllItems('defects', 1000)
+    defectsArray = common.ReadAllItems('defects', MAX)
     allItemData['defects'] = defectsArray
 
     # Collect selected information about all JA Task information and save it
-    tasksArray = common.ReadAllItems('tasks', 1000)
+    tasksArray = common.ReadAllItems('tasks', MAX)
     allItemData['tasks'] = tasksArray
+
+    # Collect selected information about all JA Themes information and save it
+    themeArray = common.ReadAllItems('themes', MAX)
+    allItemData['themes'] = themeArray
+
+    # Collect selected information about all JA Theme Groups information and save it
+    themeGroupsArray = common.ReadAllItems('themegroups', MAX)
+    allItemData['themegroups'] = themeGroupsArray
 
     # Save all configuration information in JSON format, pretty printed to be human readable and diffable
     with open('JiraAlign_config_data.json', 'w') as outfile:
