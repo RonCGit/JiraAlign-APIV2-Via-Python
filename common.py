@@ -664,6 +664,70 @@ def GetAllConnectorProjects():
         projectsArr.append(itemDict)
     return projectsArr
     
+def GetAllCostCenters():
+    """ Get all Cost Center information and return to the caller.
+
+        Returns: All the details for each cost center in a list of objects.
+    """
+    costCenterArr = []
+    print("Collecting all Cost Center info...")
+    costCenters = GetFromJiraAlign(True, cfg.instanceurl + "/CostCenters")
+    dataCostCenter = costCenters.json()
+    for eachCostCenter in dataCostCenter:
+        itemDict = {}
+        itemDict['id'] = eachCostCenter['id']
+        if eachCostCenter['description'] is not None:
+            itemDict['description'] = eachCostCenter['description']
+        itemDict['hourlyRate'] = eachCostCenter['hourlyRate']
+        if eachCostCenter['identifier'] is not None:
+            itemDict['identifier'] = eachCostCenter['identifier']
+        itemDict['name'] = eachCostCenter['name']
+        itemDict['ownerId'] = eachCostCenter['ownerId']
+        itemDict['regionId'] = eachCostCenter['regionId']
+        # Don't save the self field, since it will be generated during creation
+        costCenterArr.append(itemDict)
+    return costCenterArr
+
+def GetAllDivisions():
+    """ Get all Division information and return to the caller.
+
+        Returns: All the details for each division in a list of objects.
+    """
+    divisionArr = []
+    print("Collecting all Division info...")
+    divisions = GetFromJiraAlign(True, cfg.instanceurl + "/Divisions")
+    dataDivisions = divisions.json()
+    for eachDivision in dataDivisions:
+        itemDict = {}
+        itemDict['id'] = eachDivision['id']
+        if eachDivision['companyCode'] is not None:
+            itemDict['companyCode'] = eachDivision['companyCode']
+        if eachDivision['costCenter'] is not None:
+            itemDict['costCenter'] = eachDivision['costCenter']
+        if eachDivision['costCenterName'] is not None:
+            itemDict['costCenterName'] = eachDivision['costCenterName']
+        if eachDivision['createdBy'] is not None:
+            itemDict['createdBy'] = eachDivision['createdBy']
+        if eachDivision['createDate'] is not None:
+            itemDict['createDate'] = eachDivision['createDate']
+        itemDict['divisionCategory'] = eachDivision['divisionCategory']
+        itemDict['divisionCategoryName'] = eachDivision['divisionCategoryName']
+        if eachDivision['parentId'] is not None:
+            itemDict['parentId'] = eachDivision['parentId']
+        if eachDivision['parentName'] is not None:
+            itemDict['parentName'] = eachDivision['parentName']
+        if eachDivision['productId'] is not None:
+            itemDict['productId'] = eachDivision['productId']
+        if eachDivision['productName'] is not None:
+            itemDict['productName'] = eachDivision['productName']
+        if eachDivision['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachDivision['lastUpdatedBy']
+        if eachDivision['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachDivision['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        divisionArr.append(itemDict)
+    return divisionArr
+
 def GetAllProducts():
     """ Get all Products information and return to the caller.
 
