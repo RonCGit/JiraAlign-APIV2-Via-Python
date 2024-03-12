@@ -55,7 +55,9 @@ def CollectBasicItems():
     for eachCit in dataCit:
         cityID = eachCit['id']
         cityN = eachCit['name']
-        citArr.append("City Name: " + cityN + " " + " / City ID: " + str(cityID))
+        cityRegionId = eachCit['regionId']
+
+        citArr.append("City Name: " + cityN + " / City ID: " + str(cityID) + " / City Region ID: " + str(cityRegionId) + " / LastUpdatedDate: ")
 
     
 # V1 GET ENTERPRISE HIERARCHY   
