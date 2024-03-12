@@ -783,6 +783,77 @@ def GetAllPrograms():
         programArr.append(itemDict)
     return programArr
 
+def GetAllRisks():
+    """ Get all Risks information and return to the caller.
+
+        Returns: All the details for each risk in a list of objects.
+    """
+    riskArr = []
+    print("Collecting all Risk info...")
+    risks = GetFromJiraAlign(True, cfg.instanceurl + "/Risks")
+    dataRisks = risks.json()
+    for eachRisk in dataRisks:
+        itemDict = {}
+        itemDict['id'] = eachRisk['id']
+        if eachRisk['closeDate'] is not None:
+            itemDict['closeDate'] = eachRisk['closeDate']
+        if eachRisk['closedBy'] is not None:
+            itemDict['closedBy'] = eachRisk['closedBy']
+        if eachRisk['consequence'] is not None:
+            itemDict['consequence'] = eachRisk['consequence']
+        if eachRisk['contingency'] is not None:
+            itemDict['contingency'] = eachRisk['contingency']
+        itemDict['createdBy'] = eachRisk['createdBy']
+        itemDict['createDate'] = eachRisk['createDate']
+        if eachRisk['criticalPath'] is not None:
+            itemDict['criticalPath'] = eachRisk['criticalPath']
+        if eachRisk['customFields'] is not None:
+            itemDict['customFields'] = eachRisk['customFields']
+        if eachRisk['description'] is not None:
+            itemDict['description'] = eachRisk['description']
+        if eachRisk['externalId'] is not None:
+            itemDict['externalId'] = eachRisk['externalId']
+        if eachRisk['externalKey'] is not None:
+            itemDict['externalKey'] = eachRisk['externalKey']
+        if eachRisk['exposure'] is not None:
+            itemDict['exposure'] = eachRisk['exposure']
+        if eachRisk['impact'] is not None:
+            itemDict['impact'] = eachRisk['impact']
+        if eachRisk['mitigation'] is not None:
+            itemDict['mitigation'] = eachRisk['mitigation']
+        if eachRisk['notify'] is not None:
+            itemDict['notify'] = eachRisk['notify']
+        if eachRisk['notifySendEmailDate'] is not None:
+            itemDict['notifySendEmailDate'] = eachRisk['notifySendEmailDate']
+        if eachRisk['occurrence'] is not None:
+            itemDict['occurrence'] = eachRisk['occurrence']
+        if eachRisk['ownerId'] is not None:
+            itemDict['ownerId'] = eachRisk['ownerId']
+        if eachRisk['relationship'] is not None:
+            itemDict['relationship'] = eachRisk['relationship']
+        itemDict['relatedItemId'] = eachRisk['relatedItemId']
+        if eachRisk['releaseId'] is not None:
+            itemDict['releaseId'] = eachRisk['releaseId']
+        if eachRisk['rank'] is not None:
+            itemDict['rank'] = eachRisk['rank']
+        itemDict['resolutionMethod'] = eachRisk['resolutionMethod']
+        if eachRisk['resolutionStatus'] is not None:
+            itemDict['resolutionStatus'] = eachRisk['resolutionStatus']
+        itemDict['riskType'] = eachRisk['riskType']
+        itemDict['status'] = eachRisk['status']
+        if eachRisk['tags'] is not None:
+            itemDict['tags'] = eachRisk['tags']
+        if eachRisk['targetResolutionDate'] is not None:
+            itemDict['targetResolutionDate'] = eachRisk['targetResolutionDate']
+        itemDict['title'] = eachRisk['title']
+        if eachRisk['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachRisk['lastUpdatedBy']
+        if eachRisk['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachRisk['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        riskArr.append(itemDict)
+    return riskArr
+
 def GetAllUsers():
     """ Get all Users information and return to the caller.
 
@@ -1973,6 +2044,7 @@ def ExtractItemData(itemType, sourceItem, extractedData):
             extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
         if sourceItem['completedDate'] is not None:
             extractedData['completedDate'] = sourceItem['completedDate']
+
 def ReadAllItems(which, maxToRead):
     """ Read in all work items of the given type (Epic, Feature, Story, etc.) and 
         return selected fields of them to the caller.  This is NOT a complete dump of all data.
@@ -1994,7 +2066,10 @@ def ReadAllItems(which, maxToRead):
 
     while Data != None:
         for eachWorkItem in Data:
-            itemIsDel = eachWorkItem['isRecycled']
+            if 'isRecycled' in eachWorkItem:
+                itemIsDel = eachWorkItem['isRecycled']
+            else:
+                itemIsDel = False
             # ONLY Take items that are not in the recycle bin/deleted
             if itemIsDel is not None or itemIsDel is True:
                 continue;

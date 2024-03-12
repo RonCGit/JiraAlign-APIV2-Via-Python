@@ -10,7 +10,7 @@ import cfg
 import json
 
 # Maximum number of records to return for main data items
-MAX = 20
+MAX = 1000
 
 ####################################################################################################################################################################################
 def main():
@@ -187,18 +187,7 @@ def main():
     with open(itemFileName, 'w') as outfile:
         json.dump(allItemData, outfile, indent=4, sort_keys=True)
 
-    epicFilename = "JiraAlign-Epics-Only.txt"
-    print("Writing all JA Epic data in text format to: " + epicFilename)
-    with open(epicFilename, 'w') as outfile:
-        for epic in epicArray:
-            outfile.write(epic.title + " " + epic.description + "\n")
-            
-    featureFilename = "JiraAlign-Features-Only.txt"
-    print("Writing all JA Feature data in text format to: " + featureFilename)
-    with open(featureFilename, 'w') as outfile:
-        for feature in featureArray:
-            outfile.write(feature.title + " " + feature.description + "\n")
-
+    pass #eof
 
 ####################################################################################################################################################################################       
 if __name__ == "__main__":
