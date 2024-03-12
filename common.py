@@ -574,6 +574,96 @@ def GetAllCities():
         cityArr.append(itemDict)
     return cityArr
 
+def GetAllConnectorBoards():
+    """ Get all Connector Board information and return to the caller.
+
+        Returns: All the details for each connector board in a list of objects.
+    """
+    boardArr = []
+    print("Collecting all Connector Board info...")
+    boards = GetFromJiraAlign(True, cfg.instanceurl + "/connectors/1/boards")
+    dataBoard = boards.json()
+    for eachBoard in dataBoard:
+        itemDict = {}
+        itemDict['id'] = eachBoard['id']
+        itemDict['areSprintsEnabled'] = eachBoard['areSprintsEnabled']
+        itemDict['boardId'] = eachBoard['boardId']
+        itemDict['boardName'] = eachBoard['boardName']
+        itemDict['connectorId'] = eachBoard['connectorId']
+        itemDict['createdBy'] = eachBoard['createdBy']
+        itemDict['createDate'] = eachBoard['createDate']
+        if eachBoard['errorMessage'] is not None:
+            itemDict['errorMessage'] = eachBoard['errorMessage']
+        itemDict['originSprints'] = eachBoard['originSprints']
+        itemDict['programId'] = eachBoard['programId']
+        itemDict['teamId'] = eachBoard['teamId']
+        itemDict['teamName'] = eachBoard['teamName']
+        if eachBoard['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachBoard['lastUpdatedBy']
+        if eachBoard['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachBoard['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        boardArr.append(itemDict)
+    return boardArr
+    
+def GetAllConnectorPriorities():
+    """ Get all Connector Priority information and return to the caller.
+
+        Returns: All the details for each connector priority in a list of objects.
+    """
+    prioritiesArr = []
+    print("Collecting all Connector Priority info...")
+    priorities = GetFromJiraAlign(True, cfg.instanceurl + "/connectors/1/priorities")
+    dataPriority = priorities.json()
+    for eachPriority in dataPriority:
+        itemDict = {}
+        itemDict['id'] = eachPriority['id']
+        itemDict['connectorId'] = eachPriority['connectorId']
+        if eachPriority['createdBy'] is not None:
+            itemDict['createdBy'] = eachPriority['createdBy']
+        if eachPriority['createDate'] is not None:
+            itemDict['createDate'] = eachPriority['createDate']
+        itemDict['itemTypeId'] = eachPriority['itemTypeId']
+        itemDict['jiraPriorityId'] = eachPriority['jiraPriorityId']
+        itemDict['jiraPriorityName'] = eachPriority['jiraPriorityName']
+        itemDict['priorityId'] = eachPriority['priorityId']
+        if eachPriority['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachPriority['lastUpdatedBy']
+        if eachPriority['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachPriority['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        prioritiesArr.append(itemDict)
+    return prioritiesArr
+    
+def GetAllConnectorProjects():
+    """ Get all Connector Project information and return to the caller.
+
+        Returns: All the details for each connector project in a list of objects.
+    """
+    projectsArr = []
+    print("Collecting all Connector Project info...")
+    projects = GetFromJiraAlign(True, cfg.instanceurl + "/connectors/1/projects")
+    dataProject = projects.json()
+    for eachProject in dataProject:
+        itemDict = {}
+        itemDict['id'] = eachProject['id']
+        if eachProject['errorMessage'] is not None:
+            itemDict['errorMessage'] = eachProject['errorMessage']
+        itemDict['connectorId'] = eachProject['connectorId']
+        itemDict['createdBy'] = eachProject['createdBy']
+        itemDict['createDate'] = eachProject['createDate']
+        itemDict['programId'] = eachProject['programId']
+        itemDict['projectId'] = eachProject['projectId']
+        itemDict['projectKey'] = eachProject['projectKey']
+        itemDict['projectName'] = eachProject['projectName']
+        if eachProject['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachProject['lastUpdatedBy']
+        if eachProject['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachProject['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        projectsArr.append(itemDict)
+    return projectsArr
+    
 def GetAllProducts():
     """ Get all Products information and return to the caller.
 

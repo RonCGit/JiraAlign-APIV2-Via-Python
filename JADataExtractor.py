@@ -10,7 +10,7 @@ import cfg
 import json
 
 # Maximum number of records to return for main data items
-MAX = 1000
+MAX = 20
 
 ####################################################################################################################################################################################
 def main():
@@ -34,12 +34,16 @@ def main():
     allConfigurationData['regions'] = regionArray
 
     # Collect all the Jira Align Connector information and save it
-    connectorJiraProjectArray = common.GetAllConnectorProjects()
-    allConfigurationData['connectorJiraProjects'] = connectorJiraProjectArray
     connectorJiraBoardArray = common.GetAllConnectorBoards()
     allConfigurationData['connectorJiraBoards'] = connectorJiraBoardArray
     connectorPrioritiesArray = common.GetAllConnectorPriorities()
     allConfigurationData['connectorPriorities'] = connectorPrioritiesArray
+    #connectorProductArray = common.GetAllConnectorProducts()
+    #allConfigurationData['connectorProducts'] = connectorProductArray
+    connectorJiraProjectArray = common.GetAllConnectorProjects()
+    allConfigurationData['connectorJiraProjects'] = connectorJiraProjectArray
+    #connectorCustomFieldsArray = common.GetAllConnectorCustomFields()
+    #allConfigurationData['connectorCustomFields'] = connectorCustomFieldsArray
 
     # Collect all Country information and save it - not supported via API V2
     #countryArray = common.GetAllCountries()
@@ -182,6 +186,19 @@ def main():
     print("Writing all item data to: " + itemFileName)
     with open(itemFileName, 'w') as outfile:
         json.dump(allItemData, outfile, indent=4, sort_keys=True)
+
+    epicFilename = "JiraAlign-Epics-Only.txt"
+    print("Writing all JA Epic data in text format to: " + epicFilename)
+    with open(epicFilename, 'w') as outfile:
+        for epic in epicArray:
+            outfile.write(epic.title + " " + epic.description + "\n")
+            
+    featureFilename = "JiraAlign-Features-Only.txt"
+    print("Writing all JA Feature data in text format to: " + featureFilename)
+    with open(featureFilename, 'w') as outfile:
+        for feature in featureArray:
+            outfile.write(feature.title + " " + feature.description + "\n")
+
 
 ####################################################################################################################################################################################       
 if __name__ == "__main__":
