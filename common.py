@@ -1128,93 +1128,6 @@ def GetAllGoals():
         goalArr.append(itemDict)
     return goalArr
 
-def GetAllObjectives():
-    """ Get all Objectives information and return to the caller.
-
-        Returns: All the details for each objective in a list of objects.
-    """
-    objectiveArr = []
-    print("Collecting all Objectives info...")
-    objectives = GetFromJiraAlign(True, cfg.instanceurl + "/objectives")
-    dataObjectives = objectives.json()
-    for eachObjective in dataObjectives:
-        itemDict = {}
-        itemDict['id'] = eachObjective['id']
-        itemDict['tier'] = eachObjective['tier']
-        itemDict['programId'] = eachObjective['programId']
-        itemDict['type'] = eachObjective['type']
-        itemDict['isBlocked'] = eachObjective['isBlocked']
-        itemDict['ownerId'] = eachObjective['ownerId']
-        itemDict['name'] = eachObjective['name']
-        itemDict['description'] = eachObjective['description']
-        if eachObjective['createDate'] is not None:
-            itemDict['createDate'] = eachObjective['createDate']
-        if eachObjective['status'] is not None:
-            itemDict['status'] = eachObjective['status']
-        if eachObjective['notes'] is not None:
-            itemDict['notes'] = eachObjective['notes']
-        if eachObjective['startInitiationDate'] is not None:
-            itemDict['startInitiationDate'] = eachObjective['startInitiationDate']
-        if eachObjective['endDate'] is not None:
-            itemDict['endDate'] = eachObjective['endDate']
-        if eachObjective['category'] is not None:
-            itemDict['category'] = eachObjective['category']
-        if eachObjective['targetSyncSprintId'] is not None:
-            itemDict['targetSyncSprintId'] = eachObjective['targetSyncSprintId']
-        if eachObjective['plannedValue'] is not None:
-            itemDict['plannedValue'] = eachObjective['plannedValue']
-        if eachObjective['deliveredValue'] is not None:
-            itemDict['deliveredValue'] = eachObjective['deliveredValue']
-        if eachObjective['themeId'] is not None:
-            itemDict['themeId'] = eachObjective['themeId']
-        if eachObjective['blockedReason'] is not None:
-            itemDict['blockedReason'] = eachObjective['blockedReason']
-        if eachObjective['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachObjective['lastUpdatedDate']
-        if eachObjective['lastUpdatedBy'] is not None:
-            itemDict['lastUpdatedBy'] = eachObjective['lastUpdatedBy']
-        if eachObjective['targetCompletionDate'] is not None:
-            itemDict['targetCompletionDate'] = eachObjective['targetCompletionDate']
-        if eachObjective['portfolioAskDate'] is not None:
-            itemDict['portfolioAskDate'] = eachObjective['portfolioAskDate']
-        if eachObjective['health'] is not None:
-            itemDict['health'] = eachObjective['health']
-        if eachObjective['parentId'] is not None:
-            itemDict['parentId'] = eachObjective['parentId']
-        if eachObjective['score'] is not None:
-            itemDict['score'] = eachObjective['score']
-        if eachObjective['portfolioId'] is not None:
-            itemDict['portfolioId'] = eachObjective['portfolioId']
-        if eachObjective['goalId'] is not None:
-            itemDict['goalId'] = eachObjective['goalId']
-        if eachObjective['solutionId'] is not None:
-            itemDict['solutionId'] = eachObjective['solutionId']
-        if eachObjective['notificationStartDate'] is not None:
-            itemDict['notificationStartDate'] = eachObjective['notificationStartDate']
-        if eachObjective['notificationFrequency'] is not None:
-            itemDict['notificationFrequency'] = eachObjective['notificationFrequency']
-        if eachObjective['reference'] is not None:
-            itemDict['reference'] = eachObjective['reference']
-        if eachObjective['programIds'] is not None:
-            itemDict['programIds'] = eachObjective['programIds']
-        if eachObjective['releaseIds'] is not None:
-            itemDict['releaseIds'] = eachObjective['releaseIds']
-        if eachObjective['featureIds'] is not None:
-            itemDict['featureIds'] = eachObjective['featureIds']
-        if eachObjective['impedimentIds'] is not None:
-            itemDict['impedimentIds'] = eachObjective['impedimentIds']
-        if eachObjective['riskIds'] is not None:
-            itemDict['riskIds'] = eachObjective['riskIds']
-        if eachObjective['dependencyIds'] is not None:
-            itemDict['dependencyIds'] = eachObjective['dependencyIds']
-        if eachObjective['customFields'] is not None:
-            itemDict['customFields'] = eachObjective['customFields']
-        if eachObjective['teamIds'] is not None:
-            itemDict['teamIds'] = eachObjective['teamIds']
-        # Don't save the self field, since it will be generated during creation
-        objectiveArr.append(itemDict)
-    return objectiveArr
-
 def GetAllCustomers():
     """ Get all Customers information and return to the caller.
 
@@ -1661,30 +1574,33 @@ def ExtractItemData(itemType, sourceItem, extractedData):
     """
     # Common fields for all item types
     extractedData['itemtype'] = itemType
-    extractedData['title'] = sourceItem['title']
     if sourceItem['description'] is not None:
         extractedData['description'] = sourceItem['description']
     extractedData['id'] = sourceItem['id']
-    extractedData['state'] = sourceItem['state']
-    if sourceItem['createdBy'] is not None:
-        extractedData['createdBy'] = sourceItem['createdBy']
     if sourceItem['createDate'] is not None:
         extractedData['createDate'] = sourceItem['createDate']
 
-    # Fields that exist for all types other than tasks
-    if itemType != "tasks":
+    # Fields that exist for all types other than objectives
+    if itemType != "objectives":
+        if sourceItem['createdBy'] is not None:
+            extractedData['createdBy'] = sourceItem['createdBy']
+        extractedData['state'] = sourceItem['state']
+        extractedData['title'] = sourceItem['title']
+        
+    # Fields that exist for all types other than tasks and objectives and themese
+    if (itemType != "tasks") and (itemType != "objectives") and (itemType != "themes"):
         if sourceItem['tags'] is not None:
             extractedData['tags'] = sourceItem['tags']
 
-    # Fields that exist for all types other than defects
-    if itemType != "defects":
+    # Fields that exist for all types other than defects or themes
+    if (itemType != "defects") and (itemType != "themes"):
         if sourceItem['lastUpdatedBy'] is not None:
             extractedData['lastUpdatedBy'] = sourceItem['lastUpdatedBy']
         if sourceItem['ownerId'] is not None:
             extractedData['ownerId'] = sourceItem['ownerId']
 
     # Fields that exist for all types other than defects and tasks
-    if (itemType != "defects") and (itemType != "tasks"):
+    if (itemType != "defects") and (itemType != "tasks") and (itemType != "objectives"):
         if sourceItem['processStepId'] is not None:
             extractedData['processStepId'] = sourceItem['processStepId']
     
@@ -2044,7 +1960,81 @@ def ExtractItemData(itemType, sourceItem, extractedData):
             extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
         if sourceItem['completedDate'] is not None:
             extractedData['completedDate'] = sourceItem['completedDate']
-
+            
+    elif itemType == "objectives":
+        extractedData['id'] = sourceItem['id']
+        extractedData['tier'] = sourceItem['tier']
+        extractedData['programId'] = sourceItem['programId']
+        extractedData['type'] = sourceItem['type']
+        extractedData['isBlocked'] = sourceItem['isBlocked']
+        extractedData['ownerId'] = sourceItem['ownerId']
+        extractedData['name'] = sourceItem['name']
+        extractedData['description'] = sourceItem['description']
+        if sourceItem['createDate'] is not None:
+            extractedData['createDate'] = sourceItem['createDate']
+        if sourceItem['status'] is not None:
+            extractedData['status'] = sourceItem['status']
+        if sourceItem['notes'] is not None:
+            extractedData['notes'] = sourceItem['notes']
+        if sourceItem['startInitiationDate'] is not None:
+            extractedData['startInitiationDate'] = sourceItem['startInitiationDate']
+        if sourceItem['endDate'] is not None:
+            extractedData['endDate'] = sourceItem['endDate']
+        if sourceItem['category'] is not None:
+            extractedData['category'] = sourceItem['category']
+        if sourceItem['targetSyncSprintId'] is not None:
+            extractedData['targetSyncSprintId'] = sourceItem['targetSyncSprintId']
+        if sourceItem['plannedValue'] is not None:
+            extractedData['plannedValue'] = sourceItem['plannedValue']
+        if sourceItem['deliveredValue'] is not None:
+            extractedData['deliveredValue'] = sourceItem['deliveredValue']
+        if sourceItem['themeId'] is not None:
+            extractedData['themeId'] = sourceItem['themeId']
+        if sourceItem['blockedReason'] is not None:
+            extractedData['blockedReason'] = sourceItem['blockedReason']
+        if sourceItem['lastUpdatedDate'] is not None:
+            extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
+        if sourceItem['lastUpdatedBy'] is not None:
+            extractedData['lastUpdatedBy'] = sourceItem['lastUpdatedBy']
+        if sourceItem['targetCompletionDate'] is not None:
+            extractedData['targetCompletionDate'] = sourceItem['targetCompletionDate']
+        if sourceItem['portfolioAskDate'] is not None:
+            extractedData['portfolioAskDate'] = sourceItem['portfolioAskDate']
+        if sourceItem['health'] is not None:
+            extractedData['health'] = sourceItem['health']
+        if sourceItem['parentId'] is not None:
+            extractedData['parentId'] = sourceItem['parentId']
+        if sourceItem['score'] is not None:
+            extractedData['score'] = sourceItem['score']
+        if sourceItem['portfolioId'] is not None:
+            extractedData['portfolioId'] = sourceItem['portfolioId']
+        if sourceItem['goalId'] is not None:
+            extractedData['goalId'] = sourceItem['goalId']
+        if sourceItem['solutionId'] is not None:
+            extractedData['solutionId'] = sourceItem['solutionId']
+        if sourceItem['notificationStartDate'] is not None:
+            extractedData['notificationStartDate'] = sourceItem['notificationStartDate']
+        if sourceItem['notificationFrequency'] is not None:
+            extractedData['notificationFrequency'] = sourceItem['notificationFrequency']
+        if sourceItem['reference'] is not None:
+            extractedData['reference'] = sourceItem['reference']
+        if sourceItem['programIds'] is not None:
+            extractedData['programIds'] = sourceItem['programIds']
+        if sourceItem['releaseIds'] is not None:
+            extractedData['releaseIds'] = sourceItem['releaseIds']
+        if sourceItem['featureIds'] is not None:
+            extractedData['featureIds'] = sourceItem['featureIds']
+        if sourceItem['impedimentIds'] is not None:
+            extractedData['impedimentIds'] = sourceItem['impedimentIds']
+        if sourceItem['riskIds'] is not None:
+            extractedData['riskIds'] = sourceItem['riskIds']
+        if sourceItem['dependencyIds'] is not None:
+            extractedData['dependencyIds'] = sourceItem['dependencyIds']
+        if sourceItem['customFields'] is not None:
+            extractedData['customFields'] = sourceItem['customFields']
+        if sourceItem['teamIds'] is not None:
+            extractedData['teamIds'] = sourceItem['teamIds']
+        
 def ReadAllItems(which, maxToRead):
     """ Read in all work items of the given type (Epic, Feature, Story, etc.) and 
         return selected fields of them to the caller.  This is NOT a complete dump of all data.
@@ -2071,7 +2061,7 @@ def ReadAllItems(which, maxToRead):
             else:
                 itemIsDel = False
             # ONLY Take items that are not in the recycle bin/deleted
-            if itemIsDel is not None or itemIsDel is True:
+            if itemIsDel is True:
                 continue;
             thisItem = {}
             ExtractItemData(which, eachWorkItem, thisItem)

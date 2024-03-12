@@ -89,10 +89,6 @@ def main():
     goalArray = common.GetAllGoals()
     allConfigurationData['goals'] = goalArray
 
-    # Collect all Objective information and save it
-    objectiveArray = common.GetAllObjectives()
-    allConfigurationData['objectives'] = objectiveArray
-
     # Collect all Release information and save it
     releaseArray = common.GetAllReleases()
     allConfigurationData['releases'] = releaseArray
@@ -144,6 +140,10 @@ def main():
     # Collect all Value Stream information and save it
     valueStreamArray = common.GetAllValueStreams()
     allItemData['valuestreams'] = valueStreamArray
+
+    # Collect all Objective information and save it
+    objectiveArray = common.ReadAllItems('objectives', MAX)
+    allItemData['objectives'] = objectiveArray
 
     # Collect selected information about all JA Epics information and save it
     epicArray = common.ReadAllItems('epics', MAX)
