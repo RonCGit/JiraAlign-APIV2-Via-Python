@@ -574,6 +574,160 @@ def GetAllCities():
         cityArr.append(itemDict)
     return cityArr
 
+def GetAllConnectorBoards():
+    """ Get all Connector Board information and return to the caller.
+
+        Returns: All the details for each connector board in a list of objects.
+    """
+    boardArr = []
+    print("Collecting all Connector Board info...")
+    boards = GetFromJiraAlign(True, cfg.instanceurl + "/connectors/1/boards")
+    dataBoard = boards.json()
+    for eachBoard in dataBoard:
+        itemDict = {}
+        itemDict['id'] = eachBoard['id']
+        itemDict['areSprintsEnabled'] = eachBoard['areSprintsEnabled']
+        itemDict['boardId'] = eachBoard['boardId']
+        itemDict['boardName'] = eachBoard['boardName']
+        itemDict['connectorId'] = eachBoard['connectorId']
+        itemDict['createdBy'] = eachBoard['createdBy']
+        itemDict['createDate'] = eachBoard['createDate']
+        if eachBoard['errorMessage'] is not None:
+            itemDict['errorMessage'] = eachBoard['errorMessage']
+        itemDict['originSprints'] = eachBoard['originSprints']
+        itemDict['programId'] = eachBoard['programId']
+        itemDict['teamId'] = eachBoard['teamId']
+        itemDict['teamName'] = eachBoard['teamName']
+        if eachBoard['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachBoard['lastUpdatedBy']
+        if eachBoard['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachBoard['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        boardArr.append(itemDict)
+    return boardArr
+    
+def GetAllConnectorPriorities():
+    """ Get all Connector Priority information and return to the caller.
+
+        Returns: All the details for each connector priority in a list of objects.
+    """
+    prioritiesArr = []
+    print("Collecting all Connector Priority info...")
+    priorities = GetFromJiraAlign(True, cfg.instanceurl + "/connectors/1/priorities")
+    dataPriority = priorities.json()
+    for eachPriority in dataPriority:
+        itemDict = {}
+        itemDict['id'] = eachPriority['id']
+        itemDict['connectorId'] = eachPriority['connectorId']
+        if eachPriority['createdBy'] is not None:
+            itemDict['createdBy'] = eachPriority['createdBy']
+        if eachPriority['createDate'] is not None:
+            itemDict['createDate'] = eachPriority['createDate']
+        itemDict['itemTypeId'] = eachPriority['itemTypeId']
+        itemDict['jiraPriorityId'] = eachPriority['jiraPriorityId']
+        itemDict['jiraPriorityName'] = eachPriority['jiraPriorityName']
+        itemDict['priorityId'] = eachPriority['priorityId']
+        if eachPriority['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachPriority['lastUpdatedBy']
+        if eachPriority['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachPriority['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        prioritiesArr.append(itemDict)
+    return prioritiesArr
+    
+def GetAllConnectorProjects():
+    """ Get all Connector Project information and return to the caller.
+
+        Returns: All the details for each connector project in a list of objects.
+    """
+    projectsArr = []
+    print("Collecting all Connector Project info...")
+    projects = GetFromJiraAlign(True, cfg.instanceurl + "/connectors/1/projects")
+    dataProject = projects.json()
+    for eachProject in dataProject:
+        itemDict = {}
+        itemDict['id'] = eachProject['id']
+        if eachProject['errorMessage'] is not None:
+            itemDict['errorMessage'] = eachProject['errorMessage']
+        itemDict['connectorId'] = eachProject['connectorId']
+        itemDict['createdBy'] = eachProject['createdBy']
+        itemDict['createDate'] = eachProject['createDate']
+        itemDict['programId'] = eachProject['programId']
+        itemDict['projectId'] = eachProject['projectId']
+        itemDict['projectKey'] = eachProject['projectKey']
+        itemDict['projectName'] = eachProject['projectName']
+        if eachProject['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachProject['lastUpdatedBy']
+        if eachProject['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachProject['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        projectsArr.append(itemDict)
+    return projectsArr
+    
+def GetAllCostCenters():
+    """ Get all Cost Center information and return to the caller.
+
+        Returns: All the details for each cost center in a list of objects.
+    """
+    costCenterArr = []
+    print("Collecting all Cost Center info...")
+    costCenters = GetFromJiraAlign(True, cfg.instanceurl + "/CostCenters")
+    dataCostCenter = costCenters.json()
+    for eachCostCenter in dataCostCenter:
+        itemDict = {}
+        itemDict['id'] = eachCostCenter['id']
+        if eachCostCenter['description'] is not None:
+            itemDict['description'] = eachCostCenter['description']
+        itemDict['hourlyRate'] = eachCostCenter['hourlyRate']
+        if eachCostCenter['identifier'] is not None:
+            itemDict['identifier'] = eachCostCenter['identifier']
+        itemDict['name'] = eachCostCenter['name']
+        itemDict['ownerId'] = eachCostCenter['ownerId']
+        itemDict['regionId'] = eachCostCenter['regionId']
+        # Don't save the self field, since it will be generated during creation
+        costCenterArr.append(itemDict)
+    return costCenterArr
+
+def GetAllDivisions():
+    """ Get all Division information and return to the caller.
+
+        Returns: All the details for each division in a list of objects.
+    """
+    divisionArr = []
+    print("Collecting all Division info...")
+    divisions = GetFromJiraAlign(True, cfg.instanceurl + "/Divisions")
+    dataDivisions = divisions.json()
+    for eachDivision in dataDivisions:
+        itemDict = {}
+        itemDict['id'] = eachDivision['id']
+        if eachDivision['companyCode'] is not None:
+            itemDict['companyCode'] = eachDivision['companyCode']
+        if eachDivision['costCenter'] is not None:
+            itemDict['costCenter'] = eachDivision['costCenter']
+        if eachDivision['costCenterName'] is not None:
+            itemDict['costCenterName'] = eachDivision['costCenterName']
+        if eachDivision['createdBy'] is not None:
+            itemDict['createdBy'] = eachDivision['createdBy']
+        if eachDivision['createDate'] is not None:
+            itemDict['createDate'] = eachDivision['createDate']
+        itemDict['divisionCategory'] = eachDivision['divisionCategory']
+        itemDict['divisionCategoryName'] = eachDivision['divisionCategoryName']
+        if eachDivision['parentId'] is not None:
+            itemDict['parentId'] = eachDivision['parentId']
+        if eachDivision['parentName'] is not None:
+            itemDict['parentName'] = eachDivision['parentName']
+        if eachDivision['productId'] is not None:
+            itemDict['productId'] = eachDivision['productId']
+        if eachDivision['productName'] is not None:
+            itemDict['productName'] = eachDivision['productName']
+        if eachDivision['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachDivision['lastUpdatedBy']
+        if eachDivision['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachDivision['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        divisionArr.append(itemDict)
+    return divisionArr
+
 def GetAllProducts():
     """ Get all Products information and return to the caller.
 
@@ -628,6 +782,77 @@ def GetAllPrograms():
         # Don't save the self field, since it will be generated during creation
         programArr.append(itemDict)
     return programArr
+
+def GetAllRisks():
+    """ Get all Risks information and return to the caller.
+
+        Returns: All the details for each risk in a list of objects.
+    """
+    riskArr = []
+    print("Collecting all Risk info...")
+    risks = GetFromJiraAlign(True, cfg.instanceurl + "/Risks")
+    dataRisks = risks.json()
+    for eachRisk in dataRisks:
+        itemDict = {}
+        itemDict['id'] = eachRisk['id']
+        if eachRisk['closeDate'] is not None:
+            itemDict['closeDate'] = eachRisk['closeDate']
+        if eachRisk['closedBy'] is not None:
+            itemDict['closedBy'] = eachRisk['closedBy']
+        if eachRisk['consequence'] is not None:
+            itemDict['consequence'] = eachRisk['consequence']
+        if eachRisk['contingency'] is not None:
+            itemDict['contingency'] = eachRisk['contingency']
+        itemDict['createdBy'] = eachRisk['createdBy']
+        itemDict['createDate'] = eachRisk['createDate']
+        if eachRisk['criticalPath'] is not None:
+            itemDict['criticalPath'] = eachRisk['criticalPath']
+        if eachRisk['customFields'] is not None:
+            itemDict['customFields'] = eachRisk['customFields']
+        if eachRisk['description'] is not None:
+            itemDict['description'] = eachRisk['description']
+        if eachRisk['externalId'] is not None:
+            itemDict['externalId'] = eachRisk['externalId']
+        if eachRisk['externalKey'] is not None:
+            itemDict['externalKey'] = eachRisk['externalKey']
+        if eachRisk['exposure'] is not None:
+            itemDict['exposure'] = eachRisk['exposure']
+        if eachRisk['impact'] is not None:
+            itemDict['impact'] = eachRisk['impact']
+        if eachRisk['mitigation'] is not None:
+            itemDict['mitigation'] = eachRisk['mitigation']
+        if eachRisk['notify'] is not None:
+            itemDict['notify'] = eachRisk['notify']
+        if eachRisk['notifySendEmailDate'] is not None:
+            itemDict['notifySendEmailDate'] = eachRisk['notifySendEmailDate']
+        if eachRisk['occurrence'] is not None:
+            itemDict['occurrence'] = eachRisk['occurrence']
+        if eachRisk['ownerId'] is not None:
+            itemDict['ownerId'] = eachRisk['ownerId']
+        if eachRisk['relationship'] is not None:
+            itemDict['relationship'] = eachRisk['relationship']
+        itemDict['relatedItemId'] = eachRisk['relatedItemId']
+        if eachRisk['releaseId'] is not None:
+            itemDict['releaseId'] = eachRisk['releaseId']
+        if eachRisk['rank'] is not None:
+            itemDict['rank'] = eachRisk['rank']
+        itemDict['resolutionMethod'] = eachRisk['resolutionMethod']
+        if eachRisk['resolutionStatus'] is not None:
+            itemDict['resolutionStatus'] = eachRisk['resolutionStatus']
+        itemDict['riskType'] = eachRisk['riskType']
+        itemDict['status'] = eachRisk['status']
+        if eachRisk['tags'] is not None:
+            itemDict['tags'] = eachRisk['tags']
+        if eachRisk['targetResolutionDate'] is not None:
+            itemDict['targetResolutionDate'] = eachRisk['targetResolutionDate']
+        itemDict['title'] = eachRisk['title']
+        if eachRisk['lastUpdatedBy'] is not None:
+            itemDict['lastUpdatedBy'] = eachRisk['lastUpdatedBy']
+        if eachRisk['lastUpdatedDate'] is not None:
+            itemDict['lastUpdatedDate'] = eachRisk['lastUpdatedDate']
+        # Don't save the self field, since it will be generated during creation
+        riskArr.append(itemDict)
+    return riskArr
 
 def GetAllUsers():
     """ Get all Users information and return to the caller.
@@ -1819,6 +2044,7 @@ def ExtractItemData(itemType, sourceItem, extractedData):
             extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
         if sourceItem['completedDate'] is not None:
             extractedData['completedDate'] = sourceItem['completedDate']
+
 def ReadAllItems(which, maxToRead):
     """ Read in all work items of the given type (Epic, Feature, Story, etc.) and 
         return selected fields of them to the caller.  This is NOT a complete dump of all data.
@@ -1840,7 +2066,10 @@ def ReadAllItems(which, maxToRead):
 
     while Data != None:
         for eachWorkItem in Data:
-            itemIsDel = eachWorkItem['isRecycled']
+            if 'isRecycled' in eachWorkItem:
+                itemIsDel = eachWorkItem['isRecycled']
+            else:
+                itemIsDel = False
             # ONLY Take items that are not in the recycle bin/deleted
             if itemIsDel is not None or itemIsDel is True:
                 continue;

@@ -34,12 +34,16 @@ def main():
     allConfigurationData['regions'] = regionArray
 
     # Collect all the Jira Align Connector information and save it
-    connectorJiraProjectArray = common.GetAllConnectorProjects()
-    allConfigurationData['connectorJiraProjects'] = connectorJiraProjectArray
     connectorJiraBoardArray = common.GetAllConnectorBoards()
     allConfigurationData['connectorJiraBoards'] = connectorJiraBoardArray
     connectorPrioritiesArray = common.GetAllConnectorPriorities()
     allConfigurationData['connectorPriorities'] = connectorPrioritiesArray
+    #connectorProductArray = common.GetAllConnectorProducts()
+    #allConfigurationData['connectorProducts'] = connectorProductArray
+    connectorJiraProjectArray = common.GetAllConnectorProjects()
+    allConfigurationData['connectorJiraProjects'] = connectorJiraProjectArray
+    #connectorCustomFieldsArray = common.GetAllConnectorCustomFields()
+    #allConfigurationData['connectorCustomFields'] = connectorCustomFieldsArray
 
     # Collect all Country information and save it - not supported via API V2
     #countryArray = common.GetAllCountries()
@@ -182,6 +186,8 @@ def main():
     print("Writing all item data to: " + itemFileName)
     with open(itemFileName, 'w') as outfile:
         json.dump(allItemData, outfile, indent=4, sort_keys=True)
+
+    pass #eof
 
 ####################################################################################################################################################################################       
 if __name__ == "__main__":
