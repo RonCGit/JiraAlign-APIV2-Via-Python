@@ -1577,18 +1577,21 @@ def ExtractItemData(itemType, sourceItem, extractedData):
     if sourceItem['description'] is not None:
         extractedData['description'] = sourceItem['description']
     extractedData['id'] = sourceItem['id']
-    if sourceItem['createDate'] is not None:
-        extractedData['createDate'] = sourceItem['createDate']
+    
+    if itemType != "themegroups":
+        if sourceItem['createDate'] is not None:
+            extractedData['createDate'] = sourceItem['createDate']
 
     # Fields that exist for all types other than objectives
     if itemType != "objectives":
-        if sourceItem['createdBy'] is not None:
-            extractedData['createdBy'] = sourceItem['createdBy']
-        extractedData['state'] = sourceItem['state']
-        extractedData['title'] = sourceItem['title']
+        if itemType != "themegroups":
+            if sourceItem['createdBy'] is not None:
+                extractedData['createdBy'] = sourceItem['createdBy']
+            extractedData['state'] = sourceItem['state']
+            extractedData['title'] = sourceItem['title']
         
     # Fields that exist for all types other than tasks and objectives and themese
-    if (itemType != "tasks") and (itemType != "objectives") and (itemType != "themes"):
+    if (itemType != "tasks") and (itemType != "objectives") and (itemType != "themes") and (itemType != "themegroups"):
         if sourceItem['tags'] is not None:
             extractedData['tags'] = sourceItem['tags']
 
@@ -1596,13 +1599,15 @@ def ExtractItemData(itemType, sourceItem, extractedData):
     if (itemType != "defects") and (itemType != "themes"):
         if sourceItem['lastUpdatedBy'] is not None:
             extractedData['lastUpdatedBy'] = sourceItem['lastUpdatedBy']
-        if sourceItem['ownerId'] is not None:
-            extractedData['ownerId'] = sourceItem['ownerId']
+        if itemType != "themegroups":
+            if sourceItem['ownerId'] is not None:
+                extractedData['ownerId'] = sourceItem['ownerId']
 
     # Fields that exist for all types other than defects and tasks
     if (itemType != "defects") and (itemType != "tasks") and (itemType != "objectives"):
-        if sourceItem['processStepId'] is not None:
-            extractedData['processStepId'] = sourceItem['processStepId']
+        if itemType != "themegroups":
+            if sourceItem['processStepId'] is not None:
+                extractedData['processStepId'] = sourceItem['processStepId']
     
     # Specific fields to extract for each item type
     if (itemType == "epics") or (itemType == "features") or (itemType == "capabilities"):
