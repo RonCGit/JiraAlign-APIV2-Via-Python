@@ -82,7 +82,7 @@ def main():
     print("A total of " + str(len(productArray)) + " Products were retrieved from Jira Align")
 
     # Collect all Program information and save it
-    programArray = common.GetAllPrograms()
+    programArray = common.ReadAllItems('programs', MAX)
     allConfigurationData['programs'] = programArray
     print("A total of " + str(len(programArray)) + " Programs were retrieved from Jira Align")
 
@@ -111,8 +111,8 @@ def main():
     allConfigurationData['goals'] = goalArray
     print("A total of " + str(len(goalArray)) + " Goals were retrieved from Jira Align")
 
-    # Collect all Release information and save it
-    releaseArray = common.GetAllReleases()
+    # Collect all Release/PI information and save it
+    releaseArray = common.ReadAllItems('releases', MAX)
     allConfigurationData['releases'] = releaseArray
     print("A total of " + str(len(releaseArray)) + " Releases were retrieved from Jira Align")
 

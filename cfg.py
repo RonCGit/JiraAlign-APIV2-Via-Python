@@ -29,6 +29,7 @@ class BearerAuth(requests.auth.AuthBase):
         self.token = token
     def __call__(self, r):
         r.headers["authorization"] = "Bearer " + self.token
+        #print("Token: " + self.token)
         return r
 #_______________________________________________________________________________
 # When you pull a work item from the API, sometimes users put commas in the text fields

@@ -20,6 +20,41 @@ DEBUG = False
 # Set to False to prompt each time
 USE_DEFAULTS = False
 
+def PatchToJiraAlign(header, paramData, verify_flag, use_bearer, url = None):
+    """Generic method to do a PATCH to the Jira Align instance, with the specified parameters, and return
+        the result of the PATCH call.
+
+    Args:
+        header: The HTTP header to use
+        paramData: The data to PATCH
+        verify_flag (bool): Either True or False
+        use_bearer (bool): If True, use the BearerAuth token, else use username/token.
+        url (string): The URL to use for the PATCH.  If None, use the default instance + API end point variables defined
+
+    Returns:
+        Response
+    """
+    if url is None:
+        # Use the default URL
+        url_to_use = cfg.instanceurl
+    else:
+        # Use the given URL
+        url_to_use = url
+    if DEBUG == True:
+        print("URL: " + url_to_use)
+    # If we need to use BearerAuth with Token
+    if use_bearer:
+        result = requests.patch(url = url_to_use, data=json.dumps(paramData),
+                               headers=header, 
+                               verify=verify_flag, 
+                               auth=cfg.BearerAuth(creds.jatoken))
+    # Otherwise, use Username/Token auth
+    else:
+        result = requests.patch(url = url_to_use, data=json.dumps(paramData),
+                               headers=header, verify=verify_flag, 
+                               auth=(creds.username, creds.jatoken))
+    return result
+
 def PostToJiraAlign(header, paramData, verify_flag, use_bearer, url = None):
     """Generic method to do a POST to the Jira Align instance, with the specified parameters, and return
         the result of the POST call.
@@ -1568,15 +1603,83 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         data, based on item type.
 
     Args:
-        itemType: Which type of work the sourceItem is: epics, features, stories, defects, tasks
+        itemType: Which type of work the sourceItem is: epics, features, stories, defects, tasks, programs
         sourceItem: Full set of data for this item from Jira Align
         extractedData: All the data that needs to be saved from this sourceItem
     """
     # Common fields for all item types
     extractedData['itemtype'] = itemType
-    if sourceItem['description'] is not None:
+    if ('description' in sourceItem) and (sourceItem['description'] is not None):
         extractedData['description'] = sourceItem['description']
     extractedData['id'] = sourceItem['id']
+    
+    # Fields that exist only for Programs
+    if (itemType == 'programs'):
+        if sourceItem['caseDevelopmentId'] is not None:
+            extractedData['caseDevelopmentId'] = sourceItem['caseDevelopmentId']
+        extractedData['intakeFormId'] = sourceItem['intakeFormId']
+        extractedData['isSolution'] = sourceItem['isSolution']
+        if sourceItem['lastUpdatedDate'] is not None:
+            extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
+        extractedData['portfolioId'] = sourceItem['portfolioId']
+        extractedData['regionId'] = sourceItem['regionId']
+        extractedData['scoreCardId'] = sourceItem['scoreCardId']
+        extractedData['solutionId'] = sourceItem['solutionId']
+        extractedData['teamId'] = sourceItem['teamId']
+        extractedData['teamDescription'] = sourceItem['teamDescription']
+        extractedData['title'] = sourceItem['title']
+        return
+        
+    # Fields that exist only for Releases/PIs
+    if (itemType == 'releases'):
+        extractedData['id'] = sourceItem['id']
+        extractedData['title'] = sourceItem['title']
+        extractedData['shortName'] = sourceItem['shortName']
+        extractedData['type'] = sourceItem['type']
+        extractedData['status'] = sourceItem['status']
+        extractedData['description'] = sourceItem['description']
+        extractedData['releaseNumber'] = sourceItem['releaseNumber']
+        extractedData['scheduleType'] = sourceItem['scheduleType']
+        extractedData['roadmap'] = sourceItem['roadmap']
+        extractedData['budget'] = sourceItem['budget']
+        extractedData['health'] = sourceItem['health']
+        if sourceItem['createDate'] is not None:
+            extractedData['createDate'] = sourceItem['createDate']
+        if sourceItem['startDate'] is not None:
+            extractedData['startDate'] = sourceItem['startDate']
+        if sourceItem['endDate'] is not None:
+            extractedData['endDate'] = sourceItem['endDate']
+        if sourceItem['testSuite'] is not None:
+            extractedData['testSuite'] = sourceItem['testSuite']
+        if sourceItem['portfolioId'] is not None:
+            extractedData['portfolioId'] = sourceItem['portfolioId']
+        if sourceItem['predecessorId'] is not None:
+            extractedData['predecessorId'] = sourceItem['predecessorId']
+        if sourceItem['score1'] is not None:
+            extractedData['score1'] = sourceItem['score1']
+        if sourceItem['score2'] is not None:
+            extractedData['score2'] = sourceItem['score2']
+        if sourceItem['score3'] is not None:
+            extractedData['score3'] = sourceItem['score3']
+        if sourceItem['score4'] is not None:
+            extractedData['score4'] = sourceItem['score4']
+        if sourceItem['blendedHourlyRate'] is not None:
+            extractedData['blendedHourlyRate'] = sourceItem['blendedHourlyRate']
+        if sourceItem['divisionId'] is not None:
+            extractedData['divisionId'] = sourceItem['divisionId']
+        if sourceItem['programIds'] is not None:
+            extractedData['programIds'] = sourceItem['programIds']
+        if ('regionIds' in sourceItem) and (sourceItem['regionIds'] is not None):
+            extractedData['regionIds'] = sourceItem['regionIds']
+        if ('anchorSprintIds' in sourceItem) and (sourceItem['anchorSprintIds'] is not None):
+            extractedData['anchorSprintIds'] = sourceItem['anchorSprintIds']
+        if sourceItem['lastUpdatedBy'] is not None:
+            extractedData['lastUpdatedBy'] = sourceItem['lastUpdatedBy']
+        if sourceItem['lastUpdatedDate'] is not None:
+            extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
+        if sourceItem['releaseNumber'] is not None:
+            extractedData['releaseNumber'] = sourceItem['releaseNumber']
+        return
     
     if itemType != "themegroups":
         if sourceItem['createDate'] is not None:
@@ -1585,7 +1688,7 @@ def ExtractItemData(itemType, sourceItem, extractedData):
     # Fields that exist for all types other than objectives
     if itemType != "objectives":
         if itemType != "themegroups":
-            if sourceItem['createdBy'] is not None:
+            if ('createdBy' in sourceItem) and (sourceItem['createdBy'] is not None):
                 extractedData['createdBy'] = sourceItem['createdBy']
             extractedData['state'] = sourceItem['state']
             extractedData['title'] = sourceItem['title']
@@ -1753,10 +1856,12 @@ def ExtractItemData(itemType, sourceItem, extractedData):
             extractedData['isCanceled'] = sourceItem['isCanceled']
         if sourceItem['isRecycled'] is not None:
             extractedData['isRecycled'] = sourceItem['isRecycled']
-        if sourceItem['dependencyIds'] is not None:
-            extractedData['dependencyIds'] = sourceItem['dependencyIds']
-        if sourceItem['featureIds'] is not None:
-            extractedData['featureIds'] = sourceItem['featureIds']
+        if 'dependencyIds' in sourceItem:
+            if sourceItem['dependencyIds'] is not None:
+                extractedData['dependencyIds'] = sourceItem['dependencyIds']
+        if 'featureIds' in sourceItem:
+            if sourceItem['featureIds'] is not None:
+                extractedData['featureIds'] = sourceItem['featureIds']
         if sourceItem['health'] is not None:
             extractedData['health'] = sourceItem['health']
         if sourceItem['status'] is not None:
@@ -1937,6 +2042,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
             extractedData['connectorId'] = sourceItem['connectorId']
         if sourceItem['acceptedDate'] is not None:
             extractedData['acceptedDate'] = sourceItem['acceptedDate']
+        if ('externalKey' in sourceItem) and (sourceItem['externalKey'] is not None):
+            extractedData['externalKey'] = sourceItem['externalKey']
 
     elif itemType == "defects":
         extractedData['storyId'] = sourceItem['storyId']
@@ -2040,7 +2147,7 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         if sourceItem['teamIds'] is not None:
             extractedData['teamIds'] = sourceItem['teamIds']
         
-def ReadAllItems(which, maxToRead):
+def ReadAllItems(which, maxToRead, filterOnProgramID=None):
     """ Read in all work items of the given type (Epic, Feature, Story, etc.) and 
         return selected fields of them to the caller.  This is NOT a complete dump of all data.
         Any work items that are deleted/in recycle bin are skipped.
@@ -2048,12 +2155,15 @@ def ReadAllItems(which, maxToRead):
         which: Which type of work items to retrieve.  
                Valid values are: epics, capabilities, features, stories, defects, tasks
         maxToRead: Maximum number of entries to read in.
+        filterOnProgramID: If not None, then check the read in item with the given
+        Program ID, and skip processing it if it does not match.
     """
     print("Collecting up to " + str(maxToRead) + " items of type " + which + "...")
     itemArr = []
 
     # Get the first set of data, which may be everything or may not be
-    items = GetFromJiraAlign(True, cfg.instanceurl + "/" + which)
+    fullUrl = cfg.instanceurl + "/" + which + "?expand=true"
+    items = GetFromJiraAlign(True, fullUrl)
     Data = items.json()
     line_count = 0
     # Starting point for skipping is to go to the next 100..
@@ -2068,6 +2178,13 @@ def ReadAllItems(which, maxToRead):
             # ONLY Take items that are not in the recycle bin/deleted
             if itemIsDel is True:
                 continue;
+            
+            # If we want to filter on Program ID, then make sure it matches
+            # before processing it.  If it's not processed, then it won't be
+            # in the output.
+            if (filterOnProgramID is not None):
+                if (eachWorkItem['programId'] != filterOnProgramID):
+                    continue
             thisItem = {}
             ExtractItemData(which, eachWorkItem, thisItem)
             line_count += 1
