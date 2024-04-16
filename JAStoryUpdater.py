@@ -85,14 +85,14 @@ def main():
 
     # Gather info from the user
     print("")
-    #programId = int(input("Enter the Jira Align Program ID to search in: "))
-    #stateId = int(input("Enter the Jira Align State ID to search for (5 is Accepted): "))
-    #newPIID = int(input("Enter the NEW Jira Align PI ID (JA Release) to use: "))
+    programId = int(input("Enter the Jira Align Program ID to search in: "))
+    stateId = int(input("Enter the Jira Align State ID to search for (5 is Accepted): "))
+    newPIID = int(input("Enter the NEW Jira Align PI ID (JA Release) to use: "))
     
     # Hardcoded data for testing
-    programId = 26
-    stateId = 5 # Accepted
-    newPIID = 41 # 
+    #programId = 0
+    #stateId = 5 # Accepted
+    #newPIID = 0 # 
 
     # Print out the name of the Program so it can be visually verified
     print("")
@@ -114,8 +114,6 @@ def main():
 
     # Collect selected information about all JA Stories information and save it
     storyArray = common.ReadAllItems('stories', MAX, programId)
-
-# https://cprimetempo.atlassian.net/rest/api/2/issue/PROC-114
 
     skippedStoryCount = 0
     successfulChangeCount = 0
