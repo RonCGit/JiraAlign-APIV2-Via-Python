@@ -87,12 +87,12 @@ def main():
     print("A total of " + str(len(programArray)) + " Programs were retrieved from Jira Align")
 
     # Collect all User information and save it
-    userArray = common.GetAllUsers()
+    userArray = common.ReadAllItems('users', MAX)
     allConfigurationData['users'] = userArray
     print("A total of " + str(len(userArray)) + " Users were retrieved from Jira Align")
 
     # Collect all Iteration information and save it
-    iterationArray = common.GetAllIterations()
+    iterationArray = common.ReadAllItems('iterations', MAX)
     allConfigurationData['iterations'] = iterationArray
     print("A total of " + str(len(iterationArray)) + " Iterations were retrieved from Jira Align")
 
@@ -147,7 +147,7 @@ def main():
     print("A total of " + str(len(releaseVehicleArray)) + " Release Vehicles were retrieved from Jira Align")
 
     # Collect all Teams information and save it
-    teamsArray = common.GetAllTeams()
+    teamsArray = common.ReadAllItems('teams', MAX)
     allConfigurationData['teams'] = teamsArray
     print("A total of " + str(len(teamsArray)) + " Teams were retrieved from Jira Align")
 
