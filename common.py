@@ -41,6 +41,8 @@ def PatchToJiraAlign(header, paramData, verify_flag, use_bearer, url = None):
         # Use the given URL
         url_to_use = url
     if DEBUG == True:
+        print("Headers: " + header)
+        print("Data: " + paramData)
         print("URL: " + url_to_use)
     # If we need to use BearerAuth with Token
     if use_bearer:
@@ -127,7 +129,7 @@ def CollectApiInfo():
     else:
         cfg.apiendpoint = input("Enter the api endpoint for your instance in following format EG. ""cities"". It is very important that you spell this endpoint correctly. Please refer to the api documents E.G https://cprime.agilecraft.com/api-docs/public/ for the apiendpoints available : ")
         #print(apiendpoint)
-        cfg.instanceurl = input("Enter the url for your instance in following format EG. ""https://cprime.agilecraft.com"" : ")
+        cfg.instanceurl = input("Enter the url for your instance in following format EG. ""https://foo.agilecraft.com"" : ")
         ChkInput = input("Is this your correct instance and endpoint you want to work with?  " + cfg.instanceurl + " : " + cfg.apiendpoint + "  " + "\n")
         if (ChkInput == "N") or (ChkInput == "n"):
             CollectApiInfo()
@@ -1681,25 +1683,104 @@ def ExtractItemData(itemType, sourceItem, extractedData):
             extractedData['releaseNumber'] = sourceItem['releaseNumber']
         return
     
+    # Fields that exist only for Sprints/Iterations
+    if itemType == 'iterations':
+        extractedData['id'] = sourceItem['id']
+        extractedData['releaseId'] = sourceItem['releaseId']
+        extractedData['title'] = sourceItem['title']
+        extractedData['shortName'] = sourceItem['shortName']
+        extractedData['schedule'] = sourceItem['schedule']
+        extractedData['state'] = sourceItem['state']
+        extractedData['teamId'] = sourceItem['teamId']
+        extractedData['maxAllocation'] = sourceItem['maxAllocation']
+        extractedData['color'] = sourceItem['color']
+        extractedData['isLocked'] = sourceItem['isLocked']
+        extractedData['defectAllocation'] = sourceItem['defectAllocation']
+        extractedData['programId'] = sourceItem['programId']
+        extractedData['regionId'] = sourceItem['regionId']
+        extractedData['type'] = sourceItem['type']
+        if sourceItem['beginDate'] is not None:
+            extractedData['beginDate'] = sourceItem['beginDate']
+        if sourceItem['endDate'] is not None:
+            extractedData['endDate'] = sourceItem['endDate']
+        if sourceItem['actualEndDate'] is not None:
+            extractedData['actualEndDate'] = sourceItem['actualEndDate']
+        if sourceItem['description'] is not None:
+            extractedData['description'] = sourceItem['description']
+        if sourceItem['overrideVelocity'] is not None:
+            extractedData['overrideVelocity'] = sourceItem['overrideVelocity']
+        if sourceItem['createDate'] is not None:
+            extractedData['createDate'] = sourceItem['createDate']
+        if sourceItem['goal'] is not None:
+            extractedData['goal'] = sourceItem['goal']
+        if sourceItem['anchorSprintId'] is not None:
+            extractedData['anchorSprintId'] = sourceItem['anchorSprintId']
+        if sourceItem['regressionHours'] is not None:
+            extractedData['regressionHours'] = sourceItem['regressionHours']
+        if sourceItem['lastUpdatedDate'] is not None:
+            extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
+
+    # Fields that exist only for Teams
+    if itemType == 'teams':
+        extractedData['id'] = sourceItem['id']
+        extractedData['name'] = sourceItem['name']
+        extractedData['ownerId'] = sourceItem['ownerId']
+        extractedData['isActive'] = sourceItem['isActive']
+        if sourceItem['regionId'] is not None:
+            extractedData['regionId'] = sourceItem['regionId']
+        if sourceItem['programId'] is not None:
+            extractedData['programId'] = sourceItem['programId']
+        if sourceItem['programIds'] is not None:
+            extractedData['programIds'] = sourceItem['programIds']
+        if sourceItem['description'] is not None:
+            extractedData['description'] = sourceItem['description']
+        if sourceItem['sprintPrefix'] is not None:
+            extractedData['sprintPrefix'] = sourceItem['sprintPrefix']
+        if sourceItem['shortName'] is not None:
+            extractedData['shortName'] = sourceItem['shortName']
+        if sourceItem['trackBy'] is not None:
+            extractedData['trackBy'] = sourceItem['trackBy']
+        if sourceItem['maxAllocation'] is not None:
+            extractedData['maxAllocation'] = sourceItem['maxAllocation']
+        if sourceItem['allowTaskDeletion'] is not None:
+            extractedData['allowTaskDeletion'] = sourceItem['allowTaskDeletion']
+        if sourceItem['allowTeamToRunStandup'] is not None:
+            extractedData['allowTeamToRunStandup'] = sourceItem['allowTeamToRunStandup']
+        if sourceItem['isKanbanTeam'] is not None:
+            extractedData['isKanbanTeam'] = sourceItem['isKanbanTeam']
+        if sourceItem['createDate'] is not None:
+            extractedData['createDate'] = sourceItem['createDate']
+        if sourceItem['lastUpdatedDate'] is not None:
+            extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
+        if sourceItem['enableAutoEstimate'] is not None:
+            extractedData['enableAutoEstimate'] = sourceItem['enableAutoEstimate']
+        if sourceItem['autoEstimateValue'] is not None:
+            extractedData['autoEstimateValue'] = sourceItem['autoEstimateValue']
+        if sourceItem['throughput'] is not None:
+            extractedData['throughput'] = sourceItem['throughput']
+        if sourceItem['communityIds'] is not None:
+            extractedData['communityIds'] = sourceItem['communityIds']
+        
     if itemType != "themegroups":
         if sourceItem['createDate'] is not None:
             extractedData['createDate'] = sourceItem['createDate']
 
     # Fields that exist for all types other than objectives
     if itemType != "objectives":
-        if itemType != "themegroups":
+        if (itemType != "themegroups") and (itemType != "teams"):
             if ('createdBy' in sourceItem) and (sourceItem['createdBy'] is not None):
                 extractedData['createdBy'] = sourceItem['createdBy']
             extractedData['state'] = sourceItem['state']
             extractedData['title'] = sourceItem['title']
         
     # Fields that exist for all types other than tasks and objectives and themese
-    if (itemType != "tasks") and (itemType != "objectives") and (itemType != "themes") and (itemType != "themegroups"):
+    if (itemType != "tasks") and (itemType != "objectives") and (itemType != "themes") and\
+        (itemType != "themegroups") and (itemType != "iterations") and (itemType != "teams"):
         if sourceItem['tags'] is not None:
             extractedData['tags'] = sourceItem['tags']
 
     # Fields that exist for all types other than defects or themes
-    if (itemType != "defects") and (itemType != "themes"):
+    if (itemType != "defects") and (itemType != "themes") and (itemType != "iterations") and (itemType != "teams"):
         if sourceItem['lastUpdatedBy'] is not None:
             extractedData['lastUpdatedBy'] = sourceItem['lastUpdatedBy']
         if itemType != "themegroups":
@@ -1707,7 +1788,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
                 extractedData['ownerId'] = sourceItem['ownerId']
 
     # Fields that exist for all types other than defects and tasks
-    if (itemType != "defects") and (itemType != "tasks") and (itemType != "objectives"):
+    if (itemType != "defects") and (itemType != "tasks") and (itemType != "objectives") and\
+       (itemType != "iterations") and (itemType != "teams"):
         if itemType != "themegroups":
             if sourceItem['processStepId'] is not None:
                 extractedData['processStepId'] = sourceItem['processStepId']
