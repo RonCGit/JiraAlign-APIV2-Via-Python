@@ -1603,6 +1603,435 @@ def GetAllValueStreams():
 def ExtractItemData(itemType, sourceItem, extractedData):
     """ Extract all applicable fields from the source item and add them to the extracted
         data, based on item type.
+        Generic version, checks for a key's existance in the source before attempting to copy
+        it over -- easier to maintain.
+
+    Args:
+        itemType: Which type of work the sourceItem is: epics, features, stories, defects, tasks, programs
+        sourceItem: Full set of data for this item from Jira Align
+        extractedData: All the data that needs to be saved from this sourceItem
+    """
+    # These will always exist
+    extractedData['id'] = sourceItem['id']
+    extractedData['itemtype'] = itemType
+    
+    # Check to see if each key exists in sourceItem, and if it does, then check to
+    # see if the value is NOT None.  If it's not None, then copy the data over.
+    if ('abilityToExec' in sourceItem) and (sourceItem['abilityToExec'] is not None):
+        extractedData['abilityToExec'] = sourceItem['abilityToExec']
+    if ('acceptedDate' in sourceItem) and (sourceItem['acceptedDate'] is not None):
+        extractedData['acceptedDate'] = sourceItem['acceptedDate']
+    if ('acceptedUserId' in sourceItem) and (sourceItem['acceptedUserId'] is not None):
+        extractedData['acceptedUserId'] = sourceItem['acceptedUserId']
+    if ('actualEndDate' in sourceItem) and (sourceItem['actualEndDate'] is not None):
+        extractedData['actualEndDate'] = sourceItem['actualEndDate']
+    if ('additionalProgramIds' in sourceItem) and (sourceItem['additionalProgramIds'] is not None):
+        extractedData['additionalProgramIds'] = sourceItem['additionalProgramIds']
+    if ('additionalProcessStepIds' in sourceItem) and (sourceItem['additionalProcessStepIds'] is not None):
+        extractedData['additionalProcessStepIds'] = sourceItem['additionalProcessStepIds']
+    if ('affectedCountryIds' in sourceItem) and (sourceItem['affectedCountryIds'] is not None):
+        extractedData['affectedCountryIds'] = sourceItem['affectedCountryIds']
+    if ('allowTaskDeletion' in sourceItem) and (sourceItem['allowTaskDeletion'] is not None):
+        extractedData['allowTaskDeletion'] = sourceItem['allowTaskDeletion']
+    if ('allowTeamToRunStandup' in sourceItem) and (sourceItem['allowTeamToRunStandup'] is not None):
+        extractedData['allowTeamToRunStandup'] = sourceItem['allowTeamToRunStandup']
+    if ('anchorSprintId' in sourceItem) and (sourceItem['anchorSprintId'] is not None):
+        extractedData['anchorSprintId'] = sourceItem['anchorSprintId']
+    if ('anchorSprintIds' in sourceItem) and (sourceItem['anchorSprintIds'] is not None):
+        extractedData['anchorSprintIds'] = sourceItem['anchorSprintIds']
+    if ('associatedTicket' in sourceItem) and (sourceItem['associatedTicket'] is not None):
+        extractedData['associatedTicket'] = sourceItem['associatedTicket']
+    if ('autoEstimateValue' in sourceItem) and (sourceItem['autoEstimateValue'] is not None):
+        extractedData['autoEstimateValue'] = sourceItem['autoEstimateValue']
+    if ('beginDate' in sourceItem) and (sourceItem['beginDate'] is not None):
+        extractedData['beginDate'] = sourceItem['beginDate']
+    if ('benefits' in sourceItem) and (sourceItem['benefits'] is not None):
+        extractedData['benefits'] = sourceItem['benefits']
+    if ('blendedHourlyRate' in sourceItem) and (sourceItem['blendedHourlyRate'] is not None):
+        extractedData['blendedHourlyRate'] = sourceItem['blendedHourlyRate']
+    if ('blockedReason' in sourceItem) and (sourceItem['blockedReason'] is not None):
+        extractedData['blockedReason'] = sourceItem['blockedReason']
+    if ('budget' in sourceItem) and (sourceItem['budget'] is not None):
+        extractedData['budget'] = sourceItem['budget']
+    if ('businessDriver' in sourceItem) and (sourceItem['businessDriver'] is not None):
+        extractedData['businessDriver'] = sourceItem['businessDriver']
+    if ('businessImpact' in sourceItem) and (sourceItem['businessImpact'] is not None):
+        extractedData['businessImpact'] = sourceItem['businessImpact']
+    if ('businessValue' in sourceItem) and (sourceItem['businessValue'] is not None):
+        extractedData['businessValue'] = sourceItem['businessValue']
+    if ('capitalized' in sourceItem) and (sourceItem['capitalized'] is not None):
+        extractedData['capitalized'] = sourceItem['capitalized']
+    if ('caseDevelopmentId' in sourceItem) and (sourceItem['caseDevelopmentId'] is not None):
+        extractedData['caseDevelopmentId'] = sourceItem['caseDevelopmentId']
+    if ('category' in sourceItem) and (sourceItem['category'] is not None):
+        extractedData['category'] = sourceItem['category']
+    if ('closeDate' in sourceItem) and (sourceItem['closeDate'] is not None):
+        extractedData['closeDate'] = sourceItem['closeDate']
+    if ('color' in sourceItem) and (sourceItem['color'] is not None):
+        extractedData['color'] = sourceItem['color']
+    if ('communityIds' in sourceItem) and (sourceItem['communityIds'] is not None):
+        extractedData['communityIds'] = sourceItem['communityIds']
+    if ('completedDate' in sourceItem) and (sourceItem['completedDate'] is not None):
+        extractedData['completedDate'] = sourceItem['completedDate']
+    if ('complexity' in sourceItem) and (sourceItem['complexity'] is not None):
+        extractedData['complexity'] = sourceItem['complexity']
+    if ('connectorId' in sourceItem) and (sourceItem['connectorId'] is not None):
+        extractedData['connectorId'] = sourceItem['connectorId']
+    if ('createDate' in sourceItem) and (sourceItem['createDate'] is not None):
+        extractedData['createDate'] = sourceItem['createDate']
+    if ('createdBy' in sourceItem) and (sourceItem['createdBy'] is not None):
+        extractedData['createdBy'] = sourceItem['createdBy']
+    if ('customerIds' in sourceItem) and (sourceItem['customerIds'] is not None):
+        extractedData['customerIds'] = sourceItem['customerIds']
+    if ('customFields' in sourceItem) and (sourceItem['customFields'] is not None):
+        extractedData['customFields'] = sourceItem['customFields']
+    if ('defectAllocation' in sourceItem) and (sourceItem['defectAllocation'] is not None):
+        extractedData['defectAllocation'] = sourceItem['defectAllocation']
+    if ('deliveredValue' in sourceItem) and (sourceItem['deliveredValue'] is not None):
+        extractedData['deliveredValue'] = sourceItem['deliveredValue']
+    if ('dependencyIds' in sourceItem) and (sourceItem['dependencyIds'] is not None):
+        extractedData['dependencyIds'] = sourceItem['dependencyIds']
+    if ('description' in sourceItem) and (sourceItem['description'] is not None):
+        extractedData['description'] = sourceItem['description']
+    if ('descriptionRich' in sourceItem) and (sourceItem['descriptionRich'] is not None):
+        extractedData['descriptionRich'] = sourceItem['descriptionRich']
+    if ('dependencyIds' in sourceItem) and (sourceItem['dependencyIds'] is not None):
+        extractedData['dependencyIds'] = sourceItem['dependencyIds']
+    if ('designStage' in sourceItem) and (sourceItem['designStage'] is not None):
+        extractedData['designStage'] = sourceItem['designStage']
+    if ('devCompleteBy' in sourceItem) and (sourceItem['devCompleteBy'] is not None):
+        extractedData['devCompleteBy'] = sourceItem['devCompleteBy']
+    if ('devCompleteDate' in sourceItem) and (sourceItem['devCompleteDate'] is not None):
+        extractedData['devCompleteDate'] = sourceItem['devCompleteDate']
+    if ('discountRate' in sourceItem) and (sourceItem['discountRate'] is not None):
+        extractedData['discountRate'] = sourceItem['discountRate']
+    if ('divisionId' in sourceItem) and (sourceItem['divisionId'] is not None):
+        extractedData['divisionId'] = sourceItem['divisionId']
+    if ('efficiencyDividend' in sourceItem) and (sourceItem['efficiencyDividend'] is not None):
+        extractedData['efficiencyDividend'] = sourceItem['efficiencyDividend']
+    if ('effortHours' in sourceItem) and (sourceItem['effortHours'] is not None):
+        extractedData['effortHours'] = sourceItem['effortHours']
+    if ('effortPoints' in sourceItem) and (sourceItem['effortPoints'] is not None):
+        extractedData['effortPoints'] = sourceItem['effortPoints']
+    if ('effortSwag' in sourceItem) and (sourceItem['effortSwag'] is not None):
+        extractedData['effortSwag'] = sourceItem['effortSwag']
+    if ('enableAutoEstimate' in sourceItem) and (sourceItem['enableAutoEstimate'] is not None):
+        extractedData['enableAutoEstimate'] = sourceItem['enableAutoEstimate']
+    if ('endDate' in sourceItem) and (sourceItem['endDate'] is not None):
+        extractedData['endDate'] = sourceItem['endDate']
+    if ('endSprintId' in sourceItem) and (sourceItem['endSprintId'] is not None):
+        extractedData['endSprintId'] = sourceItem['endSprintId']
+    if ('epicObjectId' in sourceItem) and (sourceItem['epicObjectId'] is not None):
+        extractedData['epicObjectId'] = sourceItem['epicObjectId']
+    if ('estimateAtCompletion' in sourceItem) and (sourceItem['estimateAtCompletion'] is not None):
+        extractedData['estimateAtCompletion'] = sourceItem['estimateAtCompletion']
+    if ('estimateTshirt' in sourceItem) and (sourceItem['estimateTshirt'] is not None):
+        extractedData['estimateTshirt'] = sourceItem['estimateTshirt']
+    if ('estimationEffortPercent' in sourceItem) and (sourceItem['estimationEffortPercent'] is not None):
+        extractedData['estimationEffortPercent'] = sourceItem['estimationEffortPercent']
+    if ('expenseSavings' in sourceItem) and (sourceItem['expenseSavings'] is not None):
+        extractedData['expenseSavings'] = sourceItem['expenseSavings']
+    if ('externalCapEx' in sourceItem) and (sourceItem['externalCapEx'] is not None):
+        extractedData['externalCapEx'] = sourceItem['externalCapEx']
+    if ('externalId' in sourceItem) and (sourceItem['externalId'] is not None):
+        extractedData['externalId'] = sourceItem['externalId']
+    if ('externalKey' in sourceItem) and (sourceItem['externalKey'] is not None):
+        extractedData['externalKey'] = sourceItem['externalKey']
+    if ('externalOpEx' in sourceItem) and (sourceItem['externalOpEx'] is not None):
+        extractedData['externalOpEx'] = sourceItem['externalOpEx']
+    if ('externalProject' in sourceItem) and (sourceItem['externalProject'] is not None):
+        extractedData['externalProject'] = sourceItem['externalProject']
+    if ('externalUser' in sourceItem) and (sourceItem['externalUser'] is not None):
+        extractedData['externalUser'] = sourceItem['externalUser']
+    if ('failureImpact' in sourceItem) and (sourceItem['failureImpact'] is not None):
+        extractedData['failureImpact'] = sourceItem['failureImpact']
+    if ('failureProbability' in sourceItem) and (sourceItem['failureProbability'] is not None):
+        extractedData['failureProbability'] = sourceItem['failureProbability']
+    if ('featureId' in sourceItem) and (sourceItem['featureId'] is not None):
+        extractedData['featureId'] = sourceItem['featureId']
+    if ('featureIds' in sourceItem) and (sourceItem['featureIds'] is not None):
+        extractedData['featureIds'] = sourceItem['featureIds']
+    if ('featureRank' in sourceItem) and (sourceItem['featureRank'] is not None):
+        extractedData['featureRank'] = sourceItem['featureRank']
+    if ('featureSummary' in sourceItem) and (sourceItem['featureSummary'] is not None):
+        extractedData['featureSummary'] = sourceItem['featureSummary']
+    if ('fcastShare' in sourceItem) and (sourceItem['fcastShare'] is not None):
+        extractedData['fcastShare'] = sourceItem['fcastShare']
+    if ('forecastYears' in sourceItem) and (sourceItem['forecastYears'] is not None):
+        extractedData['forecastYears'] = sourceItem['forecastYears']
+    if ('functionalArea' in sourceItem) and (sourceItem['functionalArea'] is not None):
+        extractedData['functionalArea'] = sourceItem['functionalArea']
+    if ('fundingStage' in sourceItem) and (sourceItem['fundingStage'] is not None):
+        extractedData['fundingStage'] = sourceItem['fundingStage']
+    if ('goal' in sourceItem) and (sourceItem['goal'] is not None):
+        extractedData['goal'] = sourceItem['goal']
+    if ('goalId' in sourceItem) and (sourceItem['goalId'] is not None):
+        extractedData['goalId'] = sourceItem['goalId']
+    if ('health' in sourceItem) and (sourceItem['health'] is not None):
+        extractedData['health'] = sourceItem['health']
+    if ('hoursEstimate' in sourceItem) and (sourceItem['hoursEstimate'] is not None):
+        extractedData['hoursEstimate'] = sourceItem['hoursEstimate']
+    if ('hypothesis' in sourceItem) and (sourceItem['hypothesis'] is not None):
+        extractedData['hypothesis'] = sourceItem['hypothesis']
+    if ('impedimentIds' in sourceItem) and (sourceItem['impedimentIds'] is not None):
+        extractedData['impedimentIds'] = sourceItem['impedimentIds']
+    if ('initialInvestment' in sourceItem) and (sourceItem['initialInvestment'] is not None):
+        extractedData['initialInvestment'] = sourceItem['initialInvestment']
+    if ('investmentType' in sourceItem) and (sourceItem['investmentType'] is not None):
+        extractedData['investmentType'] = sourceItem['investmentType']
+    if ('inProgressBy' in sourceItem) and (sourceItem['inProgressBy'] is not None):
+        extractedData['inProgressBy'] = sourceItem['inProgressBy']
+    if ('inProgressDate' in sourceItem) and (sourceItem['inProgressDate'] is not None):
+        extractedData['inProgressDate'] = sourceItem['inProgressDate']
+    if ('inProgressDateEnd' in sourceItem) and (sourceItem['inProgressDateEnd'] is not None):
+        extractedData['inProgressDateEnd'] = sourceItem['inProgressDateEnd']
+    if ('inScope' in sourceItem) and (sourceItem['inScope'] is not None):
+        extractedData['inScope'] = sourceItem['inScope']
+    if ('intakeFormId' in sourceItem) and (sourceItem['intakeFormId'] is not None):
+        extractedData['intakeFormId'] = sourceItem['intakeFormId']
+    if ('isActive' in sourceItem) and (sourceItem['isActive'] is not None):
+        extractedData['isActive'] = sourceItem['isActive']
+    if ('isBlocked' in sourceItem) and (sourceItem['isBlocked'] is not None):
+        extractedData['isBlocked'] = sourceItem['isBlocked']
+    if ('isCanceled' in sourceItem) and (sourceItem['isCanceled'] is not None):
+        extractedData['isCanceled'] = sourceItem['isCanceled']
+    if ('isImport' in sourceItem) and (sourceItem['isImport'] is not None):
+        extractedData['isImport'] = sourceItem['isImport']
+    if ('isKanbanTeam' in sourceItem) and (sourceItem['isKanbanTeam'] is not None):
+        extractedData['isKanbanTeam'] = sourceItem['isKanbanTeam']
+    if ('isLocked' in sourceItem) and (sourceItem['isLocked'] is not None):
+        extractedData['isLocked'] = sourceItem['isLocked']
+    if ('isMultiProgram' in sourceItem) and (sourceItem['isMultiProgram'] is not None):
+        extractedData['isMultiProgram'] = sourceItem['isMultiProgram']
+    if ('isRecycled' in sourceItem) and (sourceItem['isRecycled'] is not None):
+        extractedData['isRecycled'] = sourceItem['isRecycled']
+    if ('isSolution' in sourceItem) and (sourceItem['isSolution'] is not None):
+        extractedData['isSolution'] = sourceItem['isSolution']
+    if ('isSplit' in sourceItem) and (sourceItem['isSplit'] is not None):
+        extractedData['isSplit'] = sourceItem['isSplit']
+    if ('itemToSyncDate' in sourceItem) and (sourceItem['itemToSyncDate'] is not None):
+        extractedData['itemToSyncDate'] = sourceItem['itemToSyncDate']
+    if ('iterationId' in sourceItem) and (sourceItem['iterationId'] is not None):
+        extractedData['iterationId'] = sourceItem['iterationId']
+    if ('iterationSort' in sourceItem) and (sourceItem['iterationSort'] is not None):
+        extractedData['iterationSort'] = sourceItem['iterationSort']
+    if ('itemtype' in sourceItem) and (sourceItem['itemtype'] is not None):
+        extractedData['itemtype'] = sourceItem['itemtype']
+    if ('itrisk' in sourceItem) and (sourceItem['itrisk'] is not None):
+        extractedData['itrisk'] = sourceItem['itrisk']
+    if ('itRisk' in sourceItem) and (sourceItem['itRisk'] is not None):
+        extractedData['itRisk'] = sourceItem['itRisk']
+    if ('jiraProjectKey' in sourceItem) and (sourceItem['jiraProjectKey'] is not None):
+        extractedData['jiraProjectKey'] = sourceItem['jiraProjectKey']
+    if ('lastUpdatedBy' in sourceItem) and (sourceItem['lastUpdatedBy'] is not None):
+        extractedData['lastUpdatedBy'] = sourceItem['lastUpdatedBy']
+    if ('lastUpdatedDate' in sourceItem) and (sourceItem['lastUpdatedDate'] is not None):
+        extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
+    if ('leanUxCanvas' in sourceItem) and (sourceItem['leanUxCanvas'] is not None):
+        extractedData['leanUxCanvas'] = sourceItem['leanUxCanvas']
+    if ('links' in sourceItem) and (sourceItem['links'] is not None):
+        extractedData['links'] = sourceItem['links']
+    if ('manWeeks' in sourceItem) and (sourceItem['manWeeks'] is not None):
+        extractedData['manWeeks'] = sourceItem['manWeeks']
+    if ('maxAllocation' in sourceItem) and (sourceItem['maxAllocation'] is not None):
+        extractedData['maxAllocation'] = sourceItem['maxAllocation']
+    if ('mmf' in sourceItem) and (sourceItem['mmf'] is not None):
+        extractedData['mmf'] = sourceItem['mmf']
+    if ('mvp' in sourceItem) and (sourceItem['mvp'] is not None):
+        extractedData['mvp'] = sourceItem['mvp']
+    if ('name' in sourceItem) and (sourceItem['name'] is not None):
+        extractedData['name'] = sourceItem['name']
+    if ('notes' in sourceItem) and (sourceItem['notes'] is not None):
+        extractedData['notes'] = sourceItem['notes']
+    if ('notificationStartDate' in sourceItem) and (sourceItem['notificationStartDate'] is not None):
+        extractedData['notificationStartDate'] = sourceItem['notificationStartDate']
+    if ('notificationFrequency' in sourceItem) and (sourceItem['notificationFrequency'] is not None):
+        extractedData['notificationFrequency'] = sourceItem['notificationFrequency']
+    if ('notStartedBy' in sourceItem) and (sourceItem['notStartedBy'] is not None):
+        extractedData['notStartedBy'] = sourceItem['notStartedBy']
+    if ('notStartedDate' in sourceItem) and (sourceItem['notStartedDate'] is not None):
+        extractedData['notStartedDate'] = sourceItem['notStartedDate']
+    if ('notStartedDateEnd' in sourceItem) and (sourceItem['notStartedDateEnd'] is not None):
+        extractedData['notStartedDateEnd'] = sourceItem['notStartedDateEnd']
+    if ('overrideVelocity' in sourceItem) and (sourceItem['overrideVelocity'] is not None):
+        extractedData['overrideVelocity'] = sourceItem['overrideVelocity']
+    if ('ownerId' in sourceItem) and (sourceItem['ownerId'] is not None):
+        extractedData['ownerId'] = sourceItem['ownerId']
+    if ('parentId' in sourceItem) and (sourceItem['parentId'] is not None):
+        extractedData['parentId'] = sourceItem['parentId']
+    if ('parentSplitId' in sourceItem) and (sourceItem['parentSplitId'] is not None):
+        extractedData['parentSplitId'] = sourceItem['parentSplitId']
+    if ('pendingApprovalBy' in sourceItem) and (sourceItem['pendingApprovalBy'] is not None):
+        extractedData['pendingApprovalBy'] = sourceItem['pendingApprovalBy']
+    if ('pendingApprovalDate' in sourceItem) and (sourceItem['pendingApprovalDate'] is not None):
+        extractedData['pendingApprovalDate'] = sourceItem['pendingApprovalDate']
+    if ('planningMode' in sourceItem) and (sourceItem['planningMode'] is not None):
+        extractedData['planningMode'] = sourceItem['planningMode']
+    if ('plannedValue' in sourceItem) and (sourceItem['plannedValue'] is not None):
+        extractedData['plannedValue'] = sourceItem['plannedValue']
+    if ('points' in sourceItem) and (sourceItem['points'] is not None):
+        extractedData['points'] = sourceItem['points']
+    if ('pointsEstimate' in sourceItem) and (sourceItem['pointsEstimate'] is not None):
+        extractedData['pointsEstimate'] = sourceItem['pointsEstimate']
+    if ('portfolioAskDate' in sourceItem) and (sourceItem['portfolioAskDate'] is not None):
+        extractedData['portfolioAskDate'] = sourceItem['portfolioAskDate']
+    if ('portfolioId' in sourceItem) and (sourceItem['portfolioId'] is not None):
+        extractedData['portfolioId'] = sourceItem['portfolioId']
+    if ('predecessorId' in sourceItem) and (sourceItem['predecessorId'] is not None):
+        extractedData['predecessorId'] = sourceItem['predecessorId']
+    if ('primaryProgramId' in sourceItem) and (sourceItem['primaryProgramId'] is not None):
+        extractedData['primaryProgramId'] = sourceItem['primaryProgramId']
+    if ('priority' in sourceItem) and (sourceItem['priority'] is not None):
+        extractedData['priority'] = sourceItem['priority']
+    if ('processStepId' in sourceItem) and (sourceItem['processStepId'] is not None):
+        extractedData['processStepId'] = sourceItem['processStepId']
+    if ('processStepName' in sourceItem) and (sourceItem['processStepName'] is not None):
+        extractedData['processStepName'] = sourceItem['processStepName']
+    if ('productId' in sourceItem) and (sourceItem['productId'] is not None):
+        extractedData['productId'] = sourceItem['productId']
+    if ('productObjectiveIds' in sourceItem) and (sourceItem['productObjectiveIds'] is not None):
+        extractedData['productObjectiveIds'] = sourceItem['productObjectiveIds']
+    if ('programId' in sourceItem) and (sourceItem['programId'] is not None):
+        extractedData['programId'] = sourceItem['programId']
+    if ('programIds' in sourceItem) and (sourceItem['programIds'] is not None):
+        extractedData['programIds'] = sourceItem['programIds']
+    if ('prototype' in sourceItem) and (sourceItem['prototype'] is not None):
+        extractedData['prototype'] = sourceItem['prototype']
+    if ('quadrant' in sourceItem) and (sourceItem['quadrant'] is not None):
+        extractedData['quadrant'] = sourceItem['quadrant']
+    if ('readyToStartBy' in sourceItem) and (sourceItem['readyToStartBy'] is not None):
+        extractedData['readyToStartBy'] = sourceItem['readyToStartBy']
+    if ('readyToStartDate' in sourceItem) and (sourceItem['readyToStartDate'] is not None):
+        extractedData['readyToStartDate'] = sourceItem['readyToStartDate']
+    if ('reference' in sourceItem) and (sourceItem['reference'] is not None):
+        extractedData['reference'] = sourceItem['reference']
+    if ('regionId' in sourceItem) and (sourceItem['regionId'] is not None):
+        extractedData['regionId'] = sourceItem['regionId']
+    if ('regionIds' in sourceItem) and (sourceItem['regionIds'] is not None):
+        extractedData['regionIds'] = sourceItem['regionIds']
+    if ('regressionHours' in sourceItem) and (sourceItem['regressionHours'] is not None):
+        extractedData['regressionHours'] = sourceItem['regressionHours']
+    if ('releaseId' in sourceItem) and (sourceItem['releaseId'] is not None):
+        extractedData['releaseId'] = sourceItem['releaseId']
+    if ('releaseIds' in sourceItem) and (sourceItem['releaseIds'] is not None):
+        extractedData['releaseIds'] = sourceItem['releaseIds']
+    if ('releaseNumber' in sourceItem) and (sourceItem['releaseNumber'] is not None):
+        extractedData['releaseNumber'] = sourceItem['releaseNumber']
+    if ('releaseVehicleIds' in sourceItem) and (sourceItem['releaseVehicleIds'] is not None):
+        extractedData['releaseVehicleIds'] = sourceItem['releaseVehicleIds']
+    if ('reportColor' in sourceItem) and (sourceItem['reportColor'] is not None):
+        extractedData['reportColor'] = sourceItem['reportColor']
+    if ('requesterId' in sourceItem) and (sourceItem['requesterId'] is not None):
+        extractedData['requesterId'] = sourceItem['requesterId']
+    if ('revenueAssurance' in sourceItem) and (sourceItem['revenueAssurance'] is not None):
+        extractedData['revenueAssurance'] = sourceItem['revenueAssurance']
+    if ('revenueGrowth' in sourceItem) and (sourceItem['revenueGrowth'] is not None):
+        extractedData['revenueGrowth'] = sourceItem['revenueGrowth']
+    if ('riskAppetite' in sourceItem) and (sourceItem['riskAppetite'] is not None):
+        extractedData['riskAppetite'] = sourceItem['riskAppetite']
+    if ('riskIds' in sourceItem) and (sourceItem['riskIds'] is not None):
+        extractedData['riskIds'] = sourceItem['riskIds']
+    if ('roadmap' in sourceItem) and (sourceItem['roadmap'] is not None):
+        extractedData['roadmap'] = sourceItem['roadmap']
+    if ('roi' in sourceItem) and (sourceItem['roi'] is not None):
+        extractedData['roi'] = sourceItem['roi']
+    if ('scoreCardId' in sourceItem) and (sourceItem['scoreCardId'] is not None):
+        extractedData['scoreCardId'] = sourceItem['scoreCardId']
+    if ('shortName' in sourceItem) and (sourceItem['shortName'] is not None):
+        extractedData['shortName'] = sourceItem['shortName']
+    if ('schedule' in sourceItem) and (sourceItem['schedule'] is not None):
+        extractedData['schedule'] = sourceItem['schedule']
+    if ('scheduleType' in sourceItem) and (sourceItem['scheduleType'] is not None):
+        extractedData['scheduleType'] = sourceItem['scheduleType']
+    if ('score' in sourceItem) and (sourceItem['score'] is not None):
+        extractedData['score'] = sourceItem['score']
+    if ('score1' in sourceItem) and (sourceItem['score1'] is not None):
+        extractedData['score1'] = sourceItem['score1']
+    if ('score2' in sourceItem) and (sourceItem['score2'] is not None):
+        extractedData['score2'] = sourceItem['score2']
+    if ('score3' in sourceItem) and (sourceItem['score3'] is not None):
+        extractedData['score3'] = sourceItem['score3']
+    if ('score4' in sourceItem) and (sourceItem['score4'] is not None):
+        extractedData['score4'] = sourceItem['score4']
+    if ('shortName' in sourceItem) and (sourceItem['shortName'] is not None):
+        extractedData['shortName'] = sourceItem['shortName']
+    if ('solutionId' in sourceItem) and (sourceItem['solutionId'] is not None):
+        extractedData['solutionId'] = sourceItem['solutionId']
+    if ('source' in sourceItem) and (sourceItem['source'] is not None):
+        extractedData['source'] = sourceItem['source']
+    if ('spendToDate' in sourceItem) and (sourceItem['spendToDate'] is not None):
+        extractedData['spendToDate'] = sourceItem['spendToDate']
+    if ('sprintPrefix' in sourceItem) and (sourceItem['sprintPrefix'] is not None):
+        extractedData['sprintPrefix'] = sourceItem['sprintPrefix']
+    if ('startDate' in sourceItem) and (sourceItem['startDate'] is not None):
+        extractedData['startDate'] = sourceItem['startDate']
+    if ('startInitiationDate' in sourceItem) and (sourceItem['startInitiationDate'] is not None):
+        extractedData['startInitiationDate'] = sourceItem['startInitiationDate']
+    if ('startSprintId' in sourceItem) and (sourceItem['startSprintId'] is not None):
+        extractedData['startSprintId'] = sourceItem['startSprintId']
+    if ('state' in sourceItem) and (sourceItem['state'] is not None):
+        extractedData['state'] = sourceItem['state']
+    if ('status' in sourceItem) and (sourceItem['status'] is not None):
+        extractedData['status'] = sourceItem['status']
+    if ('storyId' in sourceItem) and (sourceItem['storyId'] is not None):
+        extractedData['storyId'] = sourceItem['storyId']
+    if ('strategicDriver' in sourceItem) and (sourceItem['strategicDriver'] is not None):
+        extractedData['strategicDriver'] = sourceItem['strategicDriver']
+    if ('strategicHorizon' in sourceItem) and (sourceItem['strategicHorizon'] is not None):
+        extractedData['strategicHorizon'] = sourceItem['strategicHorizon']
+    if ('strategicValueScore' in sourceItem) and (sourceItem['strategicValueScore'] is not None):
+        extractedData['strategicValueScore'] = sourceItem['strategicValueScore']
+    if ('tags' in sourceItem) and (sourceItem['tags'] is not None):
+        extractedData['tags'] = sourceItem['tags']
+    if ('targetCompletionDate' in sourceItem) and (sourceItem['targetCompletionDate'] is not None):
+        extractedData['targetCompletionDate'] = sourceItem['targetCompletionDate']
+    if ('targetSyncSprintId' in sourceItem) and (sourceItem['targetSyncSprintId'] is not None):
+        extractedData['targetSyncSprintId'] = sourceItem['targetSyncSprintId']
+    if ('teamId' in sourceItem) and (sourceItem['teamId'] is not None):
+        extractedData['teamId'] = sourceItem['teamId']
+    if ('teamIds' in sourceItem) and (sourceItem['teamIds'] is not None):
+        extractedData['teamIds'] = sourceItem['teamIds']
+    if ('teamDescription' in sourceItem) and (sourceItem['teamDescription'] is not None):
+        extractedData['teamDescription'] = sourceItem['teamDescription']
+    if ('testCategoryIds' in sourceItem) and (sourceItem['testCategoryIds'] is not None):
+        extractedData['testCategoryIds'] = sourceItem['testCategoryIds']
+    if ('testCompleteBy' in sourceItem) and (sourceItem['testCompleteBy'] is not None):
+        extractedData['testCompleteBy'] = sourceItem['testCompleteBy']
+    if ('testCompleteDate' in sourceItem) and (sourceItem['testCompleteDate'] is not None):
+        extractedData['testCompleteDate'] = sourceItem['testCompleteDate']
+    if ('testSuite' in sourceItem) and (sourceItem['testSuite'] is not None):
+        extractedData['testSuite'] = sourceItem['testSuite']
+    if ('themeId' in sourceItem) and (sourceItem['themeId'] is not None):
+        extractedData['themeId'] = sourceItem['themeId']
+    if ('throughput' in sourceItem) and (sourceItem['throughput'] is not None):
+        extractedData['throughput'] = sourceItem['throughput']
+    if ('tier' in sourceItem) and (sourceItem['tier'] is not None):
+        extractedData['tier'] = sourceItem['tier']
+    if ('title' in sourceItem) and (sourceItem['title'] is not None):
+        extractedData['title'] = sourceItem['title']
+    if ('trackBy' in sourceItem) and (sourceItem['trackBy'] is not None):
+        extractedData['trackBy'] = sourceItem['trackBy']      
+    if ('totalCapEx' in sourceItem) and (sourceItem['totalCapEx'] is not None):
+        extractedData['totalCapEx'] = sourceItem['totalCapEx']
+    if ('totalHours' in sourceItem) and (sourceItem['totalHours'] is not None):
+        extractedData['totalHours'] = sourceItem['totalHours']
+    if ('totalOpEx' in sourceItem) and (sourceItem['totalOpEx'] is not None):
+        extractedData['totalOpEx'] = sourceItem['totalOpEx']
+    if ('type' in sourceItem) and (sourceItem['type'] is not None):
+        extractedData['type'] = sourceItem['type']
+    if ('valuePoints' in sourceItem) and (sourceItem['valuePoints'] is not None):
+        extractedData['valuePoints'] = sourceItem['valuePoints']
+    if ('vehicleId' in sourceItem) and (sourceItem['vehicleId'] is not None):
+        extractedData['vehicleId'] = sourceItem['vehicleId']
+    if ('workCodeId' in sourceItem) and (sourceItem['workCodeId'] is not None):
+        extractedData['workCodeId'] = sourceItem['workCodeId']
+    if ('yearlyCashFlow1' in sourceItem) and (sourceItem['yearlyCashFlow1'] is not None):
+        extractedData['yearlyCashFlow1'] = sourceItem['yearlyCashFlow1']
+        
+def ExtractItemDataOLD(itemType, sourceItem, extractedData):
+    """ PREVIOUS VERSION
+        Extract all applicable fields from the source item and add them to the extracted
+        data, based on item type.
 
     Args:
         itemType: Which type of work the sourceItem is: epics, features, stories, defects, tasks, programs
