@@ -18,7 +18,7 @@ import requests
 DEBUG = False
 # Set to True to use hardcoded values for API Endpoint and Instance URL
 # Set to False to prompt each time
-USE_DEFAULTS = True
+USE_DEFAULTS = False
 
 def PatchToJiraAlign(header, paramData, verify_flag, use_bearer, url = None):
     """Generic method to do a PATCH to the Jira Align instance, with the specified parameters, and return
@@ -125,7 +125,7 @@ def CollectApiInfo():
     print("API Endpoint is normally: /")
     if USE_DEFAULTS == True:
         cfg.apiendpoint = "/"
-        cfg.instanceurl = "https://amgen.jiraalign.com"
+        cfg.instanceurl = "https://foo.jiraalign.com"
     else:
         cfg.apiendpoint = input("Enter the api endpoint for your instance in following format EG. ""cities"". It is very important that you spell this endpoint correctly. Please refer to the api documents E.G https://cprime.agilecraft.com/api-docs/public/ for the apiendpoints available : ")
         #print(apiendpoint)
