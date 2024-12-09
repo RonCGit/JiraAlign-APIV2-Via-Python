@@ -10,7 +10,7 @@ import cfg
 import json
 
 # Maximum number of records to return for main data items
-MAX = 1000
+MAX = 100
 
 ####################################################################################################################################################################################
 def main():
@@ -31,7 +31,7 @@ def main():
     print("Jira Align Version Number: " + cfg.jaVersion)
     
     # Collect all Region information and save it
-    regionArray = common.GetAllRegions()
+    regionArray = common.ReadAllItems('regions', MAX)
     allConfigurationData['regions'] = regionArray
     print("A total of " + str(len(regionArray)) + " regions were retrieved from Jira Align")
 
@@ -56,8 +56,8 @@ def main():
     #allConfigurationData['connectorCustomFields'] = connectorCustomFieldsArray
     #print("A total of " + str(len(connectorCustomFieldsArray)) + " Custom Fields were retrieved from Jira Align")
 
-    # Collect all Country information and save it - not supported via API V2
-    #countryArray = common.GetAllCountries()
+    # Collect all Country information and save it - not supported by V2 API
+    #countryArray = common.ReadAllItems('countries', MAX)
     #allConfigurationData['countries'] = countryArray
     #print("A total of " + str(len(countryArray)) + " Countries were retrieved from Jira Align")
 
@@ -169,7 +169,7 @@ def main():
     allItemData['_version'] = cfg.jaVersion
 
     # Collect all Value Stream information and save it
-    valueStreamArray = common.GetAllValueStreams()
+    valueStreamArray = common.ReadAllItems('ValueStreams', MAX)
     allItemData['valuestreams'] = valueStreamArray
     print("A total of " + str(len(valueStreamArray)) + " Value Streams were retrieved from Jira Align")
 

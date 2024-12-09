@@ -18,7 +18,7 @@ import requests
 DEBUG = False
 # Set to True to use hardcoded values for API Endpoint and Instance URL
 # Set to False to prompt each time
-USE_DEFAULTS = False
+USE_DEFAULTS = True
 
 def PatchToJiraAlign(header, paramData, verify_flag, use_bearer, url = None):
     """Generic method to do a PATCH to the Jira Align instance, with the specified parameters, and return
@@ -125,7 +125,7 @@ def CollectApiInfo():
     print("API Endpoint is normally: /")
     if USE_DEFAULTS == True:
         cfg.apiendpoint = "/"
-        cfg.instanceurl = "https://foo.jiraalign.com"
+        cfg.instanceurl = "https://amgen.jiraalign.com"
     else:
         cfg.apiendpoint = input("Enter the api endpoint for your instance in following format EG. ""cities"". It is very important that you spell this endpoint correctly. Please refer to the api documents E.G https://cprime.agilecraft.com/api-docs/public/ for the apiendpoints available : ")
         #print(apiendpoint)
@@ -548,47 +548,6 @@ def PrintXIterations(x):
         if i > size:
             break
 
-def GetAllRegions():
-    """ Get all Region information and return to the caller.
-
-        Returns: All the details for each region in a list of objects.
-    """
-    regArr = []
-    print("Collecting all Region info...")
-    regions = GetFromJiraAlign(True, cfg.instanceurl + "/regions")
-    dataReg = regions.json()
-    for eachReg in dataReg:
-        itemDict = {}
-        itemDict['id'] = eachReg['id']
-        itemDict['code'] = eachReg['code']
-        itemDict['flag'] = eachReg['flag']
-        itemDict['name'] = eachReg['name']
-        if eachReg['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachReg['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
-        regArr.append(itemDict)
-    return regArr
-
-# APIv2 doesn't seem to support this.
-def GetAllCountries():
-    """ Get all Countries information and return to the caller.
-
-        Returns: All the details for each country in a list of objects.
-    """
-    countryArr = []
-    print("Collecting all Country info...")
-    countries = GetFromJiraAlign(True, cfg.instanceurl + "/countries")
-    dataCountry = countries.json()
-    for eachCountry in dataCountry:
-        itemDict = {}
-        itemDict['id'] = eachCountry['id']
-        itemDict['name'] = eachCountry['name']
-        if eachCountry['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachCountry['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
-        countryArr.append(itemDict)
-    return countryArr
-
 def GetAllCities():
     """ Get all Cities information and return to the caller.
 
@@ -600,14 +559,7 @@ def GetAllCities():
     dataCity = cities.json()
     for eachCity in dataCity:
         itemDict = {}
-        itemDict['id'] = eachCity['id']
-        itemDict['applyTimeTracking'] = eachCity['applyTimeTracking']
-        itemDict['image'] = eachCity['image']
-        itemDict['name'] = eachCity['name']
-        itemDict['regionId'] = eachCity['regionId']
-        if eachCity['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachCity['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('cities', eachCity, itemDict)
         cityArr.append(itemDict)
     return cityArr
 
@@ -622,24 +574,7 @@ def GetAllConnectorBoards():
     dataBoard = boards.json()
     for eachBoard in dataBoard:
         itemDict = {}
-        itemDict['id'] = eachBoard['id']
-        itemDict['areSprintsEnabled'] = eachBoard['areSprintsEnabled']
-        itemDict['boardId'] = eachBoard['boardId']
-        itemDict['boardName'] = eachBoard['boardName']
-        itemDict['connectorId'] = eachBoard['connectorId']
-        itemDict['createdBy'] = eachBoard['createdBy']
-        itemDict['createDate'] = eachBoard['createDate']
-        if eachBoard['errorMessage'] is not None:
-            itemDict['errorMessage'] = eachBoard['errorMessage']
-        itemDict['originSprints'] = eachBoard['originSprints']
-        itemDict['programId'] = eachBoard['programId']
-        itemDict['teamId'] = eachBoard['teamId']
-        itemDict['teamName'] = eachBoard['teamName']
-        if eachBoard['lastUpdatedBy'] is not None:
-            itemDict['lastUpdatedBy'] = eachBoard['lastUpdatedBy']
-        if eachBoard['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachBoard['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('connectorJiraBoards', eachBoard, itemDict)
         boardArr.append(itemDict)
     return boardArr
     
@@ -654,21 +589,7 @@ def GetAllConnectorPriorities():
     dataPriority = priorities.json()
     for eachPriority in dataPriority:
         itemDict = {}
-        itemDict['id'] = eachPriority['id']
-        itemDict['connectorId'] = eachPriority['connectorId']
-        if eachPriority['createdBy'] is not None:
-            itemDict['createdBy'] = eachPriority['createdBy']
-        if eachPriority['createDate'] is not None:
-            itemDict['createDate'] = eachPriority['createDate']
-        itemDict['itemTypeId'] = eachPriority['itemTypeId']
-        itemDict['jiraPriorityId'] = eachPriority['jiraPriorityId']
-        itemDict['jiraPriorityName'] = eachPriority['jiraPriorityName']
-        itemDict['priorityId'] = eachPriority['priorityId']
-        if eachPriority['lastUpdatedBy'] is not None:
-            itemDict['lastUpdatedBy'] = eachPriority['lastUpdatedBy']
-        if eachPriority['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachPriority['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('connectorJiraPriorities', eachPriority, itemDict)
         prioritiesArr.append(itemDict)
     return prioritiesArr
     
@@ -683,21 +604,7 @@ def GetAllConnectorProjects():
     dataProject = projects.json()
     for eachProject in dataProject:
         itemDict = {}
-        itemDict['id'] = eachProject['id']
-        if eachProject['errorMessage'] is not None:
-            itemDict['errorMessage'] = eachProject['errorMessage']
-        itemDict['connectorId'] = eachProject['connectorId']
-        itemDict['createdBy'] = eachProject['createdBy']
-        itemDict['createDate'] = eachProject['createDate']
-        itemDict['programId'] = eachProject['programId']
-        itemDict['projectId'] = eachProject['projectId']
-        itemDict['projectKey'] = eachProject['projectKey']
-        itemDict['projectName'] = eachProject['projectName']
-        if eachProject['lastUpdatedBy'] is not None:
-            itemDict['lastUpdatedBy'] = eachProject['lastUpdatedBy']
-        if eachProject['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachProject['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('connectorJiraProjects', eachProject, itemDict)
         projectsArr.append(itemDict)
     return projectsArr
     
@@ -712,16 +619,7 @@ def GetAllCostCenters():
     dataCostCenter = costCenters.json()
     for eachCostCenter in dataCostCenter:
         itemDict = {}
-        itemDict['id'] = eachCostCenter['id']
-        if eachCostCenter['description'] is not None:
-            itemDict['description'] = eachCostCenter['description']
-        itemDict['hourlyRate'] = eachCostCenter['hourlyRate']
-        if eachCostCenter['identifier'] is not None:
-            itemDict['identifier'] = eachCostCenter['identifier']
-        itemDict['name'] = eachCostCenter['name']
-        itemDict['ownerId'] = eachCostCenter['ownerId']
-        itemDict['regionId'] = eachCostCenter['regionId']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('costcenters', eachCostCenter, itemDict)
         costCenterArr.append(itemDict)
     return costCenterArr
 
@@ -736,32 +634,7 @@ def GetAllDivisions():
     dataDivisions = divisions.json()
     for eachDivision in dataDivisions:
         itemDict = {}
-        itemDict['id'] = eachDivision['id']
-        if eachDivision['companyCode'] is not None:
-            itemDict['companyCode'] = eachDivision['companyCode']
-        if eachDivision['costCenter'] is not None:
-            itemDict['costCenter'] = eachDivision['costCenter']
-        if eachDivision['costCenterName'] is not None:
-            itemDict['costCenterName'] = eachDivision['costCenterName']
-        if eachDivision['createdBy'] is not None:
-            itemDict['createdBy'] = eachDivision['createdBy']
-        if eachDivision['createDate'] is not None:
-            itemDict['createDate'] = eachDivision['createDate']
-        itemDict['divisionCategory'] = eachDivision['divisionCategory']
-        itemDict['divisionCategoryName'] = eachDivision['divisionCategoryName']
-        if eachDivision['parentId'] is not None:
-            itemDict['parentId'] = eachDivision['parentId']
-        if eachDivision['parentName'] is not None:
-            itemDict['parentName'] = eachDivision['parentName']
-        if eachDivision['productId'] is not None:
-            itemDict['productId'] = eachDivision['productId']
-        if eachDivision['productName'] is not None:
-            itemDict['productName'] = eachDivision['productName']
-        if eachDivision['lastUpdatedBy'] is not None:
-            itemDict['lastUpdatedBy'] = eachDivision['lastUpdatedBy']
-        if eachDivision['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachDivision['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('divisions', eachDivision, itemDict)
         divisionArr.append(itemDict)
     return divisionArr
 
@@ -776,18 +649,7 @@ def GetAllProducts():
     dataProduct = products.json()
     for eachProduct in dataProduct:
         itemDict = {}
-        itemDict['id'] = eachProduct['id']
-        itemDict['title'] = eachProduct['title']
-        itemDict['shortName'] = eachProduct['shortName']
-        itemDict['isActive'] = eachProduct['isActive']
-        itemDict['parentProductId'] = eachProduct['parentProductId']
-        itemDict['divisionId'] = eachProduct['divisionId']
-        itemDict['personaIds'] = eachProduct['personaIds']
-        itemDict['competitorIds'] = eachProduct['competitorIds']
-        itemDict['roadmapSnapshotIds'] = eachProduct['roadmapSnapshotIds']
-        if eachProduct['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachProduct['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('products', eachProduct, itemDict)
         productArr.append(itemDict)
     return productArr
 
@@ -831,63 +693,7 @@ def GetAllRisks():
     dataRisks = risks.json()
     for eachRisk in dataRisks:
         itemDict = {}
-        itemDict['id'] = eachRisk['id']
-        if eachRisk['closeDate'] is not None:
-            itemDict['closeDate'] = eachRisk['closeDate']
-        if eachRisk['closedBy'] is not None:
-            itemDict['closedBy'] = eachRisk['closedBy']
-        if eachRisk['consequence'] is not None:
-            itemDict['consequence'] = eachRisk['consequence']
-        if eachRisk['contingency'] is not None:
-            itemDict['contingency'] = eachRisk['contingency']
-        itemDict['createdBy'] = eachRisk['createdBy']
-        itemDict['createDate'] = eachRisk['createDate']
-        if eachRisk['criticalPath'] is not None:
-            itemDict['criticalPath'] = eachRisk['criticalPath']
-        if eachRisk['customFields'] is not None:
-            itemDict['customFields'] = eachRisk['customFields']
-        if eachRisk['description'] is not None:
-            itemDict['description'] = eachRisk['description']
-        if eachRisk['externalId'] is not None:
-            itemDict['externalId'] = eachRisk['externalId']
-        if eachRisk['externalKey'] is not None:
-            itemDict['externalKey'] = eachRisk['externalKey']
-        if eachRisk['exposure'] is not None:
-            itemDict['exposure'] = eachRisk['exposure']
-        if eachRisk['impact'] is not None:
-            itemDict['impact'] = eachRisk['impact']
-        if eachRisk['mitigation'] is not None:
-            itemDict['mitigation'] = eachRisk['mitigation']
-        if eachRisk['notify'] is not None:
-            itemDict['notify'] = eachRisk['notify']
-        if eachRisk['notifySendEmailDate'] is not None:
-            itemDict['notifySendEmailDate'] = eachRisk['notifySendEmailDate']
-        if eachRisk['occurrence'] is not None:
-            itemDict['occurrence'] = eachRisk['occurrence']
-        if eachRisk['ownerId'] is not None:
-            itemDict['ownerId'] = eachRisk['ownerId']
-        if eachRisk['relationship'] is not None:
-            itemDict['relationship'] = eachRisk['relationship']
-        itemDict['relatedItemId'] = eachRisk['relatedItemId']
-        if eachRisk['releaseId'] is not None:
-            itemDict['releaseId'] = eachRisk['releaseId']
-        if eachRisk['rank'] is not None:
-            itemDict['rank'] = eachRisk['rank']
-        itemDict['resolutionMethod'] = eachRisk['resolutionMethod']
-        if eachRisk['resolutionStatus'] is not None:
-            itemDict['resolutionStatus'] = eachRisk['resolutionStatus']
-        itemDict['riskType'] = eachRisk['riskType']
-        itemDict['status'] = eachRisk['status']
-        if eachRisk['tags'] is not None:
-            itemDict['tags'] = eachRisk['tags']
-        if eachRisk['targetResolutionDate'] is not None:
-            itemDict['targetResolutionDate'] = eachRisk['targetResolutionDate']
-        itemDict['title'] = eachRisk['title']
-        if eachRisk['lastUpdatedBy'] is not None:
-            itemDict['lastUpdatedBy'] = eachRisk['lastUpdatedBy']
-        if eachRisk['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachRisk['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('risks', eachRisk, itemDict)
         riskArr.append(itemDict)
     return riskArr
 
@@ -1024,32 +830,7 @@ def GetAllSnapshots():
     dataSnapshots = snapshots.json()
     for eachSnapshot in dataSnapshots:
         itemDict = {}
-        itemDict['id'] = eachSnapshot['id']
-        itemDict['title'] = eachSnapshot['title']
-        itemDict['description'] = eachSnapshot['description']
-        itemDict['ownerId'] = eachSnapshot['ownerId']
-        itemDict['horizonPercentage1'] = eachSnapshot['horizonPercentage1']
-        itemDict['horizonPercentage2'] = eachSnapshot['horizonPercentage2']
-        itemDict['horizonPercentage3'] = eachSnapshot['horizonPercentage3']
-        if eachSnapshot['startDate'] is not None:
-            itemDict['startDate'] = eachSnapshot['startDate']
-        if eachSnapshot['endDate'] is not None:
-            itemDict['endDate'] = eachSnapshot['endDate']
-        if eachSnapshot['budget'] is not None:
-            itemDict['budget'] = eachSnapshot['budget']
-        if eachSnapshot['productIds'] is not None:
-            itemDict['productIds'] = eachSnapshot['productIds']
-        if eachSnapshot['releaseIds'] is not None:
-            itemDict['releaseIds'] = eachSnapshot['releaseIds']
-        if eachSnapshot['divisionIds'] is not None:
-            itemDict['divisionIds'] = eachSnapshot['divisionIds']
-        if eachSnapshot['enableSnapshotNotification'] is not None:
-            itemDict['enableSnapshotNotification'] = eachSnapshot['enableSnapshotNotification']
-        if eachSnapshot['enableStrategyNotification'] is not None:
-            itemDict['enableStrategyNotification'] = eachSnapshot['enableStrategyNotification']
-        if eachSnapshot['teamMemberIds'] is not None:
-            itemDict['teamMemberIds'] = eachSnapshot['teamMemberIds']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('snapshots', eachSnapshot, itemDict)
         snapshotArr.append(itemDict)
     return snapshotArr
 
@@ -1064,69 +845,7 @@ def GetAllThemes():
     dataThemes = themes.json()
     for eachTheme in dataThemes:
         itemDict = {}
-        itemDict['id'] = eachTheme['id']
-        itemDict['title'] = eachTheme['title']
-        itemDict['isActive'] = eachTheme['isActive']
-        itemDict['strategic'] = eachTheme['strategic']
-        itemDict['isMajor'] = eachTheme['isMajor']
-        itemDict['state'] = eachTheme['state']
-        itemDict['description'] = eachTheme['description']
-        itemDict['programIds'] = eachTheme['programIds']
-        itemDict['releaseIds'] = eachTheme['releaseIds']
-        itemDict['reportColor'] = eachTheme['reportColor']
-        itemDict['goalId'] = eachTheme['goalId']
-        itemDict['plannedBudget'] = eachTheme['plannedBudget']
-        if eachTheme['themeGroupId'] is not None:
-            itemDict['themeGroupId'] = eachTheme['themeGroupId']
-        if eachTheme['externalId'] is not None:
-            itemDict['externalId'] = eachTheme['externalId']
-        if eachTheme['externalProject'] is not None:
-            itemDict['externalProject'] = eachTheme['externalProject']
-        if eachTheme['externalKey'] is not None:
-            itemDict['externalKey'] = eachTheme['externalKey']
-        if eachTheme['connectorId'] is not None:
-            itemDict['connectorId'] = eachTheme['connectorId']
-        if eachTheme['createdBy'] is not None:
-            itemDict['createdBy'] = eachTheme['createdBy']
-        if eachTheme['createDate'] is not None:
-            itemDict['createDate'] = eachTheme['createDate']
-        if eachTheme['owner'] is not None:
-            itemDict['owner'] = eachTheme['owner']
-        if eachTheme['targetCompletionDate'] is not None:
-            itemDict['targetCompletionDate'] = eachTheme['targetCompletionDate']
-        if eachTheme['startInitiationDate'] is not None:
-            itemDict['startInitiationDate'] = eachTheme['startInitiationDate']
-        if eachTheme['portfolioAskDate'] is not None:
-            itemDict['portfolioAskDate'] = eachTheme['portfolioAskDate']
-        if eachTheme['customFields'] is not None:
-            itemDict['customFields'] = eachTheme['customFields']
-        if eachTheme['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachTheme['lastUpdatedDate']
-        if cfg.jaVersion.find("10.107") != -1 or cfg.jaVersion.find("10.106") != -1:
-            if eachTheme['developmentalStepId'] is not None:
-                eachTheme['developmentalStepId'] = eachTheme['developmentalStepId']
-            if eachTheme['operationalStepId'] is not None:
-                itemDict['operationalStepId'] = eachTheme['operationalStepId']
-            if eachTheme['ctext1'] is not None:
-                itemDict['ctext1'] = eachTheme['ctext1']
-            if eachTheme['ctext2'] is not None:
-                itemDict['ctext2'] = eachTheme['ctext2']
-            if eachTheme['carea1'] is not None:
-                itemDict['carea1'] = eachTheme['carea1']
-            if eachTheme['cdrop1'] is not None:
-                itemDict['cdrop1'] = eachTheme['cdrop1']
-            if eachTheme['cdrop2'] is not None:
-                itemDict['cdrop2'] = eachTheme['cdrop2']
-            if eachTheme['cdrop3'] is not None:
-                itemDict['cdrop3'] = eachTheme['cdrop3']
-            if eachTheme['cdrop4'] is not None:
-                itemDict['cdrop4'] = eachTheme['cdrop4']
-            if eachTheme['cdrop5'] is not None:
-                itemDict['cdrop5'] = eachTheme['cdrop5']
-        if cfg.jaVersion.find("10.109") > -1:
-            if eachTheme['processStepId'] is not None:
-                itemDict['processStepId'] = eachTheme['processStepId']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('themes', eachTheme, itemDict)
         themeArr.append(itemDict)
     return themeArr
 
@@ -1141,27 +860,7 @@ def GetAllGoals():
     dataGoals = goals.json()
     for eachGoal in dataGoals:
         itemDict = {}
-        itemDict['id'] = eachGoal['id']
-        itemDict['type'] = eachGoal['type']
-        itemDict['description'] = eachGoal['description']
-        itemDict['parentId'] = eachGoal['parentId']
-        itemDict['createDate'] = eachGoal['createDate']
-        itemDict['ownerId'] = eachGoal['ownerId']
-        if eachGoal['feasibility'] is not None:
-            itemDict['feasibility'] = eachGoal['feasibility']
-        if eachGoal['importance'] is not None:
-            itemDict['importance'] = eachGoal['importance']
-        if eachGoal['divisionId'] is not None:
-            itemDict['divisionId'] = eachGoal['divisionId']
-        if eachGoal['marketAssessment'] is not None:
-            itemDict['marketAssessment'] = eachGoal['marketAssessment']
-        if eachGoal['reference'] is not None:
-            itemDict['reference'] = eachGoal['reference']
-        if eachGoal['snapshotIds'] is not None:
-            itemDict['snapshotIds'] = eachGoal['snapshotIds']
-        if eachGoal['allocations'] is not None:
-            itemDict['allocations'] = eachGoal['allocations']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('goals', eachGoal, itemDict)
         goalArr.append(itemDict)
     return goalArr
 
@@ -1176,11 +875,7 @@ def GetAllCustomers():
     dataCustomer = customers.json()
     for eachCustomer in dataCustomer:
         itemDict = {}
-        itemDict['id'] = eachCustomer['id']
-        itemDict['name'] = eachCustomer['name']
-        if eachCustomer['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachCustomer['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('customers', eachCustomer, itemDict)
         customerArr.append(itemDict)
     return customerArr
 
@@ -1195,25 +890,7 @@ def GetAllPortfolios():
     dataPortfolio = portfolios.json()
     for eachPortfolio in dataPortfolio:
         itemDict = {}
-        itemDict['id'] = eachPortfolio['id']
-        itemDict['title'] = eachPortfolio['title']
-        itemDict['divisionId'] = eachPortfolio['divisionId']
-        itemDict['scoreCardId'] = eachPortfolio['scoreCardId']
-        itemDict['teamId'] = eachPortfolio['teamId']
-        itemDict['isActive'] = eachPortfolio['isActive']
-        itemDict['intakeFormId'] = eachPortfolio['intakeFormId']
-        itemDict['regionId'] = eachPortfolio['regionId']
-        if eachPortfolio['description'] is not None:
-            itemDict['description'] = eachPortfolio['description']
-        if eachPortfolio['isPrivate'] is not None:
-            itemDict['isPrivate'] = eachPortfolio['isPrivate']
-        if eachPortfolio['caseDevelopmentId'] is not None:
-            itemDict['caseDevelopmentId'] = eachPortfolio['caseDevelopmentId']
-        if eachPortfolio['teamDescription'] is not None:
-            itemDict['teamDescription'] = eachPortfolio['teamDescription']
-        if eachPortfolio['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachPortfolio['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('portfolios', eachPortfolio, itemDict)
         portfolioArr.append(itemDict)
     return portfolioArr
 
@@ -1228,22 +905,7 @@ def GetAllIdeas():
     dataIdeas = ideas.json()
     for eachIdea in dataIdeas:
         itemDict = {}
-        itemDict['id'] = eachIdea['id']
-        itemDict['groupId'] = eachIdea['groupId']
-        itemDict['title'] = eachIdea['title']
-        itemDict['createdBy'] = eachIdea['createdBy']
-        itemDict['createDate'] = eachIdea['createDate']
-        itemDict['ownerId'] = eachIdea['ownerId']
-        itemDict['status'] = eachIdea['status']
-        itemDict['isExternal'] = eachIdea['isExternal']
-        itemDict['companyId'] = eachIdea['companyId']
-        itemDict['categoryId'] = eachIdea['categoryId']
-        itemDict['isPublic'] = eachIdea['isPublic']
-        if eachIdea['productId'] is not None:
-            itemDict['productId'] = eachIdea['productId']
-        if eachIdea['description'] is not None:
-            itemDict['description'] = eachIdea['description']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('ideas', eachIdea, itemDict)
         ideaArr.append(itemDict)
     return ideaArr
 
@@ -1258,29 +920,7 @@ def GetAllKeyResults():
     dataKeyResults = keyResults.json()
     for eachKeyResult in dataKeyResults:
         itemDict = {}
-        itemDict['id'] = eachKeyResult['id']
-        itemDict['parentId'] = eachKeyResult['parentId']
-        itemDict['parentType'] = eachKeyResult['parentType']
-        itemDict['baselineValue'] = eachKeyResult['baselineValue']
-        itemDict['targetValue'] = eachKeyResult['targetValue']
-        itemDict['type'] = eachKeyResult['type']
-        itemDict['weight'] = eachKeyResult['weight']
-        itemDict['createDate'] = eachKeyResult['createDate']
-        itemDict['ownerId'] = eachKeyResult['ownerId']
-        itemDict['score'] = eachKeyResult['score']
-        if eachKeyResult['targetDate'] is not None:
-            itemDict['targetDate'] = eachKeyResult['targetDate']
-        if eachKeyResult['description'] is not None:
-            itemDict['description'] = eachKeyResult['description']
-        if eachKeyResult['isScoreOveridden'] is not None:
-            itemDict['isScoreOveridden'] = eachKeyResult['isScoreOveridden']
-        if eachKeyResult['scoreOverrides'] is not None:
-            itemDict['scoreOverrides'] = eachKeyResult['scoreOverrides']
-        if eachKeyResult['valueUpdates'] is not None:
-            itemDict['valueUpdates'] = eachKeyResult['valueUpdates']
-        if eachKeyResult['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachKeyResult['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('keyresults', eachKeyResult, itemDict)
         keyResultArr.append(itemDict)
     return keyResultArr
 
@@ -1295,79 +935,7 @@ def GetAllMilestones():
     dataMilestones = milestones.json()
     for eachMilestone in dataMilestones:
         itemDict = {}
-        itemDict['id'] = eachMilestone['id']
-        itemDict['tier'] = eachMilestone['tier']
-        itemDict['programId'] = eachMilestone['programId']
-        itemDict['type'] = eachMilestone['type']
-        itemDict['isBlocked'] = eachMilestone['isBlocked']
-        itemDict['ownerId'] = eachMilestone['ownerId']
-        itemDict['name'] = eachMilestone['name']
-        itemDict['createDate'] = eachMilestone['createDate']
-        if eachMilestone['description'] is not None:
-            itemDict['description'] = eachMilestone['description']
-        if eachMilestone['status'] is not None:
-            itemDict['status'] = eachMilestone['status']
-        if eachMilestone['notes'] is not None:
-            itemDict['notes'] = eachMilestone['notes']
-        if eachMilestone['startInitiationDate'] is not None:
-            itemDict['startInitiationDate'] = eachMilestone['startInitiationDate']
-        if eachMilestone['endDate'] is not None:
-            itemDict['endDate'] = eachMilestone['endDate']
-        if eachMilestone['category'] is not None:
-            itemDict['category'] = eachMilestone['category']
-        if eachMilestone['targetSyncSprintId'] is not None:
-            itemDict['targetSyncSprintId'] = eachMilestone['targetSyncSprintId']
-        if eachMilestone['plannedValue'] is not None:
-            itemDict['plannedValue'] = eachMilestone['plannedValue']
-        if eachMilestone['themeId'] is not None:
-            itemDict['themeId'] = eachMilestone['themeId']
-        if eachMilestone['deliveredValue'] is not None:
-            itemDict['deliveredValue'] = eachMilestone['deliveredValue']
-        if eachMilestone['blockedReason'] is not None:
-            itemDict['blockedReason'] = eachMilestone['blockedReason']
-        if eachMilestone['targetCompletionDate'] is not None:
-            itemDict['targetCompletionDate'] = eachMilestone['targetCompletionDate']
-        if eachMilestone['portfolioAskDate'] is not None:
-            itemDict['portfolioAskDate'] = eachMilestone['portfolioAskDate']
-        if eachMilestone['health'] is not None:
-            itemDict['health'] = eachMilestone['health']
-        if eachMilestone['parentId'] is not None:
-            itemDict['parentId'] = eachMilestone['parentId']
-        if eachMilestone['score'] is not None:
-            itemDict['score'] = eachMilestone['score']
-        if eachMilestone['portfolioId'] is not None:
-            itemDict['portfolioId'] = eachMilestone['portfolioId']
-        if eachMilestone['goalId'] is not None:
-            itemDict['goalId'] = eachMilestone['goalId']
-        if eachMilestone['solutionId'] is not None:
-            itemDict['solutionId'] = eachMilestone['solutionId']
-        if eachMilestone['notificationStartDate'] is not None:
-            itemDict['notificationStartDate'] = eachMilestone['notificationStartDate']
-        if eachMilestone['notificationFrequency'] is not None:
-            itemDict['notificationFrequency'] = eachMilestone['notificationFrequency']
-        if eachMilestone['reference'] is not None:
-            itemDict['reference'] = eachMilestone['reference']
-        if eachMilestone['programIds'] is not None:
-            itemDict['programIds'] = eachMilestone['programIds']
-        if eachMilestone['releaseIds'] is not None:
-            itemDict['releaseIds'] = eachMilestone['releaseIds']
-        if eachMilestone['featureIds'] is not None:
-            itemDict['featureIds'] = eachMilestone['featureIds']
-        if eachMilestone['impedimentIds'] is not None:
-            itemDict['impedimentIds'] = eachMilestone['impedimentIds']
-        if eachMilestone['riskIds'] is not None:
-            itemDict['riskIds'] = eachMilestone['riskIds']
-        if eachMilestone['dependencyIds'] is not None:
-            itemDict['dependencyIds'] = eachMilestone['dependencyIds']
-        if eachMilestone['customFields'] is not None:
-            itemDict['customFields'] = eachMilestone['customFields']
-        if eachMilestone['teamIds'] is not None:
-            itemDict['teamIds'] = eachMilestone['teamIds']
-        if eachMilestone['lastUpdatedBy'] is not None:
-            itemDict['lastUpdatedBy'] = eachMilestone['lastUpdatedBy']
-        if eachMilestone['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachMilestone['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('milestones', eachMilestone, itemDict)
         milestoneArr.append(itemDict)
     return milestoneArr
 
@@ -1444,53 +1012,7 @@ def GetAllReleaseVehicles():
     dataReleaseVehicle = releaseVehicles.json()
     for eachReleaseVehicle in dataReleaseVehicle:
         itemDict = {}
-        itemDict['id'] = eachReleaseVehicle['id']
-        itemDict['name'] = eachReleaseVehicle['name']
-        itemDict['releaseId'] = eachReleaseVehicle['releaseId']
-        itemDict['storiesCount'] = eachReleaseVehicle['storiesCount']
-        itemDict['storyIds'] = eachReleaseVehicle['storyIds']
-        itemDict['storiesPercentComplete'] = eachReleaseVehicle['storiesPercentComplete']
-        itemDict['contributingTeamsCount'] = eachReleaseVehicle['contributingTeamsCount']
-        itemDict['contributingProgramsCount'] = eachReleaseVehicle['contributingProgramsCount']
-        if eachReleaseVehicle['releaseName'] is not None:
-            itemDict['releaseName'] = eachReleaseVehicle['releaseName']
-        if eachReleaseVehicle['shipDate'] is not None:
-            itemDict['shipDate'] = eachReleaseVehicle['shipDate']
-        if eachReleaseVehicle['startDate'] is not None:
-            itemDict['startDate'] = eachReleaseVehicle['startDate']
-        if eachReleaseVehicle['health'] is not None:
-            itemDict['health'] = eachReleaseVehicle['health']
-        if eachReleaseVehicle['externalId'] is not None:
-            itemDict['externalId'] = eachReleaseVehicle['externalId']
-        if eachReleaseVehicle['goLiveDate'] is not None:
-            itemDict['goLiveDate'] = eachReleaseVehicle['goLiveDate']
-        if eachReleaseVehicle['connectorId'] is not None:
-            itemDict['connectorId'] = eachReleaseVehicle['connectorId']
-        if eachReleaseVehicle['ownerId'] is not None:
-            itemDict['ownerId'] = eachReleaseVehicle['ownerId']
-        if eachReleaseVehicle['jiraProjectKey'] is not None:
-            itemDict['jiraProjectKey'] = eachReleaseVehicle['jiraProjectKey']
-        if eachReleaseVehicle['status'] is not None:
-            itemDict['status'] = eachReleaseVehicle['status']
-        if eachReleaseVehicle['closedDate'] is not None:
-            itemDict['closedDate'] = eachReleaseVehicle['closedDate']
-        if eachReleaseVehicle['type'] is not None:
-            itemDict['type'] = eachReleaseVehicle['type']
-        if eachReleaseVehicle['createDate'] is not None:
-            itemDict['createDate'] = eachReleaseVehicle['createDate']
-        if eachReleaseVehicle['externalProjectId'] is not None:
-            itemDict['externalProjectId'] = eachReleaseVehicle['externalProjectId']
-        if eachReleaseVehicle['isTimeTrackingOnly'] is not None:
-            itemDict['isTimeTrackingOnly'] = eachReleaseVehicle['isTimeTrackingOnly']
-        if eachReleaseVehicle['teamIds'] is not None:
-            itemDict['teamIds'] = eachReleaseVehicle['teamIds']
-        if eachReleaseVehicle['portfolioIds'] is not None:
-            itemDict['portfolioIds'] = eachReleaseVehicle['portfolioIds']
-        if eachReleaseVehicle['programIds'] is not None:
-            itemDict['programIds'] = eachReleaseVehicle['programIds']
-        if eachReleaseVehicle['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachReleaseVehicle['lastUpdatedDate']
-        # Don't save the self field, since it will be generated during creation
+        ExtractItemData('releasevehicles', eachReleaseVehicle, itemDict)
         releaseVehicleArr.append(itemDict)
     return releaseVehicleArr
 
@@ -1554,52 +1076,6 @@ def GetAllTeams():
         teamsArr.append(itemDict)
     return teamsArr
 
-def GetAllValueStreams():
-    """ Get all Value Stream information and return to the caller.
-
-        Returns: All the details for each value stream in a list of objects.
-    """
-    valueStreamArr = []
-    print("Collecting all Value Stream info...")
-
-    # Value Streams are only supported for JA Version 10.108 or later
-    if cfg.jaVersion.find("10.108") != -1 and cfg.jaVersion.find("10.109") != -1\
-        and cfg.jaVersion.find("10.110") != -1:
-        return valueStreamArr
-
-    valueStreams = GetFromJiraAlign(True, cfg.instanceurl + "/ValueStreams")
-    dataValueStreams = valueStreams.json()
-    for eachValueStream in dataValueStreams:
-        itemDict = {}
-        itemDict['id'] = eachValueStream['id']
-        itemDict['name'] = eachValueStream['name']
-        itemDict['level'] = eachValueStream['level']
-        itemDict['teamId'] = eachValueStream['teamId']
-        itemDict['isActive'] = eachValueStream['isActive']
-        itemDict['mapToState'] = eachValueStream['mapToState']
-        if eachValueStream['teamDescription'] is not None:
-            itemDict['teamDescription'] = eachValueStream['teamDescription']
-        if eachValueStream['regionId'] is not None:
-            itemDict['regionId'] = eachValueStream['regionId']
-
-        if eachValueStream['programIds'] is not None:
-            itemDict['programIds'] = eachValueStream['programIds']
-        if eachValueStream['customerIds'] is not None:
-            itemDict['customerIds'] = eachValueStream['customerIds']
-        if eachValueStream['processSteps'] is not None:
-            itemDict['processSteps'] = eachValueStream['processSteps']
-        if eachValueStream['createdBy'] is not None:
-            itemDict['createdBy'] = eachValueStream['createdBy']
-        if eachValueStream['createDate'] is not None:
-            itemDict['createDate'] = eachValueStream['createDate']
-        if eachValueStream['lastUpdatedDate'] is not None:
-            itemDict['lastUpdatedDate'] = eachValueStream['lastUpdatedDate']
-        if eachValueStream['lastUpdatedBy'] is not None:
-            itemDict['lastUpdatedBy'] = eachValueStream['lastUpdatedBy']
-        # Don't save the self field, since it will be generated during creation
-        valueStreamArr.append(itemDict)
-    return valueStreamArr
-
 def ExtractItemData(itemType, sourceItem, extractedData):
     """ Extract all applicable fields from the source item and add them to the extracted
         data, based on item type.
@@ -1631,6 +1107,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['additionalProcessStepIds'] = sourceItem['additionalProcessStepIds']
     if ('affectedCountryIds' in sourceItem) and (sourceItem['affectedCountryIds'] is not None):
         extractedData['affectedCountryIds'] = sourceItem['affectedCountryIds']
+    if ('allocations' in sourceItem) and (sourceItem['allocations'] is not None):
+        extractedData['allocations'] = sourceItem['allocations']
     if ('allowTaskDeletion' in sourceItem) and (sourceItem['allowTaskDeletion'] is not None):
         extractedData['allowTaskDeletion'] = sourceItem['allowTaskDeletion']
     if ('allowTeamToRunStandup' in sourceItem) and (sourceItem['allowTeamToRunStandup'] is not None):
@@ -1641,10 +1119,16 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['anchorSprintId'] = sourceItem['anchorSprintId']
     if ('anchorSprintIds' in sourceItem) and (sourceItem['anchorSprintIds'] is not None):
         extractedData['anchorSprintIds'] = sourceItem['anchorSprintIds']
+    if ('applyTimeTracking' in sourceItem) and (sourceItem['applyTimeTracking'] is not None):
+        extractedData['applyTimeTracking'] = sourceItem['applyTimeTracking']
+    if ('areSprintsEnabled' in sourceItem) and (sourceItem['areSprintsEnabled'] is not None):
+        extractedData['areSprintsEnabled'] = sourceItem['areSprintsEnabled']
     if ('associatedTicket' in sourceItem) and (sourceItem['associatedTicket'] is not None):
         extractedData['associatedTicket'] = sourceItem['associatedTicket']
     if ('autoEstimateValue' in sourceItem) and (sourceItem['autoEstimateValue'] is not None):
         extractedData['autoEstimateValue'] = sourceItem['autoEstimateValue']
+    if ('baselineValue' in sourceItem) and (sourceItem['baselineValue'] is not None):
+        extractedData['baselineValue'] = sourceItem['baselineValue']
     if ('beginDate' in sourceItem) and (sourceItem['beginDate'] is not None):
         extractedData['beginDate'] = sourceItem['beginDate']
     if ('benefits' in sourceItem) and (sourceItem['benefits'] is not None):
@@ -1653,6 +1137,10 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['blendedHourlyRate'] = sourceItem['blendedHourlyRate']
     if ('blockedReason' in sourceItem) and (sourceItem['blockedReason'] is not None):
         extractedData['blockedReason'] = sourceItem['blockedReason']
+    if ('boardId' in sourceItem) and (sourceItem['boardId'] is not None):
+        extractedData['boardId'] = sourceItem['boardId']
+    if ('boardName' in sourceItem) and (sourceItem['boardName'] is not None):
+        extractedData['boardName'] = sourceItem['boardName']
     if ('budget' in sourceItem) and (sourceItem['budget'] is not None):
         extractedData['budget'] = sourceItem['budget']
     if ('businessDriver' in sourceItem) and (sourceItem['businessDriver'] is not None):
@@ -1663,38 +1151,78 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['businessValue'] = sourceItem['businessValue']
     if ('capitalized' in sourceItem) and (sourceItem['capitalized'] is not None):
         extractedData['capitalized'] = sourceItem['capitalized']
+    if ('careal' in sourceItem) and (sourceItem['careal'] is not None):
+        extractedData['careal'] = sourceItem['careal']
     if ('caseDevelopmentId' in sourceItem) and (sourceItem['caseDevelopmentId'] is not None):
         extractedData['caseDevelopmentId'] = sourceItem['caseDevelopmentId']
     if ('category' in sourceItem) and (sourceItem['category'] is not None):
         extractedData['category'] = sourceItem['category']
+    if ('categoryId' in sourceItem) and (sourceItem['categoryId'] is not None):
+        extractedData['categoryId'] = sourceItem['categoryId']
+    if ('cdrop1' in sourceItem) and (sourceItem['cdrop1'] is not None):
+        extractedData['cdrop1'] = sourceItem['cdrop1']
+    if ('cdrop2' in sourceItem) and (sourceItem['cdrop2'] is not None):
+        extractedData['cdrop2'] = sourceItem['cdrop2']
+    if ('cdrop3' in sourceItem) and (sourceItem['cdrop3'] is not None):
+        extractedData['cdrop3'] = sourceItem['cdrop3']
+    if ('cdrop4' in sourceItem) and (sourceItem['cdrop4'] is not None):
+        extractedData['cdrop4'] = sourceItem['cdrop4']
+    if ('cdrop5' in sourceItem) and (sourceItem['cdrop5'] is not None):
+        extractedData['cdrop5'] = sourceItem['cdrop5']
     if ('city' in sourceItem) and (sourceItem['city'] is not None):
         extractedData['city'] = sourceItem['city']
     if ('cityId' in sourceItem) and (sourceItem['cityId'] is not None):
         extractedData['cityId'] = sourceItem['cityId']
     if ('closeDate' in sourceItem) and (sourceItem['closeDate'] is not None):
         extractedData['closeDate'] = sourceItem['closeDate']
+    if ('closedBy' in sourceItem) and (sourceItem['closedBy'] is not None):
+        extractedData['closedBy'] = sourceItem['closedBy']
+    if ('closedDate' in sourceItem) and (sourceItem['closedDate'] is not None):
+        extractedData['closedDate'] = sourceItem['closedDate']
+    if ('code' in sourceItem) and (sourceItem['code'] is not None):
+        extractedData['code'] = sourceItem['code']
     if ('color' in sourceItem) and (sourceItem['color'] is not None):
         extractedData['color'] = sourceItem['color']
     if ('communityIds' in sourceItem) and (sourceItem['communityIds'] is not None):
         extractedData['communityIds'] = sourceItem['communityIds']
     if ('company' in sourceItem) and (sourceItem['company'] is not None):
         extractedData['company'] = sourceItem['company']
+    if ('companyCode' in sourceItem) and (sourceItem['companyCode'] is not None):
+        extractedData['companyCode'] = sourceItem['companyCode']
     if ('companyId' in sourceItem) and (sourceItem['companyId'] is not None):
         extractedData['companyId'] = sourceItem['companyId']
+    if ('competitorIds' in sourceItem) and (sourceItem['competitorIds'] is not None):
+        extractedData['competitorIds'] = sourceItem['competitorIds']
     if ('completedDate' in sourceItem) and (sourceItem['completedDate'] is not None):
         extractedData['completedDate'] = sourceItem['completedDate']
     if ('complexity' in sourceItem) and (sourceItem['complexity'] is not None):
         extractedData['complexity'] = sourceItem['complexity']
     if ('connectorId' in sourceItem) and (sourceItem['connectorId'] is not None):
         extractedData['connectorId'] = sourceItem['connectorId']
+    if ('consequence' in sourceItem) and (sourceItem['consequence'] is not None):
+        extractedData['consequence'] = sourceItem['consequence']
+    if ('contingency' in sourceItem) and (sourceItem['contingency'] is not None):
+        extractedData['contingency'] = sourceItem['contingency']
+    if ('contributingProgramsCount' in sourceItem) and (sourceItem['contributingProgramsCount'] is not None):
+        extractedData['contributingProgramsCount'] = sourceItem['contributingProgramsCount']
+    if ('contributingTeamsCount' in sourceItem) and (sourceItem['contributingTeamsCount'] is not None):
+        extractedData['contributingTeamsCount'] = sourceItem['contributingTeamsCount']
     if ('costCenter' in sourceItem) and (sourceItem['costCenter'] is not None):
         extractedData['costCenter'] = sourceItem['costCenter']
     if ('costCenterId' in sourceItem) and (sourceItem['costCenterId'] is not None):
         extractedData['costCenterId'] = sourceItem['costCenterId']
+    if ('costCenterName' in sourceItem) and (sourceItem['costCenterName'] is not None):
+        extractedData['costCenterName'] = sourceItem['costCenterName']
     if ('createDate' in sourceItem) and (sourceItem['createDate'] is not None):
         extractedData['createDate'] = sourceItem['createDate']
     if ('createdBy' in sourceItem) and (sourceItem['createdBy'] is not None):
         extractedData['createdBy'] = sourceItem['createdBy']
+    if ('criticalPath' in sourceItem) and (sourceItem['criticalPath'] is not None):
+        extractedData['criticalPath'] = sourceItem['criticalPath']
+    if ('ctext1' in sourceItem) and (sourceItem['ctext1'] is not None):
+        extractedData['ctext1'] = sourceItem['ctext1']
+    if ('ctext2' in sourceItem) and (sourceItem['ctext2'] is not None):
+        extractedData['ctext2'] = sourceItem['ctext2']
     if ('customerIds' in sourceItem) and (sourceItem['customerIds'] is not None):
         extractedData['customerIds'] = sourceItem['customerIds']
     if ('customFields' in sourceItem) and (sourceItem['customFields'] is not None):
@@ -1717,12 +1245,20 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['devCompleteBy'] = sourceItem['devCompleteBy']
     if ('devCompleteDate' in sourceItem) and (sourceItem['devCompleteDate'] is not None):
         extractedData['devCompleteDate'] = sourceItem['devCompleteDate']
+    if ('developmentalStepId' in sourceItem) and (sourceItem['developmentalStepId'] is not None):
+        extractedData['developmentalStepId'] = sourceItem['developmentalStepId']
     if ('discountRate' in sourceItem) and (sourceItem['discountRate'] is not None):
         extractedData['discountRate'] = sourceItem['discountRate']
     if ('division' in sourceItem) and (sourceItem['division'] is not None):
         extractedData['division'] = sourceItem['division']
+    if ('divisionCategory' in sourceItem) and (sourceItem['divisionCategory'] is not None):
+        extractedData['divisionCategory'] = sourceItem['divisionCategory']
+    if ('divisionCategoryName' in sourceItem) and (sourceItem['divisionCategoryName'] is not None):
+        extractedData['divisionCategoryName'] = sourceItem['divisionCategoryName']
     if ('divisionId' in sourceItem) and (sourceItem['divisionId'] is not None):
         extractedData['divisionId'] = sourceItem['divisionId']
+    if ('divisionIds' in sourceItem) and (sourceItem['divisionIds'] is not None):
+        extractedData['divisionIds'] = sourceItem['divisionIds']
     if ('efficiencyDividend' in sourceItem) and (sourceItem['efficiencyDividend'] is not None):
         extractedData['efficiencyDividend'] = sourceItem['efficiencyDividend']
     if ('effortHours' in sourceItem) and (sourceItem['effortHours'] is not None):
@@ -1739,6 +1275,10 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['employeeId'] = sourceItem['employeeId']
     if ('enableAutoEstimate' in sourceItem) and (sourceItem['enableAutoEstimate'] is not None):
         extractedData['enableAutoEstimate'] = sourceItem['enableAutoEstimate']
+    if ('enableSnapshotNotification' in sourceItem) and (sourceItem['enableSnapshotNotification'] is not None):
+        extractedData['enableSnapshotNotification'] = sourceItem['enableSnapshotNotification']
+    if ('enableStrategyNotification' in sourceItem) and (sourceItem['enableStrategyNotification'] is not None):
+        extractedData['enableStrategyNotification'] = sourceItem['enableStrategyNotification']
     if ('endDate' in sourceItem) and (sourceItem['endDate'] is not None):
         extractedData['endDate'] = sourceItem['endDate']
     if ('endSprintId' in sourceItem) and (sourceItem['endSprintId'] is not None):
@@ -1749,6 +1289,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['enterpriseHierarchyId'] = sourceItem['enterpriseHierarchyId']
     if ('epicObjectId' in sourceItem) and (sourceItem['epicObjectId'] is not None):
         extractedData['epicObjectId'] = sourceItem['epicObjectId']
+    if ('errorMessage' in sourceItem) and (sourceItem['errorMessage'] is not None):
+        extractedData['errorMessage'] = sourceItem['errorMessage']
     if ('estimateAtCompletion' in sourceItem) and (sourceItem['estimateAtCompletion'] is not None):
         extractedData['estimateAtCompletion'] = sourceItem['estimateAtCompletion']
     if ('estimateTshirt' in sourceItem) and (sourceItem['estimateTshirt'] is not None):
@@ -1757,6 +1299,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['estimationEffortPercent'] = sourceItem['estimationEffortPercent']
     if ('expenseSavings' in sourceItem) and (sourceItem['expenseSavings'] is not None):
         extractedData['expenseSavings'] = sourceItem['expenseSavings']
+    if ('exposure' in sourceItem) and (sourceItem['exposure'] is not None):
+        extractedData['exposure'] = sourceItem['exposure']
     if ('externalCapEx' in sourceItem) and (sourceItem['externalCapEx'] is not None):
         extractedData['externalCapEx'] = sourceItem['externalCapEx']
     if ('externalId' in sourceItem) and (sourceItem['externalId'] is not None):
@@ -1767,12 +1311,16 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['externalOpEx'] = sourceItem['externalOpEx']
     if ('externalProject' in sourceItem) and (sourceItem['externalProject'] is not None):
         extractedData['externalProject'] = sourceItem['externalProject']
+    if ('externalProjectId' in sourceItem) and (sourceItem['externalProjectId'] is not None):
+        extractedData['externalProjectId'] = sourceItem['externalProjectId']
     if ('externalUser' in sourceItem) and (sourceItem['externalUser'] is not None):
         extractedData['externalUser'] = sourceItem['externalUser']
     if ('failureImpact' in sourceItem) and (sourceItem['failureImpact'] is not None):
         extractedData['failureImpact'] = sourceItem['failureImpact']
     if ('failureProbability' in sourceItem) and (sourceItem['failureProbability'] is not None):
         extractedData['failureProbability'] = sourceItem['failureProbability']
+    if ('feasibility' in sourceItem) and (sourceItem['feasibility'] is not None):
+        extractedData['feasibility'] = sourceItem['feasibility']
     if ('featureId' in sourceItem) and (sourceItem['featureId'] is not None):
         extractedData['featureId'] = sourceItem['featureId']
     if ('featureIds' in sourceItem) and (sourceItem['featureIds'] is not None):
@@ -1785,6 +1333,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['fcastShare'] = sourceItem['fcastShare']
     if ('firstName' in sourceItem) and (sourceItem['firstName'] is not None):
         extractedData['firstName'] = sourceItem['firstName']
+    if ('flag' in sourceItem) and (sourceItem['flag'] is not None):
+        extractedData['flag'] = sourceItem['flag']
     if ('forecastYears' in sourceItem) and (sourceItem['forecastYears'] is not None):
         extractedData['forecastYears'] = sourceItem['forecastYears']
     if ('functionalArea' in sourceItem) and (sourceItem['functionalArea'] is not None):
@@ -1797,6 +1347,10 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['goal'] = sourceItem['goal']
     if ('goalId' in sourceItem) and (sourceItem['goalId'] is not None):
         extractedData['goalId'] = sourceItem['goalId']
+    if ('goLiveDate' in sourceItem) and (sourceItem['goLiveDate'] is not None):
+        extractedData['goLiveDate'] = sourceItem['goLiveDate']
+    if ('groupId' in sourceItem) and (sourceItem['groupId'] is not None):
+        extractedData['groupId'] = sourceItem['groupId']
     if ('health' in sourceItem) and (sourceItem['health'] is not None):
         extractedData['health'] = sourceItem['health']
     if ('holidayCalendar' in sourceItem) and (sourceItem['holidayCalendar'] is not None):
@@ -1807,12 +1361,28 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['holidayCityId'] = sourceItem['holidayCityId']
     if ('holidayRegionId' in sourceItem) and (sourceItem['holidayRegionId'] is not None):
         extractedData['holidayRegionId'] = sourceItem['holidayRegionId']
+    if ('horizonPercentage1' in sourceItem) and (sourceItem['horizonPercentage1'] is not None):
+        extractedData['horizonPercentage1'] = sourceItem['horizonPercentage1']
+    if ('horizonPercentage2' in sourceItem) and (sourceItem['horizonPercentage2'] is not None):
+        extractedData['horizonPercentage2'] = sourceItem['horizonPercentage2']
+    if ('horizonPercentage3' in sourceItem) and (sourceItem['horizonPercentage3'] is not None):
+        extractedData['horizonPercentage3'] = sourceItem['horizonPercentage3']
+    if ('hourlyRate' in sourceItem) and (sourceItem['hourlyRate'] is not None):
+        extractedData['hourlyRate'] = sourceItem['hourlyRate']
     if ('hoursEstimate' in sourceItem) and (sourceItem['hoursEstimate'] is not None):
         extractedData['hoursEstimate'] = sourceItem['hoursEstimate']
     if ('hypothesis' in sourceItem) and (sourceItem['hypothesis'] is not None):
         extractedData['hypothesis'] = sourceItem['hypothesis']
+    if ('identifier' in sourceItem) and (sourceItem['identifier'] is not None):
+        extractedData['identifier'] = sourceItem['identifier']
+    if ('image' in sourceItem) and (sourceItem['image'] is not None):
+        extractedData['image'] = sourceItem['image']
+    if ('impact' in sourceItem) and (sourceItem['impact'] is not None):
+        extractedData['impact'] = sourceItem['impact']
     if ('impedimentIds' in sourceItem) and (sourceItem['impedimentIds'] is not None):
         extractedData['impedimentIds'] = sourceItem['impedimentIds']
+    if ('importance' in sourceItem) and (sourceItem['importance'] is not None):
+        extractedData['importance'] = sourceItem['importance']
     if ('includeHours' in sourceItem) and (sourceItem['includeHours'] is not None):
         extractedData['includeHours'] = sourceItem['includeHours']
     if ('initialInvestment' in sourceItem) and (sourceItem['initialInvestment'] is not None):
@@ -1845,16 +1415,26 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['isKanbanTeam'] = sourceItem['isKanbanTeam']
     if ('isLocked' in sourceItem) and (sourceItem['isLocked'] is not None):
         extractedData['isLocked'] = sourceItem['isLocked']
+    if ('isMajor' in sourceItem) and (sourceItem['isMajor'] is not None):
+        extractedData['isMajor'] = sourceItem['isMajor']
     if ('isMultiProgram' in sourceItem) and (sourceItem['isMultiProgram'] is not None):
         extractedData['isMultiProgram'] = sourceItem['isMultiProgram']
+    if ('isPrivate' in sourceItem) and (sourceItem['isPrivate'] is not None):
+        extractedData['isPrivate'] = sourceItem['isPrivate']
+    if ('isPublic' in sourceItem) and (sourceItem['isPublic'] is not None):
+        extractedData['isPublic'] = sourceItem['isPublic']
     if ('isRecycled' in sourceItem) and (sourceItem['isRecycled'] is not None):
         extractedData['isRecycled'] = sourceItem['isRecycled']
+    if ('isScoreOverridden' in sourceItem) and (sourceItem['isScoreOverridden'] is not None):
+        extractedData['isScoreOverridden'] = sourceItem['isScoreOverridden']
     if ('isSolution' in sourceItem) and (sourceItem['isSolution'] is not None):
         extractedData['isSolution'] = sourceItem['isSolution']
     if ('isSplit' in sourceItem) and (sourceItem['isSplit'] is not None):
         extractedData['isSplit'] = sourceItem['isSplit']
     if ('isTimeTracking' in sourceItem) and (sourceItem['isTimeTracking'] is not None):
         extractedData['isTimeTracking'] = sourceItem['isTimeTracking']
+    if ('isTimeTrackingOnly' in sourceItem) and (sourceItem['isTimeTrackingOnly'] is not None):
+        extractedData['isTimeTrackingOnly'] = sourceItem['isTimeTrackingOnly']
     if ('isUserManager' in sourceItem) and (sourceItem['isUserManager'] is not None):
         extractedData['isUserManager'] = sourceItem['isUserManager']
     if ('itemToSyncDate' in sourceItem) and (sourceItem['itemToSyncDate'] is not None):
@@ -1865,10 +1445,16 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['iterationSort'] = sourceItem['iterationSort']
     if ('itemtype' in sourceItem) and (sourceItem['itemtype'] is not None):
         extractedData['itemtype'] = sourceItem['itemtype']
+    if ('itemTypeId' in sourceItem) and (sourceItem['itemTypeId'] is not None):
+        extractedData['itemTypeId'] = sourceItem['itemTypeId']
     if ('itrisk' in sourceItem) and (sourceItem['itrisk'] is not None):
         extractedData['itrisk'] = sourceItem['itrisk']
     if ('itRisk' in sourceItem) and (sourceItem['itRisk'] is not None):
         extractedData['itRisk'] = sourceItem['itRisk']
+    if ('jiraPriorityId' in sourceItem) and (sourceItem['jiraPriorityId'] is not None):
+        extractedData['jiraPriorityId'] = sourceItem['jiraPriorityId']
+    if ('jiraPriorityName' in sourceItem) and (sourceItem['jiraPriorityName'] is not None):
+        extractedData['jiraPriorityName'] = sourceItem['jiraPriorityName']
     if ('jiraProjectKey' in sourceItem) and (sourceItem['jiraProjectKey'] is not None):
         extractedData['jiraProjectKey'] = sourceItem['jiraProjectKey']
     if ('lastLoginDate' in sourceItem) and (sourceItem['lastLoginDate'] is not None):
@@ -1881,14 +1467,22 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['lastUpdatedDate'] = sourceItem['lastUpdatedDate']
     if ('leanUxCanvas' in sourceItem) and (sourceItem['leanUxCanvas'] is not None):
         extractedData['leanUxCanvas'] = sourceItem['leanUxCanvas']
+    if ('level' in sourceItem) and (sourceItem['level'] is not None):
+        extractedData['level'] = sourceItem['level']
     if ('links' in sourceItem) and (sourceItem['links'] is not None):
         extractedData['links'] = sourceItem['links']
     if ('managerId' in sourceItem) and (sourceItem['managerId'] is not None):
         extractedData['managerId'] = sourceItem['managerId']
     if ('manWeeks' in sourceItem) and (sourceItem['manWeeks'] is not None):
         extractedData['manWeeks'] = sourceItem['manWeeks']
+    if ('mapToState' in sourceItem) and (sourceItem['mapToState'] is not None):
+        extractedData['mapToState'] = sourceItem['mapToState']
+    if ('marketAssessment' in sourceItem) and (sourceItem['marketAssessment'] is not None):
+        extractedData['marketAssessment'] = sourceItem['marketAssessment']
     if ('maxAllocation' in sourceItem) and (sourceItem['maxAllocation'] is not None):
         extractedData['maxAllocation'] = sourceItem['maxAllocation']
+    if ('mitigation' in sourceItem) and (sourceItem['mitigation'] is not None):
+        extractedData['mitigation'] = sourceItem['mitigation']
     if ('mmf' in sourceItem) and (sourceItem['mmf'] is not None):
         extractedData['mmf'] = sourceItem['mmf']
     if ('mvp' in sourceItem) and (sourceItem['mvp'] is not None):
@@ -1897,6 +1491,10 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['name'] = sourceItem['name']
     if ('notes' in sourceItem) and (sourceItem['notes'] is not None):
         extractedData['notes'] = sourceItem['notes']
+    if ('notify' in sourceItem) and (sourceItem['notify'] is not None):
+        extractedData['notify'] = sourceItem['notify']
+    if ('notifySendEmailDate' in sourceItem) and (sourceItem['notifySendEmailDate'] is not None):
+        extractedData['notifySendEmailDate'] = sourceItem['notifySendEmailDate']
     if ('notificationStartDate' in sourceItem) and (sourceItem['notificationStartDate'] is not None):
         extractedData['notificationStartDate'] = sourceItem['notificationStartDate']
     if ('notificationFrequency' in sourceItem) and (sourceItem['notificationFrequency'] is not None):
@@ -1907,6 +1505,12 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['notStartedDate'] = sourceItem['notStartedDate']
     if ('notStartedDateEnd' in sourceItem) and (sourceItem['notStartedDateEnd'] is not None):
         extractedData['notStartedDateEnd'] = sourceItem['notStartedDateEnd']
+    if ('occurrence' in sourceItem) and (sourceItem['occurrence'] is not None):
+        extractedData['occurrence'] = sourceItem['occurrence']
+    if ('operationalStepId' in sourceItem) and (sourceItem['operationalStepId'] is not None):
+        extractedData['operationalStepId'] = sourceItem['operationalStepId']
+    if ('originSprints' in sourceItem) and (sourceItem['originSprints'] is not None):
+        extractedData['originSprints'] = sourceItem['originSprints']
     if ('overrideVelocity' in sourceItem) and (sourceItem['overrideVelocity'] is not None):
         extractedData['overrideVelocity'] = sourceItem['overrideVelocity']
     if ('owner' in sourceItem) and (sourceItem['owner'] is not None):
@@ -1915,14 +1519,24 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['ownerId'] = sourceItem['ownerId']
     if ('parentId' in sourceItem) and (sourceItem['parentId'] is not None):
         extractedData['parentId'] = sourceItem['parentId']
+    if ('parentName' in sourceItem) and (sourceItem['parentName'] is not None):
+        extractedData['parentName'] = sourceItem['parentName']
+    if ('parentProductId' in sourceItem) and (sourceItem['parentProductId'] is not None):
+        extractedData['parentProductId'] = sourceItem['parentProductId']
     if ('parentSplitId' in sourceItem) and (sourceItem['parentSplitId'] is not None):
         extractedData['parentSplitId'] = sourceItem['parentSplitId']
+    if ('parentType' in sourceItem) and (sourceItem['parentType'] is not None):
+        extractedData['parentType'] = sourceItem['parentType']
     if ('pendingApprovalBy' in sourceItem) and (sourceItem['pendingApprovalBy'] is not None):
         extractedData['pendingApprovalBy'] = sourceItem['pendingApprovalBy']
     if ('pendingApprovalDate' in sourceItem) and (sourceItem['pendingApprovalDate'] is not None):
         extractedData['pendingApprovalDate'] = sourceItem['pendingApprovalDate']
+    if ('personaIds' in sourceItem) and (sourceItem['personaIds'] is not None):
+        extractedData['personaIds'] = sourceItem['personaIds']
     if ('planningMode' in sourceItem) and (sourceItem['planningMode'] is not None):
         extractedData['planningMode'] = sourceItem['planningMode']
+    if ('plannedBudget' in sourceItem) and (sourceItem['plannedBudget'] is not None):
+        extractedData['plannedBudget'] = sourceItem['plannedBudget']
     if ('plannedValue' in sourceItem) and (sourceItem['plannedValue'] is not None):
         extractedData['plannedValue'] = sourceItem['plannedValue']
     if ('points' in sourceItem) and (sourceItem['points'] is not None):
@@ -1933,32 +1547,50 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['portfolioAskDate'] = sourceItem['portfolioAskDate']
     if ('portfolioId' in sourceItem) and (sourceItem['portfolioId'] is not None):
         extractedData['portfolioId'] = sourceItem['portfolioId']
+    if ('portfolioIds' in sourceItem) and (sourceItem['portfolioIds'] is not None):
+        extractedData['portfolioIds'] = sourceItem['portfolioIds']
     if ('predecessorId' in sourceItem) and (sourceItem['predecessorId'] is not None):
         extractedData['predecessorId'] = sourceItem['predecessorId']
     if ('primaryProgramId' in sourceItem) and (sourceItem['primaryProgramId'] is not None):
         extractedData['primaryProgramId'] = sourceItem['primaryProgramId']
     if ('priority' in sourceItem) and (sourceItem['priority'] is not None):
         extractedData['priority'] = sourceItem['priority']
+    if ('priorityId' in sourceItem) and (sourceItem['priorityId'] is not None):
+        extractedData['priorityId'] = sourceItem['priorityId']
     if ('processStepId' in sourceItem) and (sourceItem['processStepId'] is not None):
         extractedData['processStepId'] = sourceItem['processStepId']
+    if ('processSteps' in sourceItem) and (sourceItem['processSteps'] is not None):
+        extractedData['processSteps'] = sourceItem['processSteps']
     if ('processStepName' in sourceItem) and (sourceItem['processStepName'] is not None):
         extractedData['processStepName'] = sourceItem['processStepName']
     if ('productId' in sourceItem) and (sourceItem['productId'] is not None):
         extractedData['productId'] = sourceItem['productId']
+    if ('productIds' in sourceItem) and (sourceItem['productIds'] is not None):
+        extractedData['productIds'] = sourceItem['productIds']
+    if ('productName' in sourceItem) and (sourceItem['productName'] is not None):
+        extractedData['productName'] = sourceItem['productName']
     if ('productObjectiveIds' in sourceItem) and (sourceItem['productObjectiveIds'] is not None):
         extractedData['productObjectiveIds'] = sourceItem['productObjectiveIds']
     if ('program' in sourceItem) and (sourceItem['program'] is not None):
         extractedData['program'] = sourceItem['program']
-    if ('programs' in sourceItem) and (sourceItem['programs'] is not None):
-        extractedData['programs'] = sourceItem['programs']
     if ('programId' in sourceItem) and (sourceItem['programId'] is not None):
         extractedData['programId'] = sourceItem['programId']
     if ('programIds' in sourceItem) and (sourceItem['programIds'] is not None):
         extractedData['programIds'] = sourceItem['programIds']
+    if ('programs' in sourceItem) and (sourceItem['programs'] is not None):
+        extractedData['programs'] = sourceItem['programs']
+    if ('projectId' in sourceItem) and (sourceItem['projectId'] is not None):
+        extractedData['projectId'] = sourceItem['projectId']
+    if ('projectKey' in sourceItem) and (sourceItem['projectKey'] is not None):
+        extractedData['projectKey'] = sourceItem['projectKey']
+    if ('projectName' in sourceItem) and (sourceItem['projectName'] is not None):
+        extractedData['projectName'] = sourceItem['projectName']
     if ('prototype' in sourceItem) and (sourceItem['prototype'] is not None):
         extractedData['prototype'] = sourceItem['prototype']
     if ('quadrant' in sourceItem) and (sourceItem['quadrant'] is not None):
         extractedData['quadrant'] = sourceItem['quadrant']
+    if ('rank' in sourceItem) and (sourceItem['rank'] is not None):
+        extractedData['rank'] = sourceItem['rank']
     if ('readyToStartBy' in sourceItem) and (sourceItem['readyToStartBy'] is not None):
         extractedData['readyToStartBy'] = sourceItem['readyToStartBy']
     if ('readyToStartDate' in sourceItem) and (sourceItem['readyToStartDate'] is not None):
@@ -1973,12 +1605,18 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['regionIds'] = sourceItem['regionIds']
     if ('regressionHours' in sourceItem) and (sourceItem['regressionHours'] is not None):
         extractedData['regressionHours'] = sourceItem['regressionHours']
+    if ('relatedItemId' in sourceItem) and (sourceItem['relatedItemId'] is not None):
+        extractedData['relatedItemId'] = sourceItem['relatedItemId']
+    if ('relationship' in sourceItem) and (sourceItem['relationship'] is not None):
+        extractedData['relationship'] = sourceItem['relationship']
     if ('release' in sourceItem) and (sourceItem['release'] is not None):
         extractedData['release'] = sourceItem['release']
     if ('releaseId' in sourceItem) and (sourceItem['releaseId'] is not None):
         extractedData['releaseId'] = sourceItem['releaseId']
     if ('releaseIds' in sourceItem) and (sourceItem['releaseIds'] is not None):
         extractedData['releaseIds'] = sourceItem['releaseIds']
+    if ('releaseName' in sourceItem) and (sourceItem['releaseName'] is not None):
+        extractedData['releaseName'] = sourceItem['releaseName']
     if ('releaseNumber' in sourceItem) and (sourceItem['releaseNumber'] is not None):
         extractedData['releaseNumber'] = sourceItem['releaseNumber']
     if ('releaseVehicleIds' in sourceItem) and (sourceItem['releaseVehicleIds'] is not None):
@@ -1987,6 +1625,10 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['reportColor'] = sourceItem['reportColor']
     if ('requesterId' in sourceItem) and (sourceItem['requesterId'] is not None):
         extractedData['requesterId'] = sourceItem['requesterId']
+    if ('resolutionMethod' in sourceItem) and (sourceItem['resolutionMethod'] is not None):
+        extractedData['resolutionMethod'] = sourceItem['resolutionMethod']
+    if ('resolutionStatus' in sourceItem) and (sourceItem['resolutionStatus'] is not None):
+        extractedData['resolutionStatus'] = sourceItem['resolutionStatus']
     if ('revenueAssurance' in sourceItem) and (sourceItem['revenueAssurance'] is not None):
         extractedData['revenueAssurance'] = sourceItem['revenueAssurance']
     if ('revenueGrowth' in sourceItem) and (sourceItem['revenueGrowth'] is not None):
@@ -1995,16 +1637,18 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['riskAppetite'] = sourceItem['riskAppetite']
     if ('riskIds' in sourceItem) and (sourceItem['riskIds'] is not None):
         extractedData['riskIds'] = sourceItem['riskIds']
+    if ('riskType' in sourceItem) and (sourceItem['riskType'] is not None):
+        extractedData['riskType'] = sourceItem['riskType']
     if ('roadmap' in sourceItem) and (sourceItem['roadmap'] is not None):
         extractedData['roadmap'] = sourceItem['roadmap']
+    if ('roadmapSnapshotIds' in sourceItem) and (sourceItem['roadmapSnapshotIds'] is not None):
+        extractedData['roadmapSnapshotIds'] = sourceItem['roadmapSnapshotIds']
     if ('roi' in sourceItem) and (sourceItem['roi'] is not None):
         extractedData['roi'] = sourceItem['roi']
     if ('role' in sourceItem) and (sourceItem['role'] is not None):
         extractedData['role'] = sourceItem['role']
     if ('roleId' in sourceItem) and (sourceItem['roleId'] is not None):
         extractedData['roleId'] = sourceItem['roleId']
-    if ('scoreCardId' in sourceItem) and (sourceItem['scoreCardId'] is not None):
-        extractedData['scoreCardId'] = sourceItem['scoreCardId']
     if ('shortName' in sourceItem) and (sourceItem['shortName'] is not None):
         extractedData['shortName'] = sourceItem['shortName']
     if ('schedule' in sourceItem) and (sourceItem['schedule'] is not None):
@@ -2021,8 +1665,16 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['score3'] = sourceItem['score3']
     if ('score4' in sourceItem) and (sourceItem['score4'] is not None):
         extractedData['score4'] = sourceItem['score4']
+    if ('scoreCardId' in sourceItem) and (sourceItem['scoreCardId'] is not None):
+        extractedData['scoreCardId'] = sourceItem['scoreCardId']
+    if ('scoreOverrides' in sourceItem) and (sourceItem['scoreOverrides'] is not None):
+        extractedData['scoreOverrides'] = sourceItem['scoreOverrides']
     if ('shortName' in sourceItem) and (sourceItem['shortName'] is not None):
         extractedData['shortName'] = sourceItem['shortName']
+    if ('shipDate' in sourceItem) and (sourceItem['shipDate'] is not None):
+        extractedData['shipDate'] = sourceItem['shipDate']
+    if ('snapshotIds' in sourceItem) and (sourceItem['snapshotIds'] is not None):
+        extractedData['snapshotIds'] = sourceItem['snapshotIds']
     if ('solutionId' in sourceItem) and (sourceItem['solutionId'] is not None):
         extractedData['solutionId'] = sourceItem['solutionId']
     if ('source' in sourceItem) and (sourceItem['source'] is not None):
@@ -2041,8 +1693,16 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['state'] = sourceItem['state']
     if ('status' in sourceItem) and (sourceItem['status'] is not None):
         extractedData['status'] = sourceItem['status']
+    if ('storiesCount' in sourceItem) and (sourceItem['storiesCount'] is not None):
+        extractedData['storiesCount'] = sourceItem['storiesCount']
+    if ('storiesPercentComplete' in sourceItem) and (sourceItem['storiesPercentComplete'] is not None):
+        extractedData['storiesPercentComplete'] = sourceItem['storiesPercentComplete']
     if ('storyId' in sourceItem) and (sourceItem['storyId'] is not None):
         extractedData['storyId'] = sourceItem['storyId']
+    if ('storyIds' in sourceItem) and (sourceItem['storyIds'] is not None):
+        extractedData['storyIds'] = sourceItem['storyIds']
+    if ('strategic' in sourceItem) and (sourceItem['strategic'] is not None):
+        extractedData['strategic'] = sourceItem['strategic']
     if ('strategicDriver' in sourceItem) and (sourceItem['strategicDriver'] is not None):
         extractedData['strategicDriver'] = sourceItem['strategicDriver']
     if ('strategicHorizon' in sourceItem) and (sourceItem['strategicHorizon'] is not None):
@@ -2053,18 +1713,28 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['tags'] = sourceItem['tags']
     if ('targetCompletionDate' in sourceItem) and (sourceItem['targetCompletionDate'] is not None):
         extractedData['targetCompletionDate'] = sourceItem['targetCompletionDate']
+    if ('targetDate' in sourceItem) and (sourceItem['targetDate'] is not None):
+        extractedData['targetDate'] = sourceItem['targetDate']
+    if ('targetResolutionDate' in sourceItem) and (sourceItem['targetResolutionDate'] is not None):
+        extractedData['targetResolutionDate'] = sourceItem['targetResolutionDate']
+    if ('targetValue' in sourceItem) and (sourceItem['targetValue'] is not None):
+        extractedData['targetValue'] = sourceItem['targetValue']
     if ('targetSyncSprintId' in sourceItem) and (sourceItem['targetSyncSprintId'] is not None):
         extractedData['targetSyncSprintId'] = sourceItem['targetSyncSprintId']
     if ('team' in sourceItem) and (sourceItem['team'] is not None):
         extractedData['team'] = sourceItem['team']
-    if ('teams' in sourceItem) and (sourceItem['teams'] is not None):
-        extractedData['teams'] = sourceItem['teams']
+    if ('teamDescription' in sourceItem) and (sourceItem['teamDescription'] is not None):
+        extractedData['teamDescription'] = sourceItem['teamDescription']
     if ('teamId' in sourceItem) and (sourceItem['teamId'] is not None):
         extractedData['teamId'] = sourceItem['teamId']
     if ('teamIds' in sourceItem) and (sourceItem['teamIds'] is not None):
         extractedData['teamIds'] = sourceItem['teamIds']
-    if ('teamDescription' in sourceItem) and (sourceItem['teamDescription'] is not None):
-        extractedData['teamDescription'] = sourceItem['teamDescription']
+    if ('teamMemberIds' in sourceItem) and (sourceItem['teamMemberIds'] is not None):
+        extractedData['teamMemberIds'] = sourceItem['teamMemberIds']
+    if ('teamName' in sourceItem) and (sourceItem['teamName'] is not None):
+        extractedData['teamName'] = sourceItem['teamName']
+    if ('teams' in sourceItem) and (sourceItem['teams'] is not None):
+        extractedData['teams'] = sourceItem['teams']
     if ('testCategoryIds' in sourceItem) and (sourceItem['testCategoryIds'] is not None):
         extractedData['testCategoryIds'] = sourceItem['testCategoryIds']
     if ('testCompleteBy' in sourceItem) and (sourceItem['testCompleteBy'] is not None):
@@ -2075,6 +1745,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['testSuite'] = sourceItem['testSuite']
     if ('themeId' in sourceItem) and (sourceItem['themeId'] is not None):
         extractedData['themeId'] = sourceItem['themeId']
+    if ('themeGroupId' in sourceItem) and (sourceItem['themeGroupId'] is not None):
+        extractedData['themeGroupId'] = sourceItem['themeGroupId']
     if ('throughput' in sourceItem) and (sourceItem['throughput'] is not None):
         extractedData['throughput'] = sourceItem['throughput']
     if ('tier' in sourceItem) and (sourceItem['tier'] is not None):
@@ -2109,10 +1781,14 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['userType'] = sourceItem['userType']
     if ('valuePoints' in sourceItem) and (sourceItem['valuePoints'] is not None):
         extractedData['valuePoints'] = sourceItem['valuePoints']
+    if ('valueUpdates' in sourceItem) and (sourceItem['valueUpdates'] is not None):
+        extractedData['valueUpdates'] = sourceItem['valueUpdates']
     if ('vehicleId' in sourceItem) and (sourceItem['vehicleId'] is not None):
         extractedData['vehicleId'] = sourceItem['vehicleId']
     if ('viewPublicErs' in sourceItem) and (sourceItem['viewPublicErs'] is not None):
         extractedData['viewPublicErs'] = sourceItem['viewPublicErs']
+    if ('weight' in sourceItem) and (sourceItem['weight'] is not None):
+        extractedData['weight'] = sourceItem['weight']
     if ('workCodeId' in sourceItem) and (sourceItem['workCodeId'] is not None):
         extractedData['workCodeId'] = sourceItem['workCodeId']
     if ('yearlyCashFlow1' in sourceItem) and (sourceItem['yearlyCashFlow1'] is not None):
