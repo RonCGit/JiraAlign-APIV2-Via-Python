@@ -1677,8 +1677,6 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['productObjectiveIds'] = sourceItem['productObjectiveIds']
     if ('program' in sourceItem) and (sourceItem['program'] is not None):
         extractedData['program'] = sourceItem['program']
-    if ('programs' in sourceItem) and (sourceItem['programs'] is not None):
-        extractedData['programs'] = sourceItem['programs']
     if ('programId' in sourceItem) and (sourceItem['programId'] is not None):
         extractedData['programId'] = sourceItem['programId']
     if ('programIds' in sourceItem) and (sourceItem['programIds'] is not None):
