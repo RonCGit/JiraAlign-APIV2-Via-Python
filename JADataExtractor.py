@@ -10,7 +10,7 @@ import cfg
 import json
 
 # Maximum number of records to return for main data items
-MAX = 65000
+MAX = 65500
 
 ####################################################################################################################################################################################
 def main():
@@ -56,6 +56,11 @@ def main():
     #allConfigurationData['connectorCustomFields'] = connectorCustomFieldsArray
     #print("A total of " + str(len(connectorCustomFieldsArray)) + " Custom Fields were retrieved from Jira Align")
 
+    # Collect all Connector External Team Mapping information and save it
+    connectorExternalTeamMappingArray = common.ReadAllItems('Connectors/2/TeamMappings', MAX)
+    allConfigurationData['connectorExternalTeamMapping'] = connectorExternalTeamMappingArray
+    print("A total of " + str(len(connectorExternalTeamMappingArray)) + " External Team Mappings were retrieved from Jira Align")
+
     # Collect all Country information and save it - not supported by V2 API
     #countryArray = common.ReadAllItems('countries', MAX)
     #allConfigurationData['countries'] = countryArray
@@ -76,6 +81,43 @@ def main():
     allConfigurationData['divisions'] = divisionArray
     print("A total of " + str(len(divisionArray)) + " Divisions were retrieved from Jira Align")
 
+    # Collect all Domain information and save it
+    domainArray = common.ReadAllItems('Domains', MAX)
+    allConfigurationData['domains'] = domainArray
+    print("A total of " + str(len(domainArray)) + " Domains were retrieved from Jira Align")
+    # Domains/Health
+    # DomainItemRelation
+
+    # Collect all Grid Configurations for Capabilities information and save it
+    gridConfigCapabilitiesArray = common.ReadAllItems('GridConfigurations/capability/ColumnConfigurations', MAX)
+    allConfigurationData['GridConfigurationsCapabilities'] = gridConfigCapabilitiesArray
+    print("A total of " + str(len(gridConfigCapabilitiesArray)) +\
+          " Grid Configurations for Capabilities were retrieved from Jira Align")
+
+    # Collect all Grid Configurations for Epics information and save it
+    gridConfigEpicsArray = common.ReadAllItems('GridConfigurations/epic/ColumnConfigurations', MAX)
+    allConfigurationData['GridConfigurationsEpics'] = gridConfigEpicsArray
+    print("A total of " + str(len(gridConfigEpicsArray)) +\
+          " Grid Configurations for Epics were retrieved from Jira Align")
+
+    # Collect all Grid Configurations for Features information and save it
+    gridConfigFeaturesArray = common.ReadAllItems('GridConfigurations/feature/ColumnConfigurations', MAX)
+    allConfigurationData['GridConfigurationsFeatures'] = gridConfigFeaturesArray
+    print("A total of " + str(len(gridConfigFeaturesArray)) +\
+          " Grid Configurations for Features were retrieved from Jira Align")
+
+    # Collect all Grid Configurations for Themes information and save it
+    gridConfigThemesArray = common.ReadAllItems('GridConfigurations/theme/ColumnConfigurations', MAX)
+    allConfigurationData['GridConfigurationsThemes'] = gridConfigThemesArray
+    print("A total of " + str(len(gridConfigThemesArray)) +\
+          " Grid Configurations for Themes were retrieved from Jira Align")
+
+    # Collect all Grid Configurations for Dependencies information and save it
+    gridConfigDependenciesArray = common.ReadAllItems('GridConfigurations/dependency/ColumnConfigurations', MAX)
+    allConfigurationData['GridConfigurationsDependencies'] = gridConfigDependenciesArray
+    print("A total of " + str(len(gridConfigDependenciesArray)) +\
+          " Grid Configurations for Dependencies were retrieved from Jira Align")
+
     # Collect all Product information and save it
     productArray = common.GetAllProducts()
     allConfigurationData['products'] = productArray
@@ -95,6 +137,11 @@ def main():
     iterationArray = common.ReadAllItems('iterations', MAX)
     allConfigurationData['iterations'] = iterationArray
     print("A total of " + str(len(iterationArray)) + " Iterations were retrieved from Jira Align")
+
+    # Collect all Anchor Sprint information and save it
+    anchorSprintArray = common.ReadAllItems('AnchorSprints', MAX)
+    allConfigurationData['anchorsprints'] = anchorSprintArray
+    print("A total of " + str(len(anchorSprintArray)) + " Anchor Sprints were retrieved from Jira Align")
 
     # Collect all Snapshot information and save it
     snapshotArray = common.GetAllSnapshots()
@@ -156,6 +203,16 @@ def main():
     allConfigurationData['risks'] = risksArray
     print("A total of " + str(len(risksArray)) + " Risks were retrieved from Jira Align")
 
+    # Collect all Dependency information and save it
+    dependencyArray = common.ReadAllItems('dependencies', MAX)
+    allConfigurationData['dependency'] = dependencyArray
+    print("A total of " + str(len(dependencyArray)) + " Dependencies were retrieved from Jira Align")
+
+    # Collect all Custom Hierarchy information and save it
+    customHierarchiesArray = common.ReadAllItems('CustomHierarchies', MAX)
+    allConfigurationData['customhierarchies'] = customHierarchiesArray
+    print("A total of " + str(len(customHierarchiesArray)) + " Custom Hierarchies were retrieved from Jira Align")
+
     # Save all configuration information in JSON format, pretty printed to be human readable and diffable
     configFileName = 'JiraAlign_config_data.json'
     print("Writing all Jira Align configuration data to: " + configFileName)
@@ -172,6 +229,11 @@ def main():
     valueStreamArray = common.ReadAllItems('ValueStreams', MAX)
     allItemData['valuestreams'] = valueStreamArray
     print("A total of " + str(len(valueStreamArray)) + " Value Streams were retrieved from Jira Align")
+
+    # Collect all Work Codes information and save it
+    workCodesArray = common.ReadAllItems('WorkCodes', MAX)
+    allItemData['workcodes'] = workCodesArray
+    print("A total of " + str(len(workCodesArray)) + " Work Codes were retrieved from Jira Align")
 
     # Collect all Objective information and save it
     objectiveArray = common.ReadAllItems('objectives', MAX)

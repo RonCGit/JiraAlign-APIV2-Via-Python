@@ -18,7 +18,7 @@ import requests
 DEBUG = False
 # Set to True to use hardcoded values for API Endpoint and Instance URL
 # Set to False to prompt each time
-USE_DEFAULTS = False
+USE_DEFAULTS = True
 
 def PatchToJiraAlign(header, paramData, verify_flag, use_bearer, url = None):
     """Generic method to do a PATCH to the Jira Align instance, with the specified parameters, and return
@@ -125,7 +125,7 @@ def CollectApiInfo():
     print("API Endpoint is normally: /")
     if USE_DEFAULTS == True:
         cfg.apiendpoint = "/"
-        cfg.instanceurl = "https://foo.jiraalign.com"
+        cfg.instanceurl = "https://amgen.jiraalign.com"
     else:
         cfg.apiendpoint = input("Enter the api endpoint for your instance in following format EG. ""cities"". It is very important that you spell this endpoint correctly. Please refer to the api documents E.G https://cprime.agilecraft.com/api-docs/public/ for the apiendpoints available : ")
         #print(apiendpoint)
@@ -1095,16 +1095,26 @@ def ExtractItemData(itemType, sourceItem, extractedData):
     # see if the value is NOT None.  If it's not None, then copy the data over.
     if ('abilityToExec' in sourceItem) and (sourceItem['abilityToExec'] is not None):
         extractedData['abilityToExec'] = sourceItem['abilityToExec']
+    if ('acceptedBy' in sourceItem) and (sourceItem['acceptedBy'] is not None):
+        extractedData['acceptedBy'] = sourceItem['acceptedDate']
     if ('acceptedDate' in sourceItem) and (sourceItem['acceptedDate'] is not None):
         extractedData['acceptedDate'] = sourceItem['acceptedDate']
     if ('acceptedUserId' in sourceItem) and (sourceItem['acceptedUserId'] is not None):
         extractedData['acceptedUserId'] = sourceItem['acceptedUserId']
+    if ('active' in sourceItem) and (sourceItem['active'] is not None):
+        extractedData['active'] = sourceItem['active']
     if ('actualEndDate' in sourceItem) and (sourceItem['actualEndDate'] is not None):
         extractedData['actualEndDate'] = sourceItem['actualEndDate']
-    if ('additionalProgramIds' in sourceItem) and (sourceItem['additionalProgramIds'] is not None):
-        extractedData['additionalProgramIds'] = sourceItem['additionalProgramIds']
     if ('additionalProcessStepIds' in sourceItem) and (sourceItem['additionalProcessStepIds'] is not None):
         extractedData['additionalProcessStepIds'] = sourceItem['additionalProcessStepIds']
+    if ('additionalProgramIds' in sourceItem) and (sourceItem['additionalProgramIds'] is not None):
+        extractedData['additionalProgramIds'] = sourceItem['additionalProgramIds']
+    if ('additionalProp1' in sourceItem) and (sourceItem['additionalProp1'] is not None):
+        extractedData['additionalProp1'] = sourceItem['additionalProp1']
+    if ('additionalProp2' in sourceItem) and (sourceItem['additionalProp2'] is not None):
+        extractedData['additionalProp2'] = sourceItem['additionalProp2']
+    if ('additionalProp3' in sourceItem) and (sourceItem['additionalProp3'] is not None):
+        extractedData['additionalProp3'] = sourceItem['additionalProp3']
     if ('affectedCountryIds' in sourceItem) and (sourceItem['affectedCountryIds'] is not None):
         extractedData['affectedCountryIds'] = sourceItem['affectedCountryIds']
     if ('allocations' in sourceItem) and (sourceItem['allocations'] is not None):
@@ -1113,6 +1123,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['allowTaskDeletion'] = sourceItem['allowTaskDeletion']
     if ('allowTeamToRunStandup' in sourceItem) and (sourceItem['allowTeamToRunStandup'] is not None):
         extractedData['allowTeamToRunStandup'] = sourceItem['allowTeamToRunStandup']
+    if ('alternateName' in sourceItem) and (sourceItem['alternateName'] is not None):
+        extractedData['alternateName'] = sourceItem['alternateName']
     if ('anchorSprint' in sourceItem) and (sourceItem['anchorSprint'] is not None):
         extractedData['anchorSprint'] = sourceItem['anchorSprint']
     if ('anchorSprintId' in sourceItem) and (sourceItem['anchorSprintId'] is not None):
@@ -1125,6 +1137,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['areSprintsEnabled'] = sourceItem['areSprintsEnabled']
     if ('associatedTicket' in sourceItem) and (sourceItem['associatedTicket'] is not None):
         extractedData['associatedTicket'] = sourceItem['associatedTicket']
+    if ('assumption' in sourceItem) and (sourceItem['assumption'] is not None):
+        extractedData['assumption'] = sourceItem['assumption']
     if ('autoEstimateValue' in sourceItem) and (sourceItem['autoEstimateValue'] is not None):
         extractedData['autoEstimateValue'] = sourceItem['autoEstimateValue']
     if ('baselineValue' in sourceItem) and (sourceItem['baselineValue'] is not None):
@@ -1135,6 +1149,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['benefits'] = sourceItem['benefits']
     if ('blendedHourlyRate' in sourceItem) and (sourceItem['blendedHourlyRate'] is not None):
         extractedData['blendedHourlyRate'] = sourceItem['blendedHourlyRate']
+    if ('blocked' in sourceItem) and (sourceItem['blocked'] is not None):
+        extractedData['blocked'] = sourceItem['blocked']
     if ('blockedReason' in sourceItem) and (sourceItem['blockedReason'] is not None):
         extractedData['blockedReason'] = sourceItem['blockedReason']
     if ('boardId' in sourceItem) and (sourceItem['boardId'] is not None):
@@ -1149,6 +1165,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['businessImpact'] = sourceItem['businessImpact']
     if ('businessValue' in sourceItem) and (sourceItem['businessValue'] is not None):
         extractedData['businessValue'] = sourceItem['businessValue']
+    if ('capabilityId' in sourceItem) and (sourceItem['capabilityId'] is not None):
+        extractedData['capabilityId'] = sourceItem['capabilityId']
     if ('capitalized' in sourceItem) and (sourceItem['capitalized'] is not None):
         extractedData['capitalized'] = sourceItem['capitalized']
     if ('careal' in sourceItem) and (sourceItem['careal'] is not None):
@@ -1183,6 +1201,16 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['code'] = sourceItem['code']
     if ('color' in sourceItem) and (sourceItem['color'] is not None):
         extractedData['color'] = sourceItem['color']
+    if ('commitDate' in sourceItem) and (sourceItem['commitDate'] is not None):
+        extractedData['commitDate'] = sourceItem['commitDate']
+    if ('committed' in sourceItem) and (sourceItem['committed'] is not None):
+        extractedData['committed'] = sourceItem['committed']
+    if ('committedBySprintId' in sourceItem) and (sourceItem['committedBySprintId'] is not None):
+        extractedData['committedBySprintId'] = sourceItem['committedBySprintId']
+    if ('committedSyncSprintId' in sourceItem) and (sourceItem['committedSyncSprintId'] is not None):
+        extractedData['committedSyncSprintId'] = sourceItem['committedSyncSprintId']
+    if ('communities' in sourceItem) and (sourceItem['communities'] is not None):
+        extractedData['communities'] = sourceItem['communities']
     if ('communityIds' in sourceItem) and (sourceItem['communityIds'] is not None):
         extractedData['communityIds'] = sourceItem['communityIds']
     if ('company' in sourceItem) and (sourceItem['company'] is not None):
@@ -1211,8 +1239,12 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['costCenter'] = sourceItem['costCenter']
     if ('costCenterId' in sourceItem) and (sourceItem['costCenterId'] is not None):
         extractedData['costCenterId'] = sourceItem['costCenterId']
+    if ('costCenterIds' in sourceItem) and (sourceItem['costCenterIds'] is not None):
+        extractedData['costCenterIds'] = sourceItem['costCenterIds']
     if ('costCenterName' in sourceItem) and (sourceItem['costCenterName'] is not None):
         extractedData['costCenterName'] = sourceItem['costCenterName']
+    if ('costCenters' in sourceItem) and (sourceItem['costCenters'] is not None):
+        extractedData['costCenters'] = sourceItem['costCenters']
     if ('createDate' in sourceItem) and (sourceItem['createDate'] is not None):
         extractedData['createDate'] = sourceItem['createDate']
     if ('createdBy' in sourceItem) and (sourceItem['createdBy'] is not None):
@@ -1227,20 +1259,38 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['customerIds'] = sourceItem['customerIds']
     if ('customFields' in sourceItem) and (sourceItem['customFields'] is not None):
         extractedData['customFields'] = sourceItem['customFields']
+    if ('defaultDisplay' in sourceItem) and (sourceItem['defaultDisplay'] is not None):
+        extractedData['defaultDisplay'] = sourceItem['defaultDisplay']
     if ('defectAllocation' in sourceItem) and (sourceItem['defectAllocation'] is not None):
         extractedData['defectAllocation'] = sourceItem['defectAllocation']
+    if ('defectIds' in sourceItem) and (sourceItem['defectIds'] is not None):
+        extractedData['defectIds'] = sourceItem['defectIds']
+    if ('defectsCount' in sourceItem) and (sourceItem['defectsCount'] is not None):
+        extractedData['defectsCount'] = sourceItem['defectsCount']
+    if ('delivered' in sourceItem) and (sourceItem['delivered'] is not None):
+        extractedData['delivered'] = sourceItem['delivered']
     if ('deliveredValue' in sourceItem) and (sourceItem['deliveredValue'] is not None):
         extractedData['deliveredValue'] = sourceItem['deliveredValue']
     if ('dependencyIds' in sourceItem) and (sourceItem['dependencyIds'] is not None):
         extractedData['dependencyIds'] = sourceItem['dependencyIds']
+    if ('dependencyType' in sourceItem) and (sourceItem['dependencyType'] is not None):
+        extractedData['dependencyType'] = sourceItem['dependencyType']
+    if ('dependencyIds' in sourceItem) and (sourceItem['dependencyIds'] is not None):
+        extractedData['dependencyIds'] = sourceItem['dependencyIds']
+    if ('dependsOnExternalId' in sourceItem) and (sourceItem['dependsOnExternalId'] is not None):
+        extractedData['dependsOnExternalId'] = sourceItem['dependsOnExternalId']
+    if ('dependsOnProgramId' in sourceItem) and (sourceItem['dependsOnProgramId'] is not None):
+        extractedData['dependsOnProgramId'] = sourceItem['dependsOnProgramId']
+    if ('dependsOnTeamId' in sourceItem) and (sourceItem['dependsOnTeamId'] is not None):
+        extractedData['dependsOnTeamId'] = sourceItem['dependsOnTeamId']
     if ('description' in sourceItem) and (sourceItem['description'] is not None):
         extractedData['description'] = sourceItem['description']
     if ('descriptionRich' in sourceItem) and (sourceItem['descriptionRich'] is not None):
         extractedData['descriptionRich'] = sourceItem['descriptionRich']
-    if ('dependencyIds' in sourceItem) and (sourceItem['dependencyIds'] is not None):
-        extractedData['dependencyIds'] = sourceItem['dependencyIds']
     if ('designStage' in sourceItem) and (sourceItem['designStage'] is not None):
         extractedData['designStage'] = sourceItem['designStage']
+    if ('detail' in sourceItem) and (sourceItem['detail'] is not None):
+        extractedData['detail'] = sourceItem['detail']
     if ('devCompleteBy' in sourceItem) and (sourceItem['devCompleteBy'] is not None):
         extractedData['devCompleteBy'] = sourceItem['devCompleteBy']
     if ('devCompleteDate' in sourceItem) and (sourceItem['devCompleteDate'] is not None):
@@ -1287,6 +1337,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['enterpriseHierarchy'] = sourceItem['enterpriseHierarchy']
     if ('enterpriseHierarchyId' in sourceItem) and (sourceItem['enterpriseHierarchyId'] is not None):
         extractedData['enterpriseHierarchyId'] = sourceItem['enterpriseHierarchyId']
+    if ('epicId' in sourceItem) and (sourceItem['epicId'] is not None):
+        extractedData['epicId'] = sourceItem['epicId']
     if ('epicObjectId' in sourceItem) and (sourceItem['epicObjectId'] is not None):
         extractedData['epicObjectId'] = sourceItem['epicObjectId']
     if ('errorMessage' in sourceItem) and (sourceItem['errorMessage'] is not None):
@@ -1313,6 +1365,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['externalProject'] = sourceItem['externalProject']
     if ('externalProjectId' in sourceItem) and (sourceItem['externalProjectId'] is not None):
         extractedData['externalProjectId'] = sourceItem['externalProjectId']
+    if ('externalTeamId' in sourceItem) and (sourceItem['externalTeamId'] is not None):
+        extractedData['externalTeamId'] = sourceItem['externalTeamId']
     if ('externalUser' in sourceItem) and (sourceItem['externalUser'] is not None):
         extractedData['externalUser'] = sourceItem['externalUser']
     if ('failureImpact' in sourceItem) and (sourceItem['failureImpact'] is not None):
@@ -1327,6 +1381,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['featureIds'] = sourceItem['featureIds']
     if ('featureRank' in sourceItem) and (sourceItem['featureRank'] is not None):
         extractedData['featureRank'] = sourceItem['featureRank']
+    if ('features' in sourceItem) and (sourceItem['features'] is not None):
+        extractedData['features'] = sourceItem['features']
     if ('featureSummary' in sourceItem) and (sourceItem['featureSummary'] is not None):
         extractedData['featureSummary'] = sourceItem['featureSummary']
     if ('fcastShare' in sourceItem) and (sourceItem['fcastShare'] is not None):
@@ -1341,6 +1397,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['functionalArea'] = sourceItem['functionalArea']
     if ('fullName' in sourceItem) and (sourceItem['fullName'] is not None):
         extractedData['fullName'] = sourceItem['fullName']
+    if ('fundingLevels' in sourceItem) and (sourceItem['fundingLevels'] is not None):
+        extractedData['fundingLevels'] = sourceItem['fundingLevels']
     if ('fundingStage' in sourceItem) and (sourceItem['fundingStage'] is not None):
         extractedData['fundingStage'] = sourceItem['fundingStage']
     if ('goal' in sourceItem) and (sourceItem['goal'] is not None):
@@ -1351,6 +1409,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['goLiveDate'] = sourceItem['goLiveDate']
     if ('groupId' in sourceItem) and (sourceItem['groupId'] is not None):
         extractedData['groupId'] = sourceItem['groupId']
+    if ('hasNoWork' in sourceItem) and (sourceItem['hasNoWork'] is not None):
+        extractedData['hasNoWork'] = sourceItem['hasNoWork']
     if ('health' in sourceItem) and (sourceItem['health'] is not None):
         extractedData['health'] = sourceItem['health']
     if ('holidayCalendar' in sourceItem) and (sourceItem['holidayCalendar'] is not None):
@@ -1387,8 +1447,6 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['includeHours'] = sourceItem['includeHours']
     if ('initialInvestment' in sourceItem) and (sourceItem['initialInvestment'] is not None):
         extractedData['initialInvestment'] = sourceItem['initialInvestment']
-    if ('investmentType' in sourceItem) and (sourceItem['investmentType'] is not None):
-        extractedData['investmentType'] = sourceItem['investmentType']
     if ('inProgressBy' in sourceItem) and (sourceItem['inProgressBy'] is not None):
         extractedData['inProgressBy'] = sourceItem['inProgressBy']
     if ('inProgressDate' in sourceItem) and (sourceItem['inProgressDate'] is not None):
@@ -1397,16 +1455,28 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['inProgressDateEnd'] = sourceItem['inProgressDateEnd']
     if ('inScope' in sourceItem) and (sourceItem['inScope'] is not None):
         extractedData['inScope'] = sourceItem['inScope']
+    if ('instance' in sourceItem) and (sourceItem['instance'] is not None):
+        extractedData['instance'] = sourceItem['instance']
     if ('intakeFormId' in sourceItem) and (sourceItem['intakeFormId'] is not None):
         extractedData['intakeFormId'] = sourceItem['intakeFormId']
+    if ('investmentType' in sourceItem) and (sourceItem['investmentType'] is not None):
+        extractedData['investmentType'] = sourceItem['investmentType']
+    if ('isAccepted' in sourceItem) and (sourceItem['isAccepted'] is not None):
+        extractedData['isAccepted'] = sourceItem['isAccepted']
     if ('isActive' in sourceItem) and (sourceItem['isActive'] is not None):
         extractedData['isActive'] = sourceItem['isActive']
+    if ('isAutomationTask' in sourceItem) and (sourceItem['isAutomationTask'] is not None):
+        extractedData['isAutomationTask'] = sourceItem['isAutomationTask']
     if ('isBlocked' in sourceItem) and (sourceItem['isBlocked'] is not None):
         extractedData['isBlocked'] = sourceItem['isBlocked']
     if ('isCanceled' in sourceItem) and (sourceItem['isCanceled'] is not None):
         extractedData['isCanceled'] = sourceItem['isCanceled']
+    if ('isCommitted' in sourceItem) and (sourceItem['isCommitted'] is not None):
+        extractedData['isCommitted'] = sourceItem['isCommitted']
     if ('isComplianceManager' in sourceItem) and (sourceItem['isComplianceManager'] is not None):
         extractedData['isComplianceManager'] = sourceItem['isComplianceManager']
+    if ('isDelivered' in sourceItem) and (sourceItem['isDelivered'] is not None):
+        extractedData['isDelivered'] = sourceItem['isDelivered']
     if ('isExternal' in sourceItem) and (sourceItem['isExternal'] is not None):
         extractedData['isExternal'] = sourceItem['isExternal']
     if ('isImport' in sourceItem) and (sourceItem['isImport'] is not None):
@@ -1419,12 +1489,20 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['isMajor'] = sourceItem['isMajor']
     if ('isMultiProgram' in sourceItem) and (sourceItem['isMultiProgram'] is not None):
         extractedData['isMultiProgram'] = sourceItem['isMultiProgram']
+    if ('isParentSplit' in sourceItem) and (sourceItem['isParentSplit'] is not None):
+        extractedData['isParentSplit'] = sourceItem['isParentSplit']
     if ('isPrivate' in sourceItem) and (sourceItem['isPrivate'] is not None):
         extractedData['isPrivate'] = sourceItem['isPrivate']
+    if ('isProposed' in sourceItem) and (sourceItem['isProposed'] is not None):
+        extractedData['isProposed'] = sourceItem['isProposed']
     if ('isPublic' in sourceItem) and (sourceItem['isPublic'] is not None):
         extractedData['isPublic'] = sourceItem['isPublic']
     if ('isRecycled' in sourceItem) and (sourceItem['isRecycled'] is not None):
         extractedData['isRecycled'] = sourceItem['isRecycled']
+    if ('isRejected' in sourceItem) and (sourceItem['isRejected'] is not None):
+        extractedData['isRejected'] = sourceItem['isRejected']
+    if ('isResponseBlocked' in sourceItem) and (sourceItem['isResponseBlocked'] is not None):
+        extractedData['isResponseBlocked'] = sourceItem['isResponseBlocked']
     if ('isScoreOverridden' in sourceItem) and (sourceItem['isScoreOverridden'] is not None):
         extractedData['isScoreOverridden'] = sourceItem['isScoreOverridden']
     if ('isSolution' in sourceItem) and (sourceItem['isSolution'] is not None):
@@ -1469,6 +1547,10 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['leanUxCanvas'] = sourceItem['leanUxCanvas']
     if ('level' in sourceItem) and (sourceItem['level'] is not None):
         extractedData['level'] = sourceItem['level']
+    if ('levelId' in sourceItem) and (sourceItem['levelId'] is not None):
+        extractedData['levelId'] = sourceItem['levelId']
+    if ('levels' in sourceItem) and (sourceItem['levels'] is not None):
+        extractedData['levels'] = sourceItem['levels']
     if ('links' in sourceItem) and (sourceItem['links'] is not None):
         extractedData['links'] = sourceItem['links']
     if ('managerId' in sourceItem) and (sourceItem['managerId'] is not None):
@@ -1489,6 +1571,10 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['mvp'] = sourceItem['mvp']
     if ('name' in sourceItem) and (sourceItem['name'] is not None):
         extractedData['name'] = sourceItem['name']
+    if ('neededBy' in sourceItem) and (sourceItem['neededBy'] is not None):
+        extractedData['neededBy'] = sourceItem['neededBy']
+    if ('neededBySprintId' in sourceItem) and (sourceItem['neededBySprintId'] is not None):
+        extractedData['neededBySprintId'] = sourceItem['neededBySprintId']
     if ('notes' in sourceItem) and (sourceItem['notes'] is not None):
         extractedData['notes'] = sourceItem['notes']
     if ('notify' in sourceItem) and (sourceItem['notify'] is not None):
@@ -1505,10 +1591,16 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['notStartedDate'] = sourceItem['notStartedDate']
     if ('notStartedDateEnd' in sourceItem) and (sourceItem['notStartedDateEnd'] is not None):
         extractedData['notStartedDateEnd'] = sourceItem['notStartedDateEnd']
+    if ('noWork' in sourceItem) and (sourceItem['noWork'] is not None):
+        extractedData['noWork'] = sourceItem['noWork']
+    if ('noWorkReason' in sourceItem) and (sourceItem['noWorkReason'] is not None):
+        extractedData['noWorkReason'] = sourceItem['noWorkReason']
     if ('occurrence' in sourceItem) and (sourceItem['occurrence'] is not None):
         extractedData['occurrence'] = sourceItem['occurrence']
     if ('operationalStepId' in sourceItem) and (sourceItem['operationalStepId'] is not None):
         extractedData['operationalStepId'] = sourceItem['operationalStepId']
+    if ('organization' in sourceItem) and (sourceItem['organization'] is not None):
+        extractedData['organization'] = sourceItem['organization']
     if ('originSprints' in sourceItem) and (sourceItem['originSprints'] is not None):
         extractedData['originSprints'] = sourceItem['originSprints']
     if ('overrideVelocity' in sourceItem) and (sourceItem['overrideVelocity'] is not None):
@@ -1519,8 +1611,16 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['ownerId'] = sourceItem['ownerId']
     if ('parentId' in sourceItem) and (sourceItem['parentId'] is not None):
         extractedData['parentId'] = sourceItem['parentId']
+    if ('parentDomain' in sourceItem) and (sourceItem['parentDomain'] is not None):
+        extractedData['parentDomain'] = sourceItem['parentDomain']
+    if ('parentDomainId' in sourceItem) and (sourceItem['parentDomainId'] is not None):
+        extractedData['parentDomainId'] = sourceItem['parentDomainId']
+    if ('parentGoalId' in sourceItem) and (sourceItem['parentGoalId'] is not None):
+        extractedData['parentGoalId'] = sourceItem['parentGoalId']
     if ('parentName' in sourceItem) and (sourceItem['parentName'] is not None):
         extractedData['parentName'] = sourceItem['parentName']
+    if ('parentProduct' in sourceItem) and (sourceItem['parentProduct'] is not None):
+        extractedData['parentProduct'] = sourceItem['parentProduct']
     if ('parentProductId' in sourceItem) and (sourceItem['parentProductId'] is not None):
         extractedData['parentProductId'] = sourceItem['parentProductId']
     if ('parentSplitId' in sourceItem) and (sourceItem['parentSplitId'] is not None):
@@ -1531,6 +1631,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['pendingApprovalBy'] = sourceItem['pendingApprovalBy']
     if ('pendingApprovalDate' in sourceItem) and (sourceItem['pendingApprovalDate'] is not None):
         extractedData['pendingApprovalDate'] = sourceItem['pendingApprovalDate']
+    if ('personaId' in sourceItem) and (sourceItem['personaId'] is not None):
+        extractedData['personaId'] = sourceItem['personaId']
     if ('personaIds' in sourceItem) and (sourceItem['personaIds'] is not None):
         extractedData['personaIds'] = sourceItem['personaIds']
     if ('planningMode' in sourceItem) and (sourceItem['planningMode'] is not None):
@@ -1543,6 +1645,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['points'] = sourceItem['points']
     if ('pointsEstimate' in sourceItem) and (sourceItem['pointsEstimate'] is not None):
         extractedData['pointsEstimate'] = sourceItem['pointsEstimate']
+    if ('portfolio' in sourceItem) and (sourceItem['portfolio'] is not None):
+        extractedData['portfolio'] = sourceItem['portfolio']
     if ('portfolioAskDate' in sourceItem) and (sourceItem['portfolioAskDate'] is not None):
         extractedData['portfolioAskDate'] = sourceItem['portfolioAskDate']
     if ('portfolioId' in sourceItem) and (sourceItem['portfolioId'] is not None):
@@ -1573,6 +1677,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['productObjectiveIds'] = sourceItem['productObjectiveIds']
     if ('program' in sourceItem) and (sourceItem['program'] is not None):
         extractedData['program'] = sourceItem['program']
+    if ('programs' in sourceItem) and (sourceItem['programs'] is not None):
+        extractedData['programs'] = sourceItem['programs']
     if ('programId' in sourceItem) and (sourceItem['programId'] is not None):
         extractedData['programId'] = sourceItem['programId']
     if ('programIds' in sourceItem) and (sourceItem['programIds'] is not None):
@@ -1581,10 +1687,14 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['programs'] = sourceItem['programs']
     if ('projectId' in sourceItem) and (sourceItem['projectId'] is not None):
         extractedData['projectId'] = sourceItem['projectId']
+    if ('projectIds' in sourceItem) and (sourceItem['projectIds'] is not None):
+        extractedData['projectIds'] = sourceItem['projectIds']
     if ('projectKey' in sourceItem) and (sourceItem['projectKey'] is not None):
         extractedData['projectKey'] = sourceItem['projectKey']
     if ('projectName' in sourceItem) and (sourceItem['projectName'] is not None):
         extractedData['projectName'] = sourceItem['projectName']
+    if ('proposed' in sourceItem) and (sourceItem['proposed'] is not None):
+        extractedData['proposed'] = sourceItem['proposed']
     if ('prototype' in sourceItem) and (sourceItem['prototype'] is not None):
         extractedData['prototype'] = sourceItem['prototype']
     if ('quadrant' in sourceItem) and (sourceItem['quadrant'] is not None):
@@ -1605,6 +1715,10 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['regionIds'] = sourceItem['regionIds']
     if ('regressionHours' in sourceItem) and (sourceItem['regressionHours'] is not None):
         extractedData['regressionHours'] = sourceItem['regressionHours']
+    if ('rejected' in sourceItem) and (sourceItem['rejected'] is not None):
+        extractedData['rejected'] = sourceItem['rejected']
+    if ('relatedDependencyId' in sourceItem) and (sourceItem['relatedDependencyId'] is not None):
+        extractedData['relatedDependencyId'] = sourceItem['relatedDependencyId']
     if ('relatedItemId' in sourceItem) and (sourceItem['relatedItemId'] is not None):
         extractedData['relatedItemId'] = sourceItem['relatedItemId']
     if ('relationship' in sourceItem) and (sourceItem['relationship'] is not None):
@@ -1625,10 +1739,18 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['reportColor'] = sourceItem['reportColor']
     if ('requesterId' in sourceItem) and (sourceItem['requesterId'] is not None):
         extractedData['requesterId'] = sourceItem['requesterId']
+    if ('requestingProgramId' in sourceItem) and (sourceItem['requestingProgramId'] is not None):
+        extractedData['requestingProgramId'] = sourceItem['requestingProgramId']
+    if ('requestingTeamId' in sourceItem) and (sourceItem['requestingTeamId'] is not None):
+        extractedData['requestingTeamId'] = sourceItem['requestingTeamId']
     if ('resolutionMethod' in sourceItem) and (sourceItem['resolutionMethod'] is not None):
         extractedData['resolutionMethod'] = sourceItem['resolutionMethod']
     if ('resolutionStatus' in sourceItem) and (sourceItem['resolutionStatus'] is not None):
         extractedData['resolutionStatus'] = sourceItem['resolutionStatus']
+    if ('responseBlocked' in sourceItem) and (sourceItem['responseBlocked'] is not None):
+        extractedData['responseBlocked'] = sourceItem['responseBlocked']
+    if ('responseBlockedReason' in sourceItem) and (sourceItem['responseBlockedReason'] is not None):
+        extractedData['responseBlockedReason'] = sourceItem['responseBlockedReason']
     if ('revenueAssurance' in sourceItem) and (sourceItem['revenueAssurance'] is not None):
         extractedData['revenueAssurance'] = sourceItem['revenueAssurance']
     if ('revenueGrowth' in sourceItem) and (sourceItem['revenueGrowth'] is not None):
@@ -1669,20 +1791,30 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['scoreCardId'] = sourceItem['scoreCardId']
     if ('scoreOverrides' in sourceItem) and (sourceItem['scoreOverrides'] is not None):
         extractedData['scoreOverrides'] = sourceItem['scoreOverrides']
+    if ('short' in sourceItem) and (sourceItem['short'] is not None):
+        extractedData['short'] = sourceItem['short']
     if ('shortName' in sourceItem) and (sourceItem['shortName'] is not None):
         extractedData['shortName'] = sourceItem['shortName']
     if ('shipDate' in sourceItem) and (sourceItem['shipDate'] is not None):
         extractedData['shipDate'] = sourceItem['shipDate']
     if ('snapshotIds' in sourceItem) and (sourceItem['snapshotIds'] is not None):
         extractedData['snapshotIds'] = sourceItem['snapshotIds']
+    if ('solution' in sourceItem) and (sourceItem['solution'] is not None):
+        extractedData['solution'] = sourceItem['solution']
     if ('solutionId' in sourceItem) and (sourceItem['solutionId'] is not None):
         extractedData['solutionId'] = sourceItem['solutionId']
     if ('source' in sourceItem) and (sourceItem['source'] is not None):
         extractedData['source'] = sourceItem['source']
     if ('spendToDate' in sourceItem) and (sourceItem['spendToDate'] is not None):
         extractedData['spendToDate'] = sourceItem['spendToDate']
+    if ('splitReason' in sourceItem) and (sourceItem['splitReason'] is not None):
+        extractedData['splitReason'] = sourceItem['splitReason']
+    if ('splitType' in sourceItem) and (sourceItem['splitType'] is not None):
+        extractedData['splitType'] = sourceItem['splitType']
     if ('sprintPrefix' in sourceItem) and (sourceItem['sprintPrefix'] is not None):
         extractedData['sprintPrefix'] = sourceItem['sprintPrefix']
+    if ('sprintSchedule' in sourceItem) and (sourceItem['sprintSchedule'] is not None):
+        extractedData['sprintSchedule'] = sourceItem['sprintSchedule']
     if ('startDate' in sourceItem) and (sourceItem['startDate'] is not None):
         extractedData['startDate'] = sourceItem['startDate']
     if ('startInitiationDate' in sourceItem) and (sourceItem['startInitiationDate'] is not None):
@@ -1693,6 +1825,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['state'] = sourceItem['state']
     if ('status' in sourceItem) and (sourceItem['status'] is not None):
         extractedData['status'] = sourceItem['status']
+    if ('statuses' in sourceItem) and (sourceItem['statuses'] is not None):
+        extractedData['statuses'] = sourceItem['statuses']
     if ('storiesCount' in sourceItem) and (sourceItem['storiesCount'] is not None):
         extractedData['storiesCount'] = sourceItem['storiesCount']
     if ('storiesPercentComplete' in sourceItem) and (sourceItem['storiesPercentComplete'] is not None):
@@ -1701,6 +1835,10 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['storyId'] = sourceItem['storyId']
     if ('storyIds' in sourceItem) and (sourceItem['storyIds'] is not None):
         extractedData['storyIds'] = sourceItem['storyIds']
+    if ('storyPointsAcceptedTotal' in sourceItem) and (sourceItem['storyPointsAcceptedTotal'] is not None):
+        extractedData['storyPointsAcceptedTotal'] = sourceItem['storyPointsAcceptedTotal']
+    if ('storyPointsTotal' in sourceItem) and (sourceItem['storyPointsTotal'] is not None):
+        extractedData['storyPointsTotal'] = sourceItem['storyPointsTotal']
     if ('strategic' in sourceItem) and (sourceItem['strategic'] is not None):
         extractedData['strategic'] = sourceItem['strategic']
     if ('strategicDriver' in sourceItem) and (sourceItem['strategicDriver'] is not None):
@@ -1743,6 +1881,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['testCompleteDate'] = sourceItem['testCompleteDate']
     if ('testSuite' in sourceItem) and (sourceItem['testSuite'] is not None):
         extractedData['testSuite'] = sourceItem['testSuite']
+    if ('testSuiteIteration' in sourceItem) and (sourceItem['testSuiteIteration'] is not None):
+        extractedData['testSuiteIteration'] = sourceItem['testSuiteIteration']
     if ('themeId' in sourceItem) and (sourceItem['themeId'] is not None):
         extractedData['themeId'] = sourceItem['themeId']
     if ('themeGroupId' in sourceItem) and (sourceItem['themeGroupId'] is not None):
@@ -1769,6 +1909,8 @@ def ExtractItemData(itemType, sourceItem, extractedData):
         extractedData['totalHours'] = sourceItem['totalHours']
     if ('totalOpEx' in sourceItem) and (sourceItem['totalOpEx'] is not None):
         extractedData['totalOpEx'] = sourceItem['totalOpEx']
+    if ('trackBy' in sourceItem) and (sourceItem['trackBy'] is not None):
+        extractedData['trackBy'] = sourceItem['trackBy']
     if ('type' in sourceItem) and (sourceItem['type'] is not None):
         extractedData['type'] = sourceItem['type']
     if ('uid' in sourceItem) and (sourceItem['uid'] is not None):
