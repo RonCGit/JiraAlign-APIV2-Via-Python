@@ -26,9 +26,9 @@ def main():
     # Setup a single variable to contain all the configuration data
     allConfigurationData = {}
 
-    # Add the Jira Align Version Number
-    allConfigurationData['_version'] = cfg.jaVersion
-    print("Jira Align Version Number: " + cfg.jaVersion)
+    # Add the Jira Align Version Number - SSO blocks this
+    #allConfigurationData['_version'] = cfg.jaVersion
+    #print("Jira Align Version Number: " + cfg.jaVersion)
     
     # Collect all Region information and save it
     regionArray = common.ReadAllItems('regions', MAX)
@@ -67,17 +67,17 @@ def main():
     #print("A total of " + str(len(countryArray)) + " Countries were retrieved from Jira Align")
 
     # Collect all City information and save it
-    cityArray = common.GetAllCities()
+    cityArray = common.ReadAllItems('cities', MAX)
     allConfigurationData['cities'] = cityArray
     print("A total of " + str(len(cityArray)) + " Cities were retrieved from Jira Align")
 
     # Collect all Cost Center information and save it
-    costCenterArray = common.GetAllCostCenters()
+    costCenterArray = common.ReadAllItems('CostCenters', MAX)
     allConfigurationData['costCenters'] = costCenterArray
     print("A total of " + str(len(costCenterArray)) + " Cost Centers were retrieved from Jira Align")
 
     # Collect all Division information and save it
-    divisionArray = common.GetAllDivisions()
+    divisionArray = common.ReadAllItems('divisions', MAX)
     allConfigurationData['divisions'] = divisionArray
     print("A total of " + str(len(divisionArray)) + " Divisions were retrieved from Jira Align")
 
@@ -119,7 +119,7 @@ def main():
           " Grid Configurations for Dependencies were retrieved from Jira Align")
 
     # Collect all Product information and save it
-    productArray = common.GetAllProducts()
+    productArray = common.ReadAllItems('products', MAX)
     allConfigurationData['products'] = productArray
     print("A total of " + str(len(productArray)) + " Products were retrieved from Jira Align")
 
@@ -144,17 +144,17 @@ def main():
     print("A total of " + str(len(anchorSprintArray)) + " Anchor Sprints were retrieved from Jira Align")
 
     # Collect all Snapshot information and save it
-    snapshotArray = common.GetAllSnapshots()
+    snapshotArray = common.ReadAllItems('snapshots', MAX)
     allConfigurationData['snapshots'] = snapshotArray
     print("A total of " + str(len(snapshotArray)) + " Strategic Snapshots were retrieved from Jira Align")
 
     # Collect all Theme information and save it
-    themeArray = common.GetAllThemes()
+    themeArray = common.ReadAllItems('themes', MAX)
     allConfigurationData['themes'] = themeArray
     print("A total of " + str(len(themeArray)) + " Themes were retrieved from Jira Align")
 
     # Collect all Goal information and save it
-    goalArray = common.GetAllGoals()
+    goalArray = common.ReadAllItems('goals', MAX)
     allConfigurationData['goals'] = goalArray
     print("A total of " + str(len(goalArray)) + " Goals were retrieved from Jira Align")
 
@@ -164,32 +164,32 @@ def main():
     print("A total of " + str(len(releaseArray)) + " Releases were retrieved from Jira Align")
 
     # Collect all Customer information and save it
-    customerArray = common.GetAllCustomers()
+    customerArray = common.ReadAllItems('customers', MAX)
     allConfigurationData['customers'] = customerArray
     print("A total of " + str(len(customerArray)) + " Customers were retrieved from Jira Align")
 
     # Collect all Portfolio information and save it
-    portfolioArray = common.GetAllPortfolios()
+    portfolioArray = common.ReadAllItems('portfolios', MAX)
     allConfigurationData['portfolio'] = portfolioArray
     print("A total of " + str(len(portfolioArray)) + " Portfolios were retrieved from Jira Align")
 
     # Collect all Idea information and save it
-    ideaArray = common.GetAllIdeas()
+    ideaArray = common.ReadAllItems('ideas', MAX)
     allConfigurationData['ideas'] = ideaArray
     print("A total of " + str(len(ideaArray)) + " Ideas were retrieved from Jira Align")
 
     # Collect all Key Results information and save it
-    keyResultsArray = common.GetAllKeyResults()
+    keyResultsArray = common.ReadAllItems('keyresults', MAX)
     allConfigurationData['keyresults'] = keyResultsArray
     print("A total of " + str(len(keyResultsArray)) + " Key Results were retrieved from Jira Align")
 
     # Collect all Milestone information and save it
-    milestoneArray = common.GetAllMilestones()
+    milestoneArray = common.ReadAllItems('milestones', MAX)
     allConfigurationData['milestones'] = milestoneArray
     print("A total of " + str(len(milestoneArray)) + " Milestones were retrieved from Jira Align")
 
     # Collect all Release Vehicle information and save it
-    releaseVehicleArray = common.GetAllReleaseVehicles()
+    releaseVehicleArray = common.ReadAllItems('releasevehicles', MAX)
     allConfigurationData['releasevehicle'] = releaseVehicleArray
     print("A total of " + str(len(releaseVehicleArray)) + " Release Vehicles were retrieved from Jira Align")
 
@@ -199,7 +199,7 @@ def main():
     print("A total of " + str(len(teamsArray)) + " Teams were retrieved from Jira Align")
 
     # Collect all Risks information and save it
-    risksArray = common.GetAllRisks()
+    risksArray = common.ReadAllItems('risks', MAX)
     allConfigurationData['risks'] = risksArray
     print("A total of " + str(len(risksArray)) + " Risks were retrieved from Jira Align")
 
