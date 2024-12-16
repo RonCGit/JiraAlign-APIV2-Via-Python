@@ -101,17 +101,6 @@ def main():
     print(" PI to set Stories to: " + get_key_info(releaseArray, newPIID))
     print("")
 
-    # Collect all Portfolio information and save it
-    #portfolioArray = common.GetAllPortfolios()
-    #rint("A total of " + str(len(portfolioArray)) + " Portfolios were retrieved from Jira Align")
-
-    # Collect all Teams information and save it
-    #teamsArray = common.GetAllTeams()
-    #print("A total of " + str(len(teamsArray)) + " Teams were retrieved from Jira Align")
-
-    # Collect selected information about all JA Features information and save it
-    #featureArray = common.ReadAllItems('features', MAX)
-
     # Collect selected information about all JA Stories information and save it
     storyArray = common.ReadAllItems('stories', MAX, programId)
 
